@@ -1,0 +1,11 @@
+{
+  "name": "cbmpa/hidrantes-system",
+  "description": "Sistema de cadastramento e gestão de redes de hidrantes",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  },
+  "require": {}
+}
