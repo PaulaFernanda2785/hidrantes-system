@@ -125,7 +125,7 @@ function hidrante_status_class(?string $status): string
     <section class="card hidrante-listing-card">
         <div class="hidrante-form-divider">
             <h3>Filtros da listagem</h3>
-            <p>Refine a pesquisa por numero, endereco, equipe responsavel, municipio e condicao operacional.</p>
+            <p>Refine a pesquisa por numero, endereco, equipe responsavel, municipio, bairro e condicao operacional.</p>
         </div>
 
         <form method="GET" action="/hidrantes" class="filters-grid hidrante-listing-filters">
@@ -174,9 +174,6 @@ function hidrante_status_class(?string $status): string
                         </option>
                     <?php endforeach; ?>
                 </select>
-                <span class="field-help hidrante-listing-bairro-help" id="filter-bairro-help" data-default-message="Selecione um municipio para listar todos os bairros disponiveis.">
-                    <?= !empty($filters['municipio_id']) ? 'Escolha um bairro especifico ou mantenha "Todos" para pesquisar no municipio inteiro.' : 'Selecione um municipio para listar todos os bairros disponiveis.' ?>
-                </span>
             </label>
 
             <div class="actions-inline hidrante-listing-actions">

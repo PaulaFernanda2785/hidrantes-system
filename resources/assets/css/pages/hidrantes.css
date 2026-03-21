@@ -428,10 +428,6 @@ input[readonly] {
     align-items: center;
 }
 
-.hidrante-listing-bairro-help {
-    min-height: 20px;
-}
-
 .hidrante-listing-actions .btn-secondary,
 .hidrante-listing-actions button {
     width: auto;
@@ -542,6 +538,11 @@ input[readonly] {
 .hidrante-table-actions .btn-secondary,
 .hidrante-table-actions button {
     width: auto;
+}
+
+.hidrante-table-actions [data-hidrante-detail]:hover,
+.hidrante-table-actions [data-hidrante-detail]:focus-visible {
+    color: #fff;
 }
 
 .hidrante-table-empty {

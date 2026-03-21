@@ -20,6 +20,7 @@ $stylesheets = [
     'components/tables.css',
     'components/pagination.css',
     'pages/auth.css',
+    'pages/management.css',
     'pages/hidrantes.css',
 ];
 $pageScripts = array_values(array_unique(array_merge([
