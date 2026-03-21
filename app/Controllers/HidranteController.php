@@ -7,6 +7,7 @@ use App\Core\Response;
 use App\Core\Session;
 use App\Repositories\BairroRepository;
 use App\Repositories\MunicipioRepository;
+use App\Services\BairroService;
 use App\Services\HidranteService;
 use App\Validators\ValidationException;
 
@@ -133,6 +134,44 @@ class HidranteController extends Controller
     public function bairrosByMunicipio(string $municipioId): void
     {
         Response::json((new BairroRepository())->byMunicipio((int) $municipioId));
+    }
+
+    public function storeBairro(): void
+    {
+        $auth = Session::get('auth', []);
+
+        try {
+            $bairro = (new BairroService())->create($this->request->all(), $auth);
+            Response::json($bairro);
+        } catch (ValidationException $e) {
+            Response::json([
+                'message' => $e->getMessage(),
+            ], 422);
+        } catch (\Throwable $e) {
+            report_exception($e);
+            Response::json([
+                'message' => 'Nao foi possivel cadastrar o bairro agora.',
+            ], 500);
+        }
+    }
+
+    public function updateBairro(string $id): void
+    {
+        $auth = Session::get('auth', []);
+
+        try {
+            $bairro = (new BairroService())->update((int) $id, $this->request->all(), $auth);
+            Response::json($bairro);
+        } catch (ValidationException $e) {
+            Response::json([
+                'message' => $e->getMessage(),
+            ], 422);
+        } catch (\Throwable $e) {
+            report_exception($e);
+            Response::json([
+                'message' => 'Nao foi possivel atualizar o bairro agora.',
+            ], 500);
+        }
     }
 
     public function photo(string $filename): void
