@@ -16,6 +16,7 @@ $stylesheets = [
     'components/alerts.css',
     'components/forms.css',
     'components/buttons.css',
+    'components/modal.css',
     'components/tables.css',
     'components/pagination.css',
     'pages/auth.css',

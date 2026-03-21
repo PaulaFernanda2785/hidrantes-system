@@ -12,19 +12,66 @@ function build_historico_page_url(int $page, array $filters): string
 {
     $query = array_filter([
         'page' => $page,
-        'usuario_id' => $filters['usuario_id'] ?? '',
+        'usuario_nome' => $filters['usuario_nome'] ?? '',
         'acao' => $filters['acao'] ?? '',
     ], static fn($value) => $value !== null && $value !== '');
 
     return '/historico?' . http_build_query($query);
+}
+
+function historico_registro_relacionado(array $item): string
+{
+    $entidade = trim((string) ($item['entidade'] ?? ''));
+    $referencia = trim((string) ($item['referencia_registro'] ?? ''));
+
+    if ($entidade === 'hidrantes') {
+        if (!empty($item['hidrante_numero_referencia'])) {
+            return 'Hidrante ' . $item['hidrante_numero_referencia'];
+        }
+
+        return $referencia !== '' ? 'Hidrante ID ' . $referencia : 'Hidrante nao identificado';
+    }
+
+    if ($entidade === 'usuarios') {
+        if (!empty($item['usuario_nome_referencia'])) {
+            return 'Usuario ' . $item['usuario_nome_referencia'];
+        }
+
+        return $referencia !== '' ? 'Usuario ID ' . $referencia : 'Usuario nao identificado';
+    }
+
+    if ($entidade === 'relatorios') {
+        return $referencia !== '' ? 'Relatorio ' . $referencia : 'Relatorio sem referencia';
+    }
+
+    if ($entidade === '') {
+        return $referencia !== '' ? 'Referencia ' . $referencia : 'Sem referencia';
+    }
+
+    return $referencia !== '' ? ucfirst($entidade) . ' ' . $referencia : ucfirst($entidade);
+}
+
+function historico_detalhes_resumidos(?string $detalhes, int $limit = 70): string
+{
+    $texto = trim((string) $detalhes);
+
+    if ($texto === '') {
+        return '-';
+    }
+
+    if (mb_strlen($texto) <= $limit) {
+        return $texto;
+    }
+
+    return mb_substr($texto, 0, $limit - 3) . '...';
 }
 ?>
 
 <h1><?= e($title) ?></h1>
 <section class="card">
     <form method="GET" action="/historico" class="filters-grid">
-        <label>ID do usuario
-            <input type="text" name="usuario_id" value="<?= e((string) ($filters['usuario_id'] ?? '')) ?>">
+        <label>Nome do usuario
+            <input type="text" name="usuario_nome" value="<?= e((string) ($filters['usuario_nome'] ?? '')) ?>">
         </label>
         <label>Acao
             <input type="text" name="acao" value="<?= e((string) ($filters['acao'] ?? '')) ?>">
@@ -47,7 +94,7 @@ function build_historico_page_url(int $page, array $filters): string
 
     <table>
         <thead>
-        <tr><th>Data</th><th>Usuario</th><th>Acao</th><th>Entidade</th><th>Referencia</th><th>Detalhes</th></tr>
+        <tr><th>Data</th><th>Usuario</th><th>Acao</th><th>Entidade</th><th>Detalhes</th><th>Acoes</th></tr>
         </thead>
         <tbody>
         <?php if (empty($items)): ?>
@@ -56,13 +103,28 @@ function build_historico_page_url(int $page, array $filters): string
             </tr>
         <?php else: ?>
             <?php foreach ($items as $item): ?>
+                <?php $registroRelacionado = historico_registro_relacionado($item); ?>
                 <tr>
                     <td><?= e($item['data_acao']) ?></td>
                     <td><?= e($item['usuario_nome_snapshot']) ?></td>
                     <td><?= e($item['acao']) ?></td>
                     <td><?= e($item['entidade'] ?? '-') ?></td>
-                    <td><?= e($item['referencia_registro'] ?? '-') ?></td>
-                    <td><?= e($item['detalhes'] ?? '-') ?></td>
+                    <td><?= e(historico_detalhes_resumidos($item['detalhes'] ?? null)) ?></td>
+                    <td>
+                        <button
+                            type="button"
+                            class="btn-secondary history-detail-trigger"
+                            data-history-detail
+                            data-data-acao="<?= e((string) ($item['data_acao'] ?? '-')) ?>"
+                            data-usuario="<?= e((string) ($item['usuario_nome_snapshot'] ?? '-')) ?>"
+                            data-acao="<?= e((string) ($item['acao'] ?? '-')) ?>"
+                            data-entidade="<?= e((string) ($item['entidade'] ?? '-')) ?>"
+                            data-registro="<?= e($registroRelacionado) ?>"
+                            data-detalhes="<?= e((string) ($item['detalhes'] ?? 'Sem detalhes informados.')) ?>"
+                        >
+                            Ver detalhe
+                        </button>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         <?php endif; ?>
@@ -108,3 +170,95 @@ function build_historico_page_url(int $page, array $filters): string
         </nav>
     <?php endif; ?>
 </section>
+
+<div class="modal-backdrop" id="historico-detail-modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="historico-detail-title">
+        <div class="modal-header">
+            <div>
+                <h2 id="historico-detail-title">Detalhes do historico</h2>
+                <p class="modal-subtitle" id="historico-detail-date">-</p>
+            </div>
+            <button type="button" class="modal-close-button" data-modal-close>Fechar</button>
+        </div>
+
+        <div class="modal-body">
+            <dl class="modal-detail-grid">
+                <div class="modal-detail-item">
+                    <dt>Usuario</dt>
+                    <dd id="historico-detail-user">-</dd>
+                </div>
+                <div class="modal-detail-item">
+                    <dt>Acao</dt>
+                    <dd id="historico-detail-action">-</dd>
+                </div>
+                <div class="modal-detail-item">
+                    <dt>Entidade</dt>
+                    <dd id="historico-detail-entity">-</dd>
+                </div>
+                <div class="modal-detail-item">
+                    <dt>Registro relacionado</dt>
+                    <dd id="historico-detail-record">-</dd>
+                </div>
+                <div class="modal-detail-item modal-detail-item-full">
+                    <dt>Detalhes</dt>
+                    <dd id="historico-detail-description">-</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('historico-detail-modal');
+    if (!modal) {
+        return;
+    }
+
+    const triggers = document.querySelectorAll('[data-history-detail]');
+    const closeButtons = modal.querySelectorAll('[data-modal-close]');
+    const detailDate = document.getElementById('historico-detail-date');
+    const detailUser = document.getElementById('historico-detail-user');
+    const detailAction = document.getElementById('historico-detail-action');
+    const detailEntity = document.getElementById('historico-detail-entity');
+    const detailRecord = document.getElementById('historico-detail-record');
+    const detailDescription = document.getElementById('historico-detail-description');
+
+    const closeModal = () => {
+        modal.hidden = true;
+        document.body.classList.remove('modal-open');
+    };
+
+    const openModal = (trigger) => {
+        detailDate.textContent = trigger.dataset.dataAcao || '-';
+        detailUser.textContent = trigger.dataset.usuario || '-';
+        detailAction.textContent = trigger.dataset.acao || '-';
+        detailEntity.textContent = trigger.dataset.entidade || '-';
+        detailRecord.textContent = trigger.dataset.registro || '-';
+        detailDescription.textContent = trigger.dataset.detalhes || '-';
+
+        modal.hidden = false;
+        document.body.classList.add('modal-open');
+    };
+
+    triggers.forEach((trigger) => {
+        trigger.addEventListener('click', () => openModal(trigger));
+    });
+
+    closeButtons.forEach((button) => {
+        button.addEventListener('click', closeModal);
+    });
+
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !modal.hidden) {
+            closeModal();
+        }
+    });
+});
+</script>
