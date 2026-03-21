@@ -5,9 +5,10 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Response;
 use App\Core\Session;
-use App\Repositories\MunicipioRepository;
 use App\Repositories\BairroRepository;
+use App\Repositories\MunicipioRepository;
 use App\Services\HidranteService;
+use App\Validators\ValidationException;
 
 class HidranteController extends Controller
 {
@@ -33,6 +34,8 @@ class HidranteController extends Controller
     {
         $this->view('hidrantes/create', [
             'title' => 'Novo Hidrante',
+            'formAction' => '/hidrantes/salvar',
+            'hidrante' => null,
             'municipios' => (new MunicipioRepository())->all(),
             'bairros' => [],
         ]);
@@ -41,18 +44,74 @@ class HidranteController extends Controller
     public function store(): void
     {
         $auth = Session::get('auth');
-        $required = ['numero_hidrante', 'equipe_responsavel', 'area', 'tipo_hidrante', 'status_operacional', 'municipio_id', 'endereco'];
-        foreach ($required as $field) {
-            if (trim((string) $this->request->input($field)) === '') {
-                $this->redirect('/hidrantes/novo', null, 'Preencha todos os campos obrigatórios do hidrante.');
-            }
-        }
 
         try {
-            (new HidranteService())->create($this->request->all(), $this->request->file('fotos') ?? [], $auth);
+            (new HidranteService())->create(
+                $this->request->all(),
+                $this->request->file('fotos') ?? [],
+                $auth
+            );
+
             $this->redirect('/hidrantes', 'Hidrante cadastrado com sucesso.');
+        } catch (ValidationException $e) {
+            $this->redirect('/hidrantes/novo', null, $e->getMessage());
         } catch (\Throwable $e) {
             $this->redirect('/hidrantes/novo', null, $e->getMessage());
+        }
+    }
+
+    public function edit(string $id): void
+    {
+        $service = new HidranteService();
+        $hidrante = $service->find((int) $id);
+
+        if (!$hidrante) {
+            $this->redirect('/hidrantes', null, 'Hidrante não encontrado.');
+        }
+
+        $bairros = [];
+        if (!empty($hidrante['municipio_id'])) {
+            $bairros = (new BairroRepository())->byMunicipio((int) $hidrante['municipio_id']);
+        }
+
+        $this->view('hidrantes/create', [
+            'title' => 'Editar Hidrante',
+            'formAction' => '/hidrantes/' . (int) $id . '/atualizar',
+            'hidrante' => $hidrante,
+            'municipios' => (new MunicipioRepository())->all(),
+            'bairros' => $bairros,
+        ]);
+    }
+
+    public function update(string $id): void
+    {
+        $auth = Session::get('auth');
+
+        try {
+            (new HidranteService())->update(
+                (int) $id,
+                $this->request->all(),
+                $this->request->file('fotos') ?? [],
+                $auth
+            );
+
+            $this->redirect('/hidrantes', 'Hidrante atualizado com sucesso.');
+        } catch (ValidationException $e) {
+            $this->redirect('/hidrantes/' . (int) $id . '/editar', null, $e->getMessage());
+        } catch (\Throwable $e) {
+            $this->redirect('/hidrantes/' . (int) $id . '/editar', null, $e->getMessage());
+        }
+    }
+
+    public function destroy(string $id): void
+    {
+        $auth = Session::get('auth');
+
+        try {
+            (new HidranteService())->delete((int) $id, $auth);
+            $this->redirect('/hidrantes', 'Hidrante excluído com sucesso.');
+        } catch (\Throwable $e) {
+            $this->redirect('/hidrantes', null, $e->getMessage());
         }
     }
 

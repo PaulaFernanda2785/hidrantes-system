@@ -19,6 +19,9 @@ $router->get('/painel', [PainelController::class, 'index'], [AuthMiddleware::cla
 $router->get('/hidrantes', [HidranteController::class, 'index'], [AuthMiddleware::class]);
 $router->get('/hidrantes/novo', [HidranteController::class, 'create'], [AuthMiddleware::class]);
 $router->post('/hidrantes/salvar', [HidranteController::class, 'store'], [AuthMiddleware::class]);
+$router->get('/hidrantes/{id}/editar', [HidranteController::class, 'edit'], [AuthMiddleware::class]);
+$router->post('/hidrantes/{id}/atualizar', [HidranteController::class, 'update'], [AuthMiddleware::class]);
+$router->post('/hidrantes/{id}/excluir', [HidranteController::class, 'destroy'], [AuthMiddleware::class]);
 
 $router->get('/usuarios', [UsuarioController::class, 'index'], [AuthMiddleware::class]);
 $router->get('/usuarios/novo', [UsuarioController::class, 'create'], [AuthMiddleware::class]);

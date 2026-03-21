@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\HidranteRepository;
+use App\Validators\ValidationException;
 
 class HidranteService
 {
@@ -23,48 +24,258 @@ class HidranteService
         return $this->hidranteRepository->all($filters);
     }
 
+    public function find(int $id): ?array
+    {
+        return $this->hidranteRepository->findById($id);
+    }
+
     public function create(array $data, array $files, array $actor): int
     {
-        if ($this->hidranteRepository->existsByNumero($data['numero_hidrante'])) {
-            throw new \InvalidArgumentException('Já existe um hidrante com esse número.');
+        $payload = $this->validateAndNormalize($data);
+
+        if ($this->hidranteRepository->existsByNumero($payload['numero_hidrante'])) {
+            throw new ValidationException([
+                'numero_hidrante' => 'Já existe um hidrante com esse número.',
+            ]);
         }
 
         $images = $this->uploadService->storeMultiple($files);
 
-        $payload = [
-            'numero_hidrante' => trim((string) $data['numero_hidrante']),
-            'equipe_responsavel' => trim((string) $data['equipe_responsavel']),
-            'area' => $data['area'],
-            'existe_no_local' => $data['existe_no_local'],
-            'tipo_hidrante' => $data['tipo_hidrante'],
-            'acessibilidade' => $data['acessibilidade'],
-            'tampo_conexoes' => $data['tampo_conexoes'],
-            'tampas_ausentes' => $data['tampas_ausentes'] ?: null,
-            'caixa_protecao' => $data['caixa_protecao'],
-            'condicao_caixa' => $data['condicao_caixa'] ?: null,
-            'presenca_agua_interior' => $data['presenca_agua_interior'],
-            'teste_realizado' => $data['teste_realizado'],
-            'resultado_teste' => $data['resultado_teste'] ?: null,
-            'status_operacional' => $data['status_operacional'],
-            'municipio_id' => (int) $data['municipio_id'],
-            'bairro_id' => !empty($data['bairro_id']) ? (int) $data['bairro_id'] : null,
-            'endereco' => trim((string) $data['endereco']),
-            'latitude' => $this->geoService->isValid($data['latitude'] ?? null, $data['longitude'] ?? null) ? $data['latitude'] : null,
-            'longitude' => $this->geoService->isValid($data['latitude'] ?? null, $data['longitude'] ?? null) ? $data['longitude'] : null,
-            'foto_01' => $images['foto_01'],
-            'foto_02' => $images['foto_02'],
-            'foto_03' => $images['foto_03'],
-            'criado_por_usuario_id' => $actor['id'],
-            'atualizado_por_usuario_id' => $actor['id'],
-        ];
+        $payload['foto_01'] = $images['foto_01'];
+        $payload['foto_02'] = $images['foto_02'];
+        $payload['foto_03'] = $images['foto_03'];
+        $payload['criado_por_usuario_id'] = $actor['id'];
+        $payload['atualizado_por_usuario_id'] = $actor['id'];
 
         $id = $this->hidranteRepository->create($payload);
-        $this->auditService->record($actor, 'cadastrar', 'hidrantes', (string) $id, 'Cadastro de hidrante realizado.');
+
+        $this->auditService->record(
+            $actor,
+            'cadastrar',
+            'hidrantes',
+            (string) $id,
+            'Cadastro de hidrante realizado.'
+        );
+
         return $id;
+    }
+
+    public function update(int $id, array $data, array $files, array $actor): void
+    {
+        $current = $this->hidranteRepository->findById($id);
+
+        if (!$current) {
+            throw new \RuntimeException('Hidrante não encontrado.');
+        }
+
+        $payload = $this->validateAndNormalize($data);
+
+        if ($this->hidranteRepository->existsByNumero($payload['numero_hidrante'], $id)) {
+            throw new ValidationException([
+                'numero_hidrante' => 'Já existe outro hidrante com esse número.',
+            ]);
+        }
+
+        $images = $this->uploadService->storeMultiple($files);
+
+        $payload['foto_01'] = $images['foto_01'] ?: $current['foto_01'];
+        $payload['foto_02'] = $images['foto_02'] ?: $current['foto_02'];
+        $payload['foto_03'] = $images['foto_03'] ?: $current['foto_03'];
+        $payload['atualizado_por_usuario_id'] = $actor['id'];
+
+        $this->hidranteRepository->update($id, $payload);
+
+        $this->auditService->record(
+            $actor,
+            'editar',
+            'hidrantes',
+            (string) $id,
+            'Edição de hidrante realizada.'
+        );
+    }
+
+    public function delete(int $id, array $actor): void
+    {
+        $current = $this->hidranteRepository->findById($id);
+
+        if (!$current) {
+            throw new \RuntimeException('Hidrante não encontrado.');
+        }
+
+        $this->hidranteRepository->softDelete($id, (int) $actor['id']);
+
+        $this->auditService->record(
+            $actor,
+            'deletar',
+            'hidrantes',
+            (string) $id,
+            'Exclusão lógica de hidrante realizada.'
+        );
     }
 
     public function mapPoints(): array
     {
         return $this->hidranteRepository->mapPoints();
+    }
+
+    private function validateAndNormalize(array $data): array
+    {
+        $errors = [];
+
+        $required = [
+            'numero_hidrante',
+            'equipe_responsavel',
+            'area',
+            'existe_no_local',
+            'tipo_hidrante',
+            'acessibilidade',
+            'tampo_conexoes',
+            'caixa_protecao',
+            'presenca_agua_interior',
+            'teste_realizado',
+            'status_operacional',
+            'municipio_id',
+            'endereco',
+        ];
+
+        foreach ($required as $field) {
+            if (trim((string) ($data[$field] ?? '')) === '') {
+                $errors[$field] = 'Campo obrigatório.';
+            }
+        }
+
+        $areas = ['urbano', 'industrial', 'rural'];
+        $simNao = ['sim', 'nao'];
+        $tipos = ['coluna', 'subterraneo', 'parede', 'outro'];
+        $tampoConexoes = ['integra', 'danificadas', 'ausentes'];
+        $condicoesCaixa = ['boa', 'regular', 'ruim'];
+        $resultadosTeste = ['funcionando normalmente', 'vazamento', 'vazao insuficiente', 'nao funcionou'];
+        $statusOperacional = ['operante', 'operante com restricao', 'inoperante'];
+
+        $numero = trim((string) ($data['numero_hidrante'] ?? ''));
+        $equipe = trim((string) ($data['equipe_responsavel'] ?? ''));
+        $area = trim((string) ($data['area'] ?? ''));
+        $existeNoLocal = trim((string) ($data['existe_no_local'] ?? ''));
+        $tipo = trim((string) ($data['tipo_hidrante'] ?? ''));
+        $acessibilidade = trim((string) ($data['acessibilidade'] ?? ''));
+        $tampo = trim((string) ($data['tampo_conexoes'] ?? ''));
+        $tampasAusentes = trim((string) ($data['tampas_ausentes'] ?? ''));
+        $caixaProtecao = trim((string) ($data['caixa_protecao'] ?? ''));
+        $condicaoCaixa = trim((string) ($data['condicao_caixa'] ?? ''));
+        $presencaAgua = trim((string) ($data['presenca_agua_interior'] ?? ''));
+        $testeRealizado = trim((string) ($data['teste_realizado'] ?? ''));
+        $resultadoTeste = trim((string) ($data['resultado_teste'] ?? ''));
+        $status = trim((string) ($data['status_operacional'] ?? ''));
+        $municipioId = (int) ($data['municipio_id'] ?? 0);
+        $bairroId = !empty($data['bairro_id']) ? (int) $data['bairro_id'] : null;
+        $endereco = trim((string) ($data['endereco'] ?? ''));
+        $latitudeRaw = trim((string) ($data['latitude'] ?? ''));
+        $longitudeRaw = trim((string) ($data['longitude'] ?? ''));
+
+        if ($numero !== '' && mb_strlen($numero) > 20) {
+            $errors['numero_hidrante'] = 'Número do hidrante excede 20 caracteres.';
+        }
+
+        if ($equipe !== '' && mb_strlen($equipe) > 150) {
+            $errors['equipe_responsavel'] = 'Equipe responsável excede 150 caracteres.';
+        }
+
+        if ($endereco !== '' && mb_strlen($endereco) > 255) {
+            $errors['endereco'] = 'Endereço excede 255 caracteres.';
+        }
+
+        if ($area && !in_array($area, $areas, true)) {
+            $errors['area'] = 'Área inválida.';
+        }
+
+        if ($existeNoLocal && !in_array($existeNoLocal, $simNao, true)) {
+            $errors['existe_no_local'] = 'Valor inválido.';
+        }
+
+        if ($tipo && !in_array($tipo, $tipos, true)) {
+            $errors['tipo_hidrante'] = 'Tipo de hidrante inválido.';
+        }
+
+        if ($acessibilidade && !in_array($acessibilidade, $simNao, true)) {
+            $errors['acessibilidade'] = 'Valor inválido.';
+        }
+
+        if ($tampo && !in_array($tampo, $tampoConexoes, true)) {
+            $errors['tampo_conexoes'] = 'Valor inválido.';
+        }
+
+        if ($caixaProtecao && !in_array($caixaProtecao, $simNao, true)) {
+            $errors['caixa_protecao'] = 'Valor inválido.';
+        }
+
+        if ($condicaoCaixa !== '' && !in_array($condicaoCaixa, $condicoesCaixa, true)) {
+            $errors['condicao_caixa'] = 'Condição da caixa inválida.';
+        }
+
+        if ($presencaAgua && !in_array($presencaAgua, $simNao, true)) {
+            $errors['presenca_agua_interior'] = 'Valor inválido.';
+        }
+
+        if ($testeRealizado && !in_array($testeRealizado, $simNao, true)) {
+            $errors['teste_realizado'] = 'Valor inválido.';
+        }
+
+        if ($resultadoTeste !== '' && !in_array($resultadoTeste, $resultadosTeste, true)) {
+            $errors['resultado_teste'] = 'Resultado do teste inválido.';
+        }
+
+        if ($status && !in_array($status, $statusOperacional, true)) {
+            $errors['status_operacional'] = 'Status operacional inválido.';
+        }
+
+        if ($municipioId <= 0) {
+            $errors['municipio_id'] = 'Município inválido.';
+        }
+
+        if ($testeRealizado === 'nao') {
+            $resultadoTeste = '';
+        }
+
+        if ($caixaProtecao === 'nao') {
+            $condicaoCaixa = '';
+        }
+
+        $latitude = null;
+        $longitude = null;
+
+        if ($latitudeRaw !== '' || $longitudeRaw !== '') {
+            if (!$this->geoService->isValid($latitudeRaw, $longitudeRaw)) {
+                $errors['coordenadas'] = 'Latitude/longitude inválidas.';
+            } else {
+                $latitude = $latitudeRaw;
+                $longitude = $longitudeRaw;
+            }
+        }
+
+        if ($errors) {
+            throw new ValidationException($errors, 'Verifique os campos informados.');
+        }
+
+        return [
+            'numero_hidrante' => $numero,
+            'equipe_responsavel' => $equipe,
+            'area' => $area,
+            'existe_no_local' => $existeNoLocal,
+            'tipo_hidrante' => $tipo,
+            'acessibilidade' => $acessibilidade,
+            'tampo_conexoes' => $tampo,
+            'tampas_ausentes' => $tampasAusentes !== '' ? $tampasAusentes : null,
+            'caixa_protecao' => $caixaProtecao,
+            'condicao_caixa' => $condicaoCaixa !== '' ? $condicaoCaixa : null,
+            'presenca_agua_interior' => $presencaAgua,
+            'teste_realizado' => $testeRealizado,
+            'resultado_teste' => $resultadoTeste !== '' ? $resultadoTeste : null,
+            'status_operacional' => $status,
+            'municipio_id' => $municipioId,
+            'bairro_id' => $bairroId,
+            'endereco' => $endereco,
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+        ];
     }
 }
