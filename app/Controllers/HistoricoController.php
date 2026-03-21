@@ -10,8 +10,8 @@ class HistoricoController extends Controller
     public function index(): void
     {
         $filters = [
-            'usuario_id' => $this->request->input('usuario_id'),
-            'acao' => $this->request->input('acao'),
+            'usuario_nome' => trim((string) $this->request->input('usuario_nome')),
+            'acao' => trim((string) $this->request->input('acao')),
         ];
 
         $page = (int) ($this->request->input('page') ?: 1);

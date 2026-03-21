@@ -29,30 +29,39 @@ class HistoricoRepository
         $where = ['1=1'];
         $params = [];
 
-        if (!empty($filters['usuario_id'])) {
-            $where[] = 'usuario_id = :usuario_id';
-            $params['usuario_id'] = (int) $filters['usuario_id'];
+        if (!empty($filters['usuario_nome'])) {
+            $where[] = 'hu.usuario_nome_snapshot LIKE :usuario_nome';
+            $params['usuario_nome'] = '%' . trim((string) $filters['usuario_nome']) . '%';
         }
 
         if (!empty($filters['acao'])) {
-            $where[] = 'acao = :acao';
+            $where[] = 'hu.acao = :acao';
             $params['acao'] = $filters['acao'];
         }
 
         $whereSql = 'WHERE ' . implode(' AND ', $where);
 
         $countSql = "SELECT COUNT(*)
-            FROM historico_usuario
+            FROM historico_usuario hu
             {$whereSql}";
 
         $countStmt = $this->db->prepare($countSql);
         $countStmt->execute($params);
         $total = (int) $countStmt->fetchColumn();
 
-        $sql = "SELECT *
-            FROM historico_usuario
+        $sql = "SELECT
+                hu.*,
+                h.numero_hidrante AS hidrante_numero_referencia,
+                u.nome AS usuario_nome_referencia
+            FROM historico_usuario hu
+            LEFT JOIN hidrantes h
+                ON hu.entidade = 'hidrantes'
+                AND CAST(hu.referencia_registro AS UNSIGNED) = h.id
+            LEFT JOIN usuarios u
+                ON hu.entidade = 'usuarios'
+                AND CAST(hu.referencia_registro AS UNSIGNED) = u.id
             {$whereSql}
-            ORDER BY data_acao DESC, id DESC
+            ORDER BY hu.data_acao DESC, hu.id DESC
             LIMIT :limit OFFSET :offset";
 
         $stmt = $this->db->prepare($sql);
