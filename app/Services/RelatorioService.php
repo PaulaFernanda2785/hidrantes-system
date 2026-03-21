@@ -13,6 +13,6 @@ class RelatorioService
 
     public function hidrantes(array $filters = []): array
     {
-        return $this->hidranteRepository->all($filters);
+        return $this->hidranteRepository->report($filters);
     }
 }
