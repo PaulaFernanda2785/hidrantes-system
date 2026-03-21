@@ -38,33 +38,7 @@ class HidranteRepository
         $perPage = max(1, $perPage);
         $offset = ($page - 1) * $perPage;
 
-        $where = ["h.deleted_at IS NULL"];
-        $params = [];
-
-        if (!empty($filters['status_operacional'])) {
-            $where[] = 'h.status_operacional = :status_operacional';
-            $params['status_operacional'] = $filters['status_operacional'];
-        }
-
-        if (!empty($filters['municipio_id'])) {
-            $where[] = 'h.municipio_id = :municipio_id';
-            $params['municipio_id'] = (int) $filters['municipio_id'];
-        }
-
-        if (!empty($filters['bairro_id'])) {
-            $where[] = 'h.bairro_id = :bairro_id';
-            $params['bairro_id'] = (int) $filters['bairro_id'];
-        }
-
-        if (!empty($filters['q'])) {
-            $search = '%' . trim((string) $filters['q']) . '%';
-            $where[] = '(h.numero_hidrante LIKE :q_numero OR h.endereco LIKE :q_endereco OR h.equipe_responsavel LIKE :q_equipe)';
-            $params['q_numero'] = $search;
-            $params['q_endereco'] = $search;
-            $params['q_equipe'] = $search;
-        }
-
-        $whereSql = 'WHERE ' . implode(' AND ', $where);
+        ['where_sql' => $whereSql, 'params' => $params] = $this->buildFilterQuery($filters);
 
         $countSql = "SELECT COUNT(*)
                     FROM hidrantes h
@@ -330,20 +304,7 @@ class HidranteRepository
 
     public function report(array $filters = []): array
     {
-        $where = ["h.deleted_at IS NULL"];
-        $params = [];
-
-        if (!empty($filters['status_operacional'])) {
-            $where[] = 'h.status_operacional = :status_operacional';
-            $params['status_operacional'] = $filters['status_operacional'];
-        }
-
-        if (!empty($filters['municipio_id'])) {
-            $where[] = 'h.municipio_id = :municipio_id';
-            $params['municipio_id'] = (int) $filters['municipio_id'];
-        }
-
-        $whereSql = 'WHERE ' . implode(' AND ', $where);
+        ['where_sql' => $whereSql, 'params' => $params] = $this->buildFilterQuery($filters);
 
         $sql = "SELECT
                     h.id,
@@ -365,6 +326,86 @@ class HidranteRepository
         $stmt->execute($params);
 
         return $stmt->fetchAll();
+    }
+
+    public function export(array $filters = []): array
+    {
+        ['where_sql' => $whereSql, 'params' => $params] = $this->buildFilterQuery($filters);
+
+        $sql = "SELECT
+                    h.id,
+                    h.numero_hidrante,
+                    h.equipe_responsavel,
+                    h.area,
+                    h.existe_no_local,
+                    h.tipo_hidrante,
+                    h.acessibilidade,
+                    h.tampo_conexoes,
+                    h.tampas_ausentes,
+                    h.caixa_protecao,
+                    h.condicao_caixa,
+                    h.presenca_agua_interior,
+                    h.teste_realizado,
+                    h.resultado_teste,
+                    h.status_operacional,
+                    h.municipio_id,
+                    m.nome AS municipio_nome,
+                    h.bairro_id,
+                    b.nome AS bairro_nome,
+                    h.endereco,
+                    h.latitude,
+                    h.longitude,
+                    h.foto_01,
+                    h.foto_02,
+                    h.foto_03,
+                    h.criado_em,
+                    h.atualizado_em,
+                    h.criado_por_usuario_id,
+                    h.atualizado_por_usuario_id
+                FROM hidrantes h
+                INNER JOIN municipios m ON m.id = h.municipio_id
+                LEFT JOIN bairros b ON b.id = h.bairro_id
+                {$whereSql}
+                ORDER BY h.atualizado_em DESC, h.id DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll();
+    }
+
+    private function buildFilterQuery(array $filters): array
+    {
+        $where = ["h.deleted_at IS NULL"];
+        $params = [];
+
+        if (!empty($filters['status_operacional'])) {
+            $where[] = 'h.status_operacional = :status_operacional';
+            $params['status_operacional'] = $filters['status_operacional'];
+        }
+
+        if (!empty($filters['municipio_id'])) {
+            $where[] = 'h.municipio_id = :municipio_id';
+            $params['municipio_id'] = (int) $filters['municipio_id'];
+        }
+
+        if (!empty($filters['bairro_id'])) {
+            $where[] = 'h.bairro_id = :bairro_id';
+            $params['bairro_id'] = (int) $filters['bairro_id'];
+        }
+
+        if (!empty($filters['q'])) {
+            $search = '%' . trim((string) $filters['q']) . '%';
+            $where[] = '(h.numero_hidrante LIKE :q_numero OR h.endereco LIKE :q_endereco OR h.equipe_responsavel LIKE :q_equipe)';
+            $params['q_numero'] = $search;
+            $params['q_endereco'] = $search;
+            $params['q_equipe'] = $search;
+        }
+
+        return [
+            'where_sql' => 'WHERE ' . implode(' AND ', $where),
+            'params' => $params,
+        ];
     }
 }
 

@@ -141,6 +141,103 @@ class HidranteController extends Controller
         Response::json((new HidranteService())->mapPoints());
     }
 
+    public function exportCsv(): void
+    {
+        $filters = [
+            'q' => trim((string) $this->request->input('q')),
+            'status_operacional' => $this->request->input('status_operacional'),
+            'municipio_id' => $this->request->input('municipio_id'),
+            'bairro_id' => $this->request->input('bairro_id'),
+        ];
+
+        $items = (new HidranteService())->export($filters);
+        $filename = 'hidrantes_' . date('Y-m-d_H-i-s') . '.csv';
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        $output = fopen('php://output', 'wb');
+        if ($output === false) {
+            http_response_code(500);
+            echo 'Nao foi possivel gerar o CSV.';
+            exit;
+        }
+
+        fwrite($output, "\xEF\xBB\xBF");
+
+        fputcsv($output, [
+            'ID',
+            'Numero do Hidrante',
+            'Equipe Responsavel',
+            'Area',
+            'Existe no Local',
+            'Tipo de Hidrante',
+            'Acessibilidade',
+            'Tampo e Conexoes',
+            'Tampas Ausentes',
+            'Caixa de Protecao',
+            'Condicao da Caixa',
+            'Presenca de Agua no Interior',
+            'Teste Realizado',
+            'Resultado do Teste',
+            'Status Operacional',
+            'Municipio ID',
+            'Municipio',
+            'Bairro ID',
+            'Bairro',
+            'Endereco',
+            'Latitude',
+            'Longitude',
+            'Foto 01',
+            'Foto 02',
+            'Foto 03',
+            'Criado em',
+            'Atualizado em',
+            'Criado por Usuario ID',
+            'Atualizado por Usuario ID',
+        ], ';');
+
+        foreach ($items as $item) {
+            fputcsv($output, [
+                $item['id'] ?? '',
+                $item['numero_hidrante'] ?? '',
+                $item['equipe_responsavel'] ?? '',
+                $item['area'] ?? '',
+                $item['existe_no_local'] ?? '',
+                $item['tipo_hidrante'] ?? '',
+                $item['acessibilidade'] ?? '',
+                $item['tampo_conexoes'] ?? '',
+                $item['tampas_ausentes'] ?? '',
+                $item['caixa_protecao'] ?? '',
+                $item['condicao_caixa'] ?? '',
+                $item['presenca_agua_interior'] ?? '',
+                $item['teste_realizado'] ?? '',
+                $item['resultado_teste'] ?? '',
+                $item['status_operacional'] ?? '',
+                $item['municipio_id'] ?? '',
+                $item['municipio_nome'] ?? '',
+                $item['bairro_id'] ?? '',
+                $item['bairro_nome'] ?? '',
+                $item['endereco'] ?? '',
+                $item['latitude'] ?? '',
+                $item['longitude'] ?? '',
+                $this->photoUrl((string) ($item['foto_01'] ?? '')),
+                $this->photoUrl((string) ($item['foto_02'] ?? '')),
+                $this->photoUrl((string) ($item['foto_03'] ?? '')),
+                $item['criado_em'] ?? '',
+                $item['atualizado_em'] ?? '',
+                $item['criado_por_usuario_id'] ?? '',
+                $item['atualizado_por_usuario_id'] ?? '',
+            ], ';');
+        }
+
+        fclose($output);
+        exit;
+    }
+
     public function bairrosByMunicipio(string $municipioId): void
     {
         Response::json((new BairroRepository())->byMunicipio((int) $municipioId));
@@ -210,5 +307,19 @@ class HidranteController extends Controller
 
         readfile($path);
         exit;
+    }
+
+    private function photoUrl(string $filename): string
+    {
+        $safeFilename = trim($filename);
+        if ($safeFilename === '') {
+            return '';
+        }
+
+        $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? '';
+        $path = '/uploads/hidrantes/' . rawurlencode($safeFilename);
+
+        return $host !== '' ? $scheme . '://' . $host . $path : $path;
     }
 }
