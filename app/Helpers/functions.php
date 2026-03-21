@@ -144,3 +144,10 @@ if (!function_exists('css_asset')) {
         return '/assets/css/' . ltrim(str_replace('\\', '/', $path), '/');
     }
 }
+
+if (!function_exists('js_asset')) {
+    function js_asset(string $path): string
+    {
+        return '/assets/js/' . ltrim(str_replace('\\', '/', $path), '/');
+    }
+}

@@ -12,6 +12,9 @@ $stylesheets = [
     'components/buttons.css',
     'pages/auth.css',
 ];
+$pageScripts = array_values(array_unique(array_merge([
+    'core/app.js',
+], $scripts ?? [])));
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -33,5 +36,8 @@ $stylesheets = [
         <?php endif; ?>
         <?= $content ?>
     </main>
+    <?php foreach ($pageScripts as $script): ?>
+        <script src="<?= e(js_asset($script)) ?>" defer></script>
+    <?php endforeach; ?>
 </body>
 </html>

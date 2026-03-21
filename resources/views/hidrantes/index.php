@@ -116,7 +116,12 @@ function build_page_url(int $page, array $filters): string
                             <a class="btn-secondary" href="/hidrantes/<?= (int) $hidrante['id'] ?>/editar">Editar</a>
 
                             <?php if (in_array($perfil, ['admin', 'gestor'], true)): ?>
-                                <form method="POST" action="/hidrantes/<?= (int) $hidrante['id'] ?>/excluir" onsubmit="return confirm('Deseja realmente excluir este hidrante?');">
+                                <form
+                                    method="POST"
+                                    action="/hidrantes/<?= (int) $hidrante['id'] ?>/excluir"
+                                    data-confirm-submit
+                                    data-confirm-message="Deseja realmente excluir este hidrante?"
+                                >
                                     <?= csrf_field() ?>
                                     <button type="submit">Excluir</button>
                                 </form>

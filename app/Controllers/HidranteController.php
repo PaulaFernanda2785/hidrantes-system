@@ -35,6 +35,7 @@ class HidranteController extends Controller
             'pagination' => $result['meta'],
             'filters' => $filters,
             'municipios' => $municipios,
+            'scripts' => ['pages/hidrantes/index.js'],
         ]);
     }
 
@@ -46,6 +47,7 @@ class HidranteController extends Controller
             'hidrante' => null,
             'municipios' => (new MunicipioRepository())->all(),
             'bairros' => [],
+            'scripts' => ['pages/hidrantes/form.js'],
         ]);
     }
 
@@ -89,6 +91,7 @@ class HidranteController extends Controller
             'hidrante' => $hidrante,
             'municipios' => (new MunicipioRepository())->all(),
             'bairros' => $bairros,
+            'scripts' => ['pages/hidrantes/form.js'],
         ]);
     }
 

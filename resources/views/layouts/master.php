@@ -22,6 +22,9 @@ $stylesheets = [
     'pages/auth.css',
     'pages/hidrantes.css',
 ];
+$pageScripts = array_values(array_unique(array_merge([
+    'core/app.js',
+], $scripts ?? [])));
 
 function menu_active(string $path): string
 {
@@ -109,6 +112,8 @@ function menu_active(string $path): string
     </div>
 </div>
 
-<script src="/assets/app.js"></script>
+<?php foreach ($pageScripts as $script): ?>
+    <script src="<?= e(js_asset($script)) ?>" defer></script>
+<?php endforeach; ?>
 </body>
 </html>
