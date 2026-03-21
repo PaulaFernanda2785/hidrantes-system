@@ -27,6 +27,20 @@ function build_page_url(int $page, array $filters): string
     return '/hidrantes?' . http_build_query($query);
 }
 
+function build_csv_url(array $filters): string
+{
+    $query = array_filter([
+        'q' => $filters['q'] ?? '',
+        'status_operacional' => $filters['status_operacional'] ?? '',
+        'municipio_id' => $filters['municipio_id'] ?? '',
+        'bairro_id' => $filters['bairro_id'] ?? '',
+    ], static fn($value) => $value !== null && $value !== '');
+
+    $suffix = $query === [] ? '' : '?' . http_build_query($query);
+
+    return '/hidrantes/exportar/csv' . $suffix;
+}
+
 function hidrante_photo_items(array $hidrante): array
 {
     $items = [];
@@ -168,6 +182,7 @@ function hidrante_status_class(?string $status): string
             <div class="actions-inline hidrante-listing-actions">
                 <button type="submit">Filtrar</button>
                 <a class="btn-secondary" href="/hidrantes">Limpar</a>
+                <a class="btn-secondary" href="<?= e(build_csv_url($filters)) ?>">Baixar CSV</a>
 
                 <?php if (in_array($perfil, ['admin', 'gestor'], true)): ?>
                     <a class="btn-secondary" href="/hidrantes/novo">Novo hidrante</a>

@@ -131,6 +131,11 @@ class HidranteService
         return $this->hidranteRepository->mapPoints();
     }
 
+    public function export(array $filters = []): array
+    {
+        return $this->hidranteRepository->export($filters);
+    }
+
     private function validateAndNormalize(array $data): array
     {
         $errors = [];
