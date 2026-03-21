@@ -1,0 +1,19 @@
+.auth-page {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+}
+
+.auth-wrapper {
+    width: min(420px, 100%);
+    padding: 20px;
+}
+
+.pre-scroll {
+    max-height: 300px;
+    overflow: auto;
+    background: var(--sidebar-bg);
+    color: #e5e7eb;
+    padding: 12px;
+    border-radius: var(--radius-md);
+}

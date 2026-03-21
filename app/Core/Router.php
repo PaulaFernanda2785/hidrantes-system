@@ -33,6 +33,7 @@ class Router
 
             $pattern = preg_replace('#\{[^/]+\}#', '([^/]+)', $route['path']);
             $pattern = '#^' . rtrim($pattern, '/') . '$#';
+
             if ($route['path'] === '/') {
                 $pattern = '#^/$#';
             }
@@ -43,17 +44,41 @@ class Router
 
             array_shift($matches);
 
-            foreach ($route['middlewares'] as $middlewareClass) {
-                (new $middlewareClass())->handle($request);
+            foreach ($route['middlewares'] as $middlewareDefinition) {
+                [$middlewareClass, $middlewareArgs] = $this->parseMiddleware($middlewareDefinition);
+
+                if (!class_exists($middlewareClass)) {
+                    throw new \RuntimeException("Middleware não encontrado: {$middlewareClass}");
+                }
+
+                $middleware = new $middlewareClass(...$middlewareArgs);
+                $middleware->handle($request);
             }
 
             [$controllerClass, $method] = $route['handler'];
             $controller = new $controllerClass();
+
             call_user_func_array([$controller, $method], $matches);
             return;
         }
 
         http_response_code(404);
         echo '404 - Página não encontrada';
+    }
+
+    private function parseMiddleware(string $middlewareDefinition): array
+    {
+        if (!str_contains($middlewareDefinition, ':')) {
+            return [$middlewareDefinition, []];
+        }
+
+        [$middlewareClass, $rawArgs] = explode(':', $middlewareDefinition, 2);
+
+        $args = array_values(array_filter(array_map(
+            static fn(string $item): string => trim($item),
+            explode(',', $rawArgs)
+        ), static fn(string $item): bool => $item !== ''));
+
+        return [$middlewareClass, [$args]];
     }
 }
