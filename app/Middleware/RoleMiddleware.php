@@ -4,6 +4,7 @@ namespace App\Middleware;
 
 use App\Core\Request;
 use App\Core\Session;
+use App\Core\View;
 
 class RoleMiddleware
 {
@@ -14,14 +15,22 @@ class RoleMiddleware
     public function handle(Request $request): void
     {
         $auth = Session::get('auth');
+
         if (!$auth) {
             Session::flash('error', 'Faça login para acessar o sistema.');
             redirect('/login');
         }
 
-        if ($this->roles && !in_array($auth['perfil'], $this->roles, true)) {
+        $perfil = $auth['perfil'] ?? null;
+
+        if (!$perfil || ($this->roles && !in_array($perfil, $this->roles, true))) {
             http_response_code(403);
-            echo '403 - Acesso negado';
+
+            // Renderiza a view dentro do layout master
+            echo \App\Core\View::render('errors/403', [
+                'title' => 'Acesso negado'
+            ]);
+
             exit;
         }
     }

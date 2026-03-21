@@ -1,0 +1,20 @@
+:root {
+    --primary: #0b4f8a;
+    --primary-dark: #083b66;
+    --sidebar-bg: #0f172a;
+    --sidebar-hover: #1e293b;
+    --bg: #f4f7fb;
+    --surface: #ffffff;
+    --text: #1f2937;
+    --text-soft: #6b7280;
+    --text-inverse: #f8fafc;
+    --border: #d1d5db;
+    --danger: #b91c1c;
+    --danger-bg: #fee2e2;
+    --success: #166534;
+    --success-bg: #dcfce7;
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+    --radius-md: 10px;
+    --radius-lg: 12px;
+    --sidebar-width: 280px;
+}

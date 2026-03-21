@@ -27,7 +27,10 @@
         <div class="actions-inline">
             <button type="submit">Filtrar</button>
             <a class="btn-secondary" href="/hidrantes">Limpar</a>
-            <a class="btn-secondary" href="/hidrantes/novo">Novo hidrante</a>
+            <?php $auth = \App\Core\Session::get('auth'); ?>
+            <?php if (in_array(($auth['perfil'] ?? ''), ['admin', 'gestor'], true)): ?>
+                <a class="btn-secondary" href="/hidrantes/novo">Novo hidrante</a>
+            <?php endif; ?>
         </div>
     </form>
 </section>
@@ -62,11 +65,15 @@
                     <td><?= e($hidrante['area']) ?></td>
                     <td><?= e($hidrante['atualizado_em']) ?></td>
                     <td>
+                        <?php $auth = \App\Core\Session::get('auth'); ?>
                         <div class="actions-inline">
                             <a class="btn-secondary" href="/hidrantes/<?= (int) $hidrante['id'] ?>/editar">Editar</a>
-                            <form method="POST" action="/hidrantes/<?= (int) $hidrante['id'] ?>/excluir" onsubmit="return confirm('Deseja realmente excluir este hidrante?');">
-                                <button type="submit">Excluir</button>
-                            </form>
+
+                            <?php if (in_array(($auth['perfil'] ?? ''), ['admin', 'gestor'], true)): ?>
+                                <form method="POST" action="/hidrantes/<?= (int) $hidrante['id'] ?>/excluir" onsubmit="return confirm('Deseja realmente excluir este hidrante?');">
+                                    <button type="submit">Excluir</button>
+                                </form>
+                            <?php endif; ?>
                         </div>
                     </td>
                 </tr>
