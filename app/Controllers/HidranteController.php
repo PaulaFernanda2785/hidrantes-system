@@ -19,6 +19,7 @@ class HidranteController extends Controller
             'q' => trim((string) $this->request->input('q')),
             'status_operacional' => $this->request->input('status_operacional'),
             'municipio_id' => $this->request->input('municipio_id'),
+            'bairro_id' => $this->request->input('bairro_id'),
         ];
 
         $page = (int) ($this->request->input('page') ?: 1);
@@ -28,6 +29,11 @@ class HidranteController extends Controller
         $result = $service->list($filters, $page, $perPage);
 
         $municipios = (new MunicipioRepository())->all();
+        $bairros = [];
+
+        if (!empty($filters['municipio_id'])) {
+            $bairros = (new BairroRepository())->byMunicipio((int) $filters['municipio_id']);
+        }
 
         $this->view('hidrantes/index', [
             'title' => 'Hidrantes',
@@ -35,6 +41,7 @@ class HidranteController extends Controller
             'pagination' => $result['meta'],
             'filters' => $filters,
             'municipios' => $municipios,
+            'bairros' => $bairros,
             'scripts' => ['pages/hidrantes/index.js'],
         ]);
     }

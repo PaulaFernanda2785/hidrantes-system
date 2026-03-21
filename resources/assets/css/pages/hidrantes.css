@@ -30,6 +30,12 @@
     line-height: 1.2;
 }
 
+.hidrante-form-header-copy h1 {
+    margin-bottom: 8px;
+    font-size: clamp(24px, 2.2vw, 32px);
+    line-height: 1.2;
+}
+
 .hidrante-form-eyebrow {
     margin-bottom: 8px;
     font-size: 12px;
@@ -378,6 +384,366 @@ input[readonly] {
     margin: 0;
 }
 
+.hidrante-listing-page {
+    display: grid;
+    gap: 20px;
+}
+
+.hidrante-listing-card {
+    padding: clamp(18px, 2.6vw, 28px);
+}
+
+.hidrante-listing-hero {
+    overflow: hidden;
+}
+
+.hidrante-listing-filters {
+    grid-template-columns: minmax(0, 1.7fr) repeat(3, minmax(0, 1fr)) minmax(220px, auto);
+    align-items: end;
+    margin-top: 18px;
+}
+
+.hidrante-listing-filters > label,
+.hidrante-listing-actions {
+    padding: 16px;
+    border: 1px solid #dbe4f0;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.hidrante-listing-filters input,
+.hidrante-listing-filters select {
+    min-height: 46px;
+    border-color: #cbd5e1;
+}
+
+.hidrante-listing-filters input:focus,
+.hidrante-listing-filters select:focus {
+    border-color: rgba(11, 79, 138, 0.4);
+    box-shadow: 0 0 0 4px rgba(11, 79, 138, 0.08);
+}
+
+.hidrante-listing-actions {
+    align-items: center;
+}
+
+.hidrante-listing-bairro-help {
+    min-height: 20px;
+}
+
+.hidrante-listing-actions .btn-secondary,
+.hidrante-listing-actions button {
+    width: auto;
+}
+
+.hidrante-listing-results-header {
+    margin-bottom: 18px;
+}
+
+.hidrante-table-shell {
+    overflow: auto;
+    border: 1px solid #dbe4f0;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.hidrante-table {
+    min-width: 980px;
+    background: transparent;
+}
+
+.hidrante-table thead th {
+    padding: 14px 16px;
+    border-bottom: 1px solid #dbe4f0;
+    background: #f8fafc;
+    color: var(--text-soft);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.hidrante-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.hidrante-table tbody tr:hover {
+    background: rgba(11, 79, 138, 0.04);
+}
+
+.hidrante-table td {
+    padding: 16px;
+    border-bottom: 1px solid #e5edf6;
+}
+
+.hidrante-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.hidrante-table-primary {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.hidrante-table-muted {
+    color: var(--text-soft);
+    font-size: 13px;
+}
+
+.hidrante-table-chip,
+.hidrante-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.hidrante-table-chip {
+    background: rgba(15, 23, 42, 0.06);
+    color: var(--text);
+}
+
+.hidrante-status-badge,
+.hidrante-detail-badge.is-neutral {
+    background: rgba(15, 23, 42, 0.08);
+    color: #334155;
+}
+
+.hidrante-status-badge.is-operante,
+.hidrante-detail-badge.is-operante {
+    background: rgba(5, 150, 105, 0.14);
+    color: #047857;
+}
+
+.hidrante-status-badge.is-restricao,
+.hidrante-detail-badge.is-restricao {
+    background: rgba(217, 119, 6, 0.14);
+    color: #b45309;
+}
+
+.hidrante-status-badge.is-inoperante,
+.hidrante-detail-badge.is-inoperante {
+    background: rgba(220, 38, 38, 0.12);
+    color: #b91c1c;
+}
+
+.hidrante-table-actions {
+    align-items: center;
+}
+
+.hidrante-table-actions .btn-secondary,
+.hidrante-table-actions button {
+    width: auto;
+}
+
+.hidrante-table-empty {
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--text-soft);
+}
+
+.hidrante-detail-modal-card {
+    width: min(1080px, 100%);
+}
+
+.hidrante-detail-modal-body {
+    display: grid;
+    gap: 18px;
+}
+
+.hidrante-detail-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.hidrante-detail-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.hidrante-detail-badge.is-soft {
+    background: rgba(11, 79, 138, 0.1);
+    color: var(--primary-dark);
+}
+
+.hidrante-detail-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.hidrante-detail-section {
+    display: grid;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid #dbe4f0;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.hidrante-detail-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.hidrante-detail-map-frame {
+    min-height: 340px;
+}
+
+.hidrante-detail-empty {
+    color: var(--text-soft);
+    font-size: 13px;
+    margin: 0;
+}
+
+.hidrante-detail-photo-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.hidrante-detail-photo-card {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.hidrante-detail-photo-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(11, 79, 138, 0.28);
+    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+}
+
+.hidrante-detail-photo-image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: calc(var(--radius-md) - 4px);
+    background: #e5e7eb;
+}
+
+.hidrante-detail-photo-label {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.hidrante-detail-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 0;
+}
+
+@media (max-width: 960px) {
+    .hidrante-listing-filters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hidrante-listing-actions {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 860px) {
+    .hidrante-table-shell {
+        overflow: visible;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .hidrante-table {
+        min-width: 0;
+    }
+
+    .hidrante-table,
+    .hidrante-table thead,
+    .hidrante-table tbody,
+    .hidrante-table tr,
+    .hidrante-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .hidrante-table thead {
+        display: none;
+    }
+
+    .hidrante-table tbody {
+        display: grid;
+        gap: 14px;
+    }
+
+    .hidrante-table tbody tr {
+        padding: 18px;
+        border: 1px solid #dbe4f0;
+        border-radius: 18px;
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .hidrante-table tbody tr:hover {
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
+    }
+
+    .hidrante-table td {
+        padding: 0;
+        border: 0;
+    }
+
+    .hidrante-table td + td {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #e5edf6;
+    }
+
+    .hidrante-table td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 6px;
+        color: var(--text-soft);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .hidrante-table-empty {
+        padding: 18px;
+        border: 1px dashed #dbe4f0;
+        border-radius: 16px;
+        background: #fff;
+    }
+
+    .hidrante-table-empty::before {
+        display: none;
+    }
+}
+
 @media (max-width: 640px) {
     .hidrante-form-header,
     .hidrante-form-footer {
@@ -416,5 +782,42 @@ input[readonly] {
 
     .upload-preview-grid {
         grid-template-columns: 1fr;
+    }
+
+    .hidrante-listing-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .hidrante-listing-actions .btn-secondary,
+    .hidrante-listing-actions button {
+        width: 100%;
+    }
+
+    .hidrante-listing-results-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hidrante-table-actions {
+        align-items: stretch;
+    }
+
+    .hidrante-table-actions form,
+    .hidrante-table-actions .btn-secondary,
+    .hidrante-table-actions button {
+        width: 100%;
+    }
+
+    .hidrante-detail-grid,
+    .hidrante-detail-photo-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hidrante-detail-map-frame {
+        min-height: 280px;
+    }
+
+    .hidrante-detail-modal-actions button {
+        width: 100%;
     }
 }
