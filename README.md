@@ -1,4 +1,4 @@
-# Sistema de Gestão de Hidrantes - MVC PHP
+# Sistema de Gestao de Hidrantes - MVC PHP
 
 ## Como usar
 
@@ -6,21 +6,22 @@
 2. Ajuste as credenciais do banco.
 3. Execute `composer dump-autoload`.
 4. Importe `database/schema/schema.sql` no MySQL/MariaDB.
-5. Configure o servidor para apontar para `public/` ou use o `index.php` da raiz.
+5. Configure o `DocumentRoot` ou o `VirtualHost` para apontar para `public/`.
+6. Acesse o sistema com a matricula `000000` e a senha `admin123`.
 
-## Estrutura principal implementada
+## Estrutura principal
 
-- Autenticação por matrícula funcional e senha hash
-- Painel com métricas básicas e dados de mapa
-- Hidrantes: listagem e cadastro funcional
-- Usuários: listagem e cadastro funcional
-- Relatórios: listagem filtrável
-- Histórico: listagem filtrável
-- Endpoints JSON para mapa e bairros por município
+- Autenticacao por matricula funcional e senha hash.
+- Painel com metricas basicas e dados de mapa.
+- Hidrantes com listagem, cadastro, edicao e exclusao logica.
+- Usuarios com listagem e cadastro.
+- Relatorios filtraveis.
+- Historico de acoes.
+- Endpoints JSON para mapa e bairros por municipio.
+- Protecao CSRF aplicada nos formularios `POST`.
 
-## Limitações atuais
+## Observacoes
 
-- Não inclui edição, exclusão e paginação real
-- Não inclui CSRF aplicado em todos os formulários
-- Não inclui mapa visual final com Leaflet já montado
-- Não inclui tratamento completo de exceções por classe
+- As fotos dos hidrantes ficam em `storage/uploads/hidrantes` e sao servidas por rota autenticada.
+- O projeto ainda nao possui suite automatizada de testes.
+- Troque a senha inicial do usuario administrador apos a instalacao.

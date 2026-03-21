@@ -68,7 +68,10 @@ function menu_active(string $path): string
                 <span class="topbar-separator">|</span>
                 <span>Perfil: <?= e($perfil) ?></span>
                 <span class="topbar-separator">|</span>
-                <a href="/logout">Sair</a>
+                <form method="POST" action="/logout" class="topbar-user-form">
+                    <?= csrf_field() ?>
+                    <button type="submit" class="topbar-link-button">Sair</button>
+                </form>
             </div>
         </header>
 

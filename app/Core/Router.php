@@ -44,6 +44,8 @@ class Router
 
             array_shift($matches);
 
+            $this->validateCsrf($request);
+
             foreach ($route['middlewares'] as $middlewareDefinition) {
                 [$middlewareClass, $middlewareArgs] = $this->parseMiddleware($middlewareDefinition);
 
@@ -64,6 +66,20 @@ class Router
 
         http_response_code(404);
         echo '404 - Página não encontrada';
+    }
+
+    private function validateCsrf(Request $request): void
+    {
+        if (!in_array($request->method(), ['POST', 'PUT', 'PATCH', 'DELETE'], true)) {
+            return;
+        }
+
+        if (csrf_token_is_valid((string) $request->input('_token'))) {
+            return;
+        }
+
+        Session::flash('error', 'Sua sessao expirou. Reenvie o formulario.');
+        redirect(previous_path('/'));
     }
 
     private function parseMiddleware(string $middlewareDefinition): array

@@ -32,8 +32,9 @@ class Database
                 PDO::ATTR_EMULATE_PREPARES => false,
             ]);
         } catch (PDOException $e) {
+            report_exception($e);
             http_response_code(500);
-            echo 'Erro de conexão com o banco de dados: ' . htmlspecialchars($e->getMessage());
+            echo 'Erro interno ao conectar com o banco de dados.';
             exit;
         }
 

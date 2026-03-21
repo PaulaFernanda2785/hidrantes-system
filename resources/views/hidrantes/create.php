@@ -11,15 +11,16 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
 
 <section class="card">
     <form method="POST" action="<?= e($formAction ?? '/hidrantes/salvar') ?>" enctype="multipart/form-data" class="form-grid cols-2">
-        <label>Número do hidrante
+        <?= csrf_field() ?>
+        <label>Numero do hidrante
             <input type="text" name="numero_hidrante" required value="<?= old_or_value($hidrante, 'numero_hidrante') ?>">
         </label>
 
-        <label>Equipe responsável
+        <label>Equipe responsavel
             <input type="text" name="equipe_responsavel" required value="<?= old_or_value($hidrante, 'equipe_responsavel') ?>">
         </label>
 
-        <label>Área
+        <label>Area
             <select name="area" required>
                 <?php
                 $areaAtual = $hidrante['area'] ?? '';
@@ -36,7 +37,7 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                 $valorAtual = $hidrante['existe_no_local'] ?? '';
                 foreach (['sim', 'nao'] as $item):
                 ?>
-                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'não' : 'sim' ?></option>
+                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'nao' : 'sim' ?></option>
                 <?php endforeach; ?>
             </select>
         </label>
@@ -47,7 +48,7 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                 $valorAtual = $hidrante['tipo_hidrante'] ?? '';
                 $tipos = [
                     'coluna' => 'coluna',
-                    'subterraneo' => 'subterrâneo',
+                    'subterraneo' => 'subterraneo',
                     'parede' => 'parede',
                     'outro' => 'outro',
                 ];
@@ -64,17 +65,17 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                 $valorAtual = $hidrante['acessibilidade'] ?? '';
                 foreach (['sim', 'nao'] as $item):
                 ?>
-                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'não' : 'sim' ?></option>
+                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'nao' : 'sim' ?></option>
                 <?php endforeach; ?>
             </select>
         </label>
 
-        <label>Tampo/conexões
+        <label>Tampo/conexoes
             <select name="tampo_conexoes" required>
                 <?php
                 $valorAtual = $hidrante['tampo_conexoes'] ?? '';
                 $opcoes = [
-                    'integra' => 'íntegra',
+                    'integra' => 'integra',
                     'danificadas' => 'danificadas',
                     'ausentes' => 'ausentes',
                 ];
@@ -89,18 +90,18 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
             <input type="text" name="tampas_ausentes" value="<?= old_or_value($hidrante, 'tampas_ausentes') ?>">
         </label>
 
-        <label>Caixa de proteção
+        <label>Caixa de protecao
             <select name="caixa_protecao" required>
                 <?php
                 $valorAtual = $hidrante['caixa_protecao'] ?? '';
                 foreach (['sim', 'nao'] as $item):
                 ?>
-                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'não' : 'sim' ?></option>
+                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'nao' : 'sim' ?></option>
                 <?php endforeach; ?>
             </select>
         </label>
 
-        <label>Condição da caixa
+        <label>Condicao da caixa
             <select name="condicao_caixa">
                 <option value="">-- selecione --</option>
                 <?php
@@ -112,13 +113,13 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
             </select>
         </label>
 
-        <label>Presença de água
+        <label>Presenca de agua
             <select name="presenca_agua_interior" required>
                 <?php
                 $valorAtual = $hidrante['presenca_agua_interior'] ?? '';
                 foreach (['sim', 'nao'] as $item):
                 ?>
-                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'não' : 'sim' ?></option>
+                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'nao' : 'sim' ?></option>
                 <?php endforeach; ?>
             </select>
         </label>
@@ -129,7 +130,7 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                 $valorAtual = $hidrante['teste_realizado'] ?? '';
                 foreach (['sim', 'nao'] as $item):
                 ?>
-                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'não' : 'sim' ?></option>
+                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'nao' : 'sim' ?></option>
                 <?php endforeach; ?>
             </select>
         </label>
@@ -142,8 +143,8 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                 $opcoes = [
                     'funcionando normalmente' => 'funcionando normalmente',
                     'vazamento' => 'vazamento',
-                    'vazao insuficiente' => 'vazão insuficiente',
-                    'nao funcionou' => 'não funcionou',
+                    'vazao insuficiente' => 'vazao insuficiente',
+                    'nao funcionou' => 'nao funcionou',
                 ];
                 foreach ($opcoes as $value => $label):
                 ?>
@@ -158,7 +159,7 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                 $valorAtual = $hidrante['status_operacional'] ?? '';
                 $opcoes = [
                     'operante' => 'operante',
-                    'operante com restricao' => 'operante com restrição',
+                    'operante com restricao' => 'operante com restricao',
                     'inoperante' => 'inoperante',
                 ];
                 foreach ($opcoes as $value => $label):
@@ -168,7 +169,7 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
             </select>
         </label>
 
-        <label>Município
+        <label>Municipio
             <select name="municipio_id" id="municipio_id" required>
                 <option value="">Selecione</option>
                 <?php foreach ($municipios as $municipio): ?>
@@ -190,7 +191,7 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
             </select>
         </label>
 
-        <label class="col-span-2">Endereço
+        <label class="col-span-2">Endereco
             <input type="text" name="endereco" required value="<?= old_or_value($hidrante, 'endereco') ?>">
         </label>
 
@@ -202,7 +203,7 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
             <input type="text" name="longitude" value="<?= old_or_value($hidrante, 'longitude') ?>">
         </label>
 
-        <label class="col-span-2">Fotos (até 3 imagens)
+        <label class="col-span-2">Fotos (ate 3 imagens)
             <input type="file" name="fotos[]" multiple accept=".jpg,.jpeg,.png,.webp">
         </label>
 
@@ -212,7 +213,7 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                 <div class="actions-inline">
                     <?php foreach (['foto_01', 'foto_02', 'foto_03'] as $fotoCampo): ?>
                         <?php if (!empty($hidrante[$fotoCampo])): ?>
-                            <a class="btn-secondary" target="_blank" href="/storage/uploads/hidrantes/<?= e($hidrante[$fotoCampo]) ?>">
+                            <a class="btn-secondary" target="_blank" rel="noopener noreferrer" href="/uploads/hidrantes/<?= e($hidrante[$fotoCampo]) ?>">
                                 <?= e($fotoCampo) ?>
                             </a>
                         <?php endif; ?>

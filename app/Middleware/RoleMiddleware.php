@@ -17,7 +17,7 @@ class RoleMiddleware
         $auth = Session::get('auth');
 
         if (!$auth) {
-            Session::flash('error', 'Faça login para acessar o sistema.');
+            Session::flash('error', 'Faca login para acessar o sistema.');
             redirect('/login');
         }
 
@@ -25,12 +25,9 @@ class RoleMiddleware
 
         if (!$perfil || ($this->roles && !in_array($perfil, $this->roles, true))) {
             http_response_code(403);
-
-            // Renderiza a view dentro do layout master
-            echo \App\Core\View::render('errors/403', [
-                'title' => 'Acesso negado'
+            View::render('errors/403', [
+                'title' => 'Acesso negado',
             ]);
-
             exit;
         }
     }

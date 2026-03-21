@@ -1,18 +1,18 @@
 <?php
 
 use App\Controllers\AuthController;
-use App\Controllers\PainelController;
-use App\Controllers\HidranteController;
-use App\Controllers\UsuarioController;
-use App\Controllers\RelatorioController;
 use App\Controllers\HistoricoController;
+use App\Controllers\HidranteController;
+use App\Controllers\PainelController;
+use App\Controllers\RelatorioController;
+use App\Controllers\UsuarioController;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\GuestMiddleware;
 use App\Middleware\RoleMiddleware;
 
 $router->get('/login', [AuthController::class, 'showLogin'], [GuestMiddleware::class]);
 $router->post('/login', [AuthController::class, 'login'], [GuestMiddleware::class]);
-$router->get('/logout', [AuthController::class, 'logout'], [AuthMiddleware::class]);
+$router->post('/logout', [AuthController::class, 'logout'], [AuthMiddleware::class]);
 
 $router->get('/', [PainelController::class, 'index'], [
     AuthMiddleware::class,
@@ -25,6 +25,11 @@ $router->get('/painel', [PainelController::class, 'index'], [
 ]);
 
 $router->get('/hidrantes', [HidranteController::class, 'index'], [
+    AuthMiddleware::class,
+    RoleMiddleware::class . ':admin,gestor,operador',
+]);
+
+$router->get('/uploads/hidrantes/{filename}', [HidranteController::class, 'photo'], [
     AuthMiddleware::class,
     RoleMiddleware::class . ':admin,gestor,operador',
 ]);

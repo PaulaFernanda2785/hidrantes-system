@@ -39,17 +39,31 @@ class AuthService
             'perfil' => $usuario['perfil'],
         ];
 
+        Session::regenerate(true);
         Session::put('auth', $auth);
-        $this->auditService->record($auth, 'login', 'usuarios', (string) $usuario['id'], 'Login realizado com sucesso.');
+
+        try {
+            $this->auditService->record($auth, 'login', 'usuarios', (string) $usuario['id'], 'Login realizado com sucesso.');
+        } catch (\Throwable $e) {
+            report_exception($e);
+        }
+
         return true;
     }
 
     public function logout(): void
     {
         $auth = Session::get('auth');
-        if ($auth) {
-            $this->auditService->record($auth, 'logout', 'usuarios', (string) $auth['id'], 'Logout realizado com sucesso.');
-        }
         Session::destroy();
+
+        if (!$auth) {
+            return;
+        }
+
+        try {
+            $this->auditService->record($auth, 'logout', 'usuarios', (string) $auth['id'], 'Logout realizado com sucesso.');
+        } catch (\Throwable $e) {
+            report_exception($e);
+        }
     }
 }

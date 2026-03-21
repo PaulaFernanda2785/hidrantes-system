@@ -35,7 +35,7 @@ class HidranteService
 
         if ($this->hidranteRepository->existsByNumero($payload['numero_hidrante'])) {
             throw new ValidationException([
-                'numero_hidrante' => 'Já existe um hidrante com esse número.',
+                'numero_hidrante' => 'Ja existe um hidrante com esse numero.',
             ]);
         }
 
@@ -49,7 +49,7 @@ class HidranteService
 
         $id = $this->hidranteRepository->create($payload);
 
-        $this->auditService->record(
+        $this->recordAuditSafely(
             $actor,
             'cadastrar',
             'hidrantes',
@@ -65,14 +65,14 @@ class HidranteService
         $current = $this->hidranteRepository->findById($id);
 
         if (!$current) {
-            throw new \RuntimeException('Hidrante não encontrado.');
+            throw new \RuntimeException('Hidrante nao encontrado.');
         }
 
         $payload = $this->validateAndNormalize($data);
 
         if ($this->hidranteRepository->existsByNumero($payload['numero_hidrante'], $id)) {
             throw new ValidationException([
-                'numero_hidrante' => 'Já existe outro hidrante com esse número.',
+                'numero_hidrante' => 'Ja existe outro hidrante com esse numero.',
             ]);
         }
 
@@ -85,12 +85,12 @@ class HidranteService
 
         $this->hidranteRepository->update($id, $payload);
 
-        $this->auditService->record(
+        $this->recordAuditSafely(
             $actor,
             'editar',
             'hidrantes',
             (string) $id,
-            'Edição de hidrante realizada.'
+            'Edicao de hidrante realizada.'
         );
     }
 
@@ -99,17 +99,17 @@ class HidranteService
         $current = $this->hidranteRepository->findById($id);
 
         if (!$current) {
-            throw new \RuntimeException('Hidrante não encontrado.');
+            throw new \RuntimeException('Hidrante nao encontrado.');
         }
 
         $this->hidranteRepository->softDelete($id, (int) $actor['id']);
 
-        $this->auditService->record(
+        $this->recordAuditSafely(
             $actor,
             'deletar',
             'hidrantes',
             (string) $id,
-            'Exclusão lógica de hidrante realizada.'
+            'Exclusao logica de hidrante realizada.'
         );
     }
 
@@ -140,7 +140,7 @@ class HidranteService
 
         foreach ($required as $field) {
             if (trim((string) ($data[$field] ?? '')) === '') {
-                $errors[$field] = 'Campo obrigatório.';
+                $errors[$field] = 'Campo obrigatorio.';
             }
         }
 
@@ -173,63 +173,63 @@ class HidranteService
         $longitudeRaw = trim((string) ($data['longitude'] ?? ''));
 
         if ($numero !== '' && mb_strlen($numero) > 20) {
-            $errors['numero_hidrante'] = 'Número do hidrante excede 20 caracteres.';
+            $errors['numero_hidrante'] = 'Numero do hidrante excede 20 caracteres.';
         }
 
         if ($equipe !== '' && mb_strlen($equipe) > 150) {
-            $errors['equipe_responsavel'] = 'Equipe responsável excede 150 caracteres.';
+            $errors['equipe_responsavel'] = 'Equipe responsavel excede 150 caracteres.';
         }
 
         if ($endereco !== '' && mb_strlen($endereco) > 255) {
-            $errors['endereco'] = 'Endereço excede 255 caracteres.';
+            $errors['endereco'] = 'Endereco excede 255 caracteres.';
         }
 
         if ($area && !in_array($area, $areas, true)) {
-            $errors['area'] = 'Área inválida.';
+            $errors['area'] = 'Area invalida.';
         }
 
         if ($existeNoLocal && !in_array($existeNoLocal, $simNao, true)) {
-            $errors['existe_no_local'] = 'Valor inválido.';
+            $errors['existe_no_local'] = 'Valor invalido.';
         }
 
         if ($tipo && !in_array($tipo, $tipos, true)) {
-            $errors['tipo_hidrante'] = 'Tipo de hidrante inválido.';
+            $errors['tipo_hidrante'] = 'Tipo de hidrante invalido.';
         }
 
         if ($acessibilidade && !in_array($acessibilidade, $simNao, true)) {
-            $errors['acessibilidade'] = 'Valor inválido.';
+            $errors['acessibilidade'] = 'Valor invalido.';
         }
 
         if ($tampo && !in_array($tampo, $tampoConexoes, true)) {
-            $errors['tampo_conexoes'] = 'Valor inválido.';
+            $errors['tampo_conexoes'] = 'Valor invalido.';
         }
 
         if ($caixaProtecao && !in_array($caixaProtecao, $simNao, true)) {
-            $errors['caixa_protecao'] = 'Valor inválido.';
+            $errors['caixa_protecao'] = 'Valor invalido.';
         }
 
         if ($condicaoCaixa !== '' && !in_array($condicaoCaixa, $condicoesCaixa, true)) {
-            $errors['condicao_caixa'] = 'Condição da caixa inválida.';
+            $errors['condicao_caixa'] = 'Condicao da caixa invalida.';
         }
 
         if ($presencaAgua && !in_array($presencaAgua, $simNao, true)) {
-            $errors['presenca_agua_interior'] = 'Valor inválido.';
+            $errors['presenca_agua_interior'] = 'Valor invalido.';
         }
 
         if ($testeRealizado && !in_array($testeRealizado, $simNao, true)) {
-            $errors['teste_realizado'] = 'Valor inválido.';
+            $errors['teste_realizado'] = 'Valor invalido.';
         }
 
         if ($resultadoTeste !== '' && !in_array($resultadoTeste, $resultadosTeste, true)) {
-            $errors['resultado_teste'] = 'Resultado do teste inválido.';
+            $errors['resultado_teste'] = 'Resultado do teste invalido.';
         }
 
         if ($status && !in_array($status, $statusOperacional, true)) {
-            $errors['status_operacional'] = 'Status operacional inválido.';
+            $errors['status_operacional'] = 'Status operacional invalido.';
         }
 
         if ($municipioId <= 0) {
-            $errors['municipio_id'] = 'Município inválido.';
+            $errors['municipio_id'] = 'Municipio invalido.';
         }
 
         if ($testeRealizado === 'nao') {
@@ -245,7 +245,7 @@ class HidranteService
 
         if ($latitudeRaw !== '' || $longitudeRaw !== '') {
             if (!$this->geoService->isValid($latitudeRaw, $longitudeRaw)) {
-                $errors['coordenadas'] = 'Latitude/longitude inválidas.';
+                $errors['coordenadas'] = 'Latitude/longitude invalidas.';
             } else {
                 $latitude = $latitudeRaw;
                 $longitude = $longitudeRaw;
@@ -277,5 +277,14 @@ class HidranteService
             'latitude' => $latitude,
             'longitude' => $longitude,
         ];
+    }
+
+    private function recordAuditSafely(array $actor, string $acao, string $entidade, string $referencia, string $detalhes): void
+    {
+        try {
+            $this->auditService->record($actor, $acao, $entidade, $referencia, $detalhes);
+        } catch (\Throwable $e) {
+            report_exception($e);
+        }
     }
 }
