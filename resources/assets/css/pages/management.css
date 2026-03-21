@@ -1,0 +1,475 @@
+.management-page {
+    display: grid;
+    gap: 20px;
+}
+
+.management-card {
+    padding: clamp(18px, 2.6vw, 28px);
+}
+
+.management-hero {
+    overflow: hidden;
+}
+
+.management-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 22px;
+    border: 1px solid rgba(11, 79, 138, 0.14);
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(11, 79, 138, 0.08), #ffffff 58%);
+}
+
+.management-header-copy h1 {
+    margin-bottom: 8px;
+    font-size: clamp(24px, 2.2vw, 32px);
+    line-height: 1.2;
+}
+
+.management-eyebrow {
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--primary);
+}
+
+.management-description {
+    margin-bottom: 0;
+    max-width: 760px;
+    color: var(--text-soft);
+    line-height: 1.6;
+}
+
+.management-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.management-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.management-badge.is-soft {
+    background: rgba(11, 79, 138, 0.1);
+    color: var(--primary-dark);
+}
+
+.management-metric-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.management-metric-card {
+    display: grid;
+    gap: 12px;
+    padding: 20px;
+    border: 1px solid #dbe4f0;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.management-metric-label {
+    color: var(--text-soft);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.management-metric-value {
+    font-size: clamp(28px, 2.8vw, 40px);
+    line-height: 1;
+    color: var(--text);
+}
+
+.management-metric-card.is-admin {
+    background: linear-gradient(180deg, rgba(11, 79, 138, 0.08), #ffffff);
+}
+
+.management-metric-card.is-gestor {
+    background: linear-gradient(180deg, rgba(217, 119, 6, 0.08), #ffffff);
+}
+
+.management-metric-card.is-operador {
+    background: linear-gradient(180deg, rgba(5, 150, 105, 0.08), #ffffff);
+}
+
+.management-section-head {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 18px;
+}
+
+.management-section-head h3 {
+    margin-bottom: 0;
+    font-size: 18px;
+}
+
+.management-section-head p {
+    margin-bottom: 0;
+    color: var(--text-soft);
+    line-height: 1.5;
+}
+
+.management-filters {
+    align-items: end;
+}
+
+.management-filters > label,
+.management-actions {
+    padding: 16px;
+    border: 1px solid #dbe4f0;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.management-filters input,
+.management-filters select {
+    min-height: 46px;
+    border-color: #cbd5e1;
+}
+
+.management-filters input:focus,
+.management-filters select:focus,
+.management-form-grid input:focus,
+.management-form-grid select:focus {
+    border-color: rgba(11, 79, 138, 0.4);
+    box-shadow: 0 0 0 4px rgba(11, 79, 138, 0.08);
+}
+
+.management-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.management-actions .btn-secondary,
+.management-actions button {
+    width: auto;
+}
+
+.management-results-header {
+    margin-bottom: 18px;
+}
+
+.management-table-shell {
+    overflow: auto;
+    border: 1px solid #dbe4f0;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.management-table {
+    min-width: 880px;
+    background: transparent;
+}
+
+.management-table thead th {
+    padding: 14px 16px;
+    border-bottom: 1px solid #dbe4f0;
+    background: #f8fafc;
+    color: var(--text-soft);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.management-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.management-table tbody tr:hover {
+    background: rgba(11, 79, 138, 0.04);
+}
+
+.management-table td {
+    padding: 16px;
+    border-bottom: 1px solid #e5edf6;
+}
+
+.management-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.management-table-primary {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.management-table-muted {
+    color: var(--text-soft);
+    font-size: 13px;
+}
+
+.management-chip,
+.management-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.management-chip {
+    background: rgba(15, 23, 42, 0.06);
+    color: var(--text);
+}
+
+.management-status-badge.is-ativo,
+.management-chip.is-ativo,
+.management-status-badge.is-operante {
+    background: rgba(5, 150, 105, 0.14);
+    color: #047857;
+}
+
+.management-status-badge.is-inativo,
+.management-chip.is-inativo,
+.management-status-badge.is-inoperante,
+.management-chip.is-deletar {
+    background: rgba(220, 38, 38, 0.12);
+    color: #b91c1c;
+}
+
+.management-status-badge.is-restricao,
+.management-chip.is-gestor,
+.management-chip.is-editar {
+    background: rgba(217, 119, 6, 0.14);
+    color: #b45309;
+}
+
+.management-chip.is-admin,
+.management-chip.is-cadastrar,
+.management-chip.is-usuarios {
+    background: rgba(11, 79, 138, 0.12);
+    color: var(--primary-dark);
+}
+
+.management-chip.is-operador,
+.management-chip.is-hidrantes,
+.management-chip.is-bairros {
+    background: rgba(5, 150, 105, 0.12);
+    color: #047857;
+}
+
+.management-chip.is-relatorios {
+    background: rgba(8, 145, 178, 0.12);
+    color: #0f766e;
+}
+
+.management-chip.is-neutral {
+    background: rgba(15, 23, 42, 0.08);
+    color: #334155;
+}
+
+.management-table-actions {
+    align-items: center;
+}
+
+.management-table-actions .btn-secondary,
+.management-table-actions button {
+    width: auto;
+}
+
+.management-empty {
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--text-soft);
+}
+
+.management-form-card {
+    display: grid;
+    gap: 18px;
+}
+
+.management-form-grid > label,
+.management-form-note,
+.management-summary {
+    padding: 16px;
+    border: 1px solid #dbe4f0;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.management-form-note strong,
+.management-summary strong {
+    display: block;
+    margin-bottom: 6px;
+}
+
+.management-form-note p,
+.management-summary p {
+    margin-bottom: 0;
+    color: var(--text-soft);
+    line-height: 1.5;
+}
+
+.management-form-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    padding: 16px;
+    border: 1px solid #dbe4f0;
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(11, 79, 138, 0.05), #ffffff);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.management-form-actions .btn-secondary,
+.management-form-actions button {
+    width: auto;
+}
+
+.management-modal-card {
+    width: min(860px, 100%);
+}
+
+@media (max-width: 960px) {
+    .management-metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .management-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .management-badges {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 860px) {
+    .management-table-shell {
+        overflow: visible;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .management-table {
+        min-width: 0;
+    }
+
+    .management-table,
+    .management-table thead,
+    .management-table tbody,
+    .management-table tr,
+    .management-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .management-table thead {
+        display: none;
+    }
+
+    .management-table tbody {
+        display: grid;
+        gap: 14px;
+    }
+
+    .management-table tbody tr {
+        padding: 18px;
+        border: 1px solid #dbe4f0;
+        border-radius: 18px;
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .management-table tbody tr:hover {
+        background: linear-gradient(180deg, #ffffff, #fbfdff);
+    }
+
+    .management-table td {
+        padding: 0;
+        border: 0;
+    }
+
+    .management-table td + td {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #e5edf6;
+    }
+
+    .management-table td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 6px;
+        color: var(--text-soft);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .management-empty {
+        padding: 18px;
+        border: 1px dashed #dbe4f0;
+        border-radius: 16px;
+        background: #fff;
+    }
+
+    .management-empty::before {
+        display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .management-metric-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .management-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .management-actions .btn-secondary,
+    .management-actions button,
+    .management-table-actions form,
+    .management-table-actions .btn-secondary,
+    .management-table-actions button,
+    .management-form-actions .btn-secondary,
+    .management-form-actions button {
+        width: 100%;
+    }
+
+    .management-results-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .management-table-actions {
+        align-items: stretch;
+    }
+}

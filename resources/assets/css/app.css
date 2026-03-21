@@ -16,4 +16,5 @@
 @import url('./components/pagination.css');
 
 @import url('./pages/auth.css');
+@import url('./pages/management.css');
 @import url('./pages/hidrantes.css');

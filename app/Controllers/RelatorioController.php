@@ -16,7 +16,7 @@ class RelatorioController extends Controller
         ];
 
         $this->view('relatorios/index', [
-            'title' => 'Relatório de Hidrantes',
+            'title' => 'Relatorio de Hidrantes',
             'items' => (new RelatorioService())->hidrantes($filters),
             'municipios' => (new MunicipioRepository())->all(),
             'filters' => $filters,
