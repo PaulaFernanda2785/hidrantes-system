@@ -137,3 +137,10 @@ if (!function_exists('csrf_token_is_valid')) {
             && hash_equals($sessionToken, $token);
     }
 }
+
+if (!function_exists('css_asset')) {
+    function css_asset(string $path): string
+    {
+        return '/assets/css/' . ltrim(str_replace('\\', '/', $path), '/');
+    }
+}

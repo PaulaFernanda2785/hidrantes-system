@@ -26,6 +26,25 @@
     font-weight: 600;
 }
 
+.topbar-user-form {
+    margin: 0;
+}
+
+.topbar-link-button {
+    width: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.topbar-link-button:hover {
+    background: transparent;
+    border-color: transparent;
+    color: var(--primary-dark);
+}
+
 .topbar-separator {
     color: var(--border);
 }

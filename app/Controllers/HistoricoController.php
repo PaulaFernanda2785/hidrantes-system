@@ -14,9 +14,15 @@ class HistoricoController extends Controller
             'acao' => $this->request->input('acao'),
         ];
 
+        $page = (int) ($this->request->input('page') ?: 1);
+        $perPage = 15;
+
+        $result = (new HistoricoService())->list($filters, $page, $perPage);
+
         $this->view('historico/index', [
-            'title' => 'Histórico do Usuário',
-            'items' => (new HistoricoService())->list($filters),
+            'title' => 'Historico do Usuario',
+            'items' => $result['data'],
+            'pagination' => $result['meta'],
             'filters' => $filters,
         ]);
     }
