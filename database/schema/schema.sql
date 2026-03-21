@@ -118,6 +118,8 @@ CREATE TABLE hidrantes (
     atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     criado_por_usuario_id BIGINT UNSIGNED NULL,
     atualizado_por_usuario_id BIGINT UNSIGNED NULL,
+    deleted_at DATETIME NULL,
+    deleted_por_usuario_id BIGINT UNSIGNED NULL,
 
     CONSTRAINT pk_hidrantes PRIMARY KEY (id),
     CONSTRAINT uq_hidrantes_numero UNIQUE (numero_hidrante),
@@ -150,6 +152,11 @@ CREATE TABLE hidrantes (
             (teste_realizado = 'sim')
             OR (teste_realizado = 'nao' AND resultado_teste IS NULL)
         )
+    CONSTRAINT fk_hidrantes_deleted_por
+        FOREIGN KEY (deleted_por_usuario_id)
+        REFERENCES usuarios (id)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE INDEX idx_hidrantes_status_operacional ON hidrantes (status_operacional);
@@ -160,6 +167,7 @@ CREATE INDEX idx_hidrantes_area ON hidrantes (area);
 CREATE INDEX idx_hidrantes_atualizado_em ON hidrantes (atualizado_em);
 CREATE INDEX idx_hidrantes_municipio_bairro ON hidrantes (municipio_id, bairro_id);
 CREATE INDEX idx_hidrantes_status_municipio ON hidrantes (status_operacional, municipio_id);
+CREATE INDEX idx_hidrantes_deleted_at ON hidrantes (deleted_at);
 
 -- =========================================================
 -- TABELA: historico_usuario
