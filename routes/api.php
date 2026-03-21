@@ -13,3 +13,13 @@ $router->get('/api/bairros/municipio/{id}', [HidranteController::class, 'bairros
     AuthMiddleware::class,
     RoleMiddleware::class . ':admin,gestor,operador',
 ]);
+
+$router->post('/api/bairros', [HidranteController::class, 'storeBairro'], [
+    AuthMiddleware::class,
+    RoleMiddleware::class . ':admin,gestor,operador',
+]);
+
+$router->post('/api/bairros/{id}', [HidranteController::class, 'updateBairro'], [
+    AuthMiddleware::class,
+    RoleMiddleware::class . ':admin,gestor,operador',
+]);

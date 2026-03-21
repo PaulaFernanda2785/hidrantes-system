@@ -1,3 +1,265 @@
+.field-help {
+    display: block;
+    font-size: 13px;
+    color: var(--text-soft);
+    margin: 0;
+}
+
+.hidrante-form-card {
+    padding: clamp(18px, 2.6vw, 28px);
+}
+
+.hidrante-form {
+    gap: 18px;
+}
+
+.hidrante-form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 22px;
+    border: 1px solid rgba(11, 79, 138, 0.14);
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(11, 79, 138, 0.08), #ffffff 58%);
+}
+
+.hidrante-form-header-copy h2 {
+    margin-bottom: 8px;
+    font-size: clamp(22px, 2vw, 30px);
+    line-height: 1.2;
+}
+
+.hidrante-form-eyebrow {
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--primary);
+}
+
+.hidrante-form-description {
+    margin-bottom: 0;
+    max-width: 720px;
+    color: var(--text-soft);
+    line-height: 1.6;
+}
+
+.hidrante-form-header-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.hidrante-form-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.hidrante-form-badge.is-soft {
+    background: rgba(11, 79, 138, 0.1);
+    color: var(--primary-dark);
+}
+
+.hidrante-form-divider {
+    display: grid;
+    gap: 6px;
+    padding-top: 8px;
+}
+
+.hidrante-form-divider h3 {
+    margin-bottom: 0;
+    font-size: 18px;
+}
+
+.hidrante-form-divider p {
+    margin-bottom: 0;
+    color: var(--text-soft);
+    line-height: 1.5;
+}
+
+.hidrante-form > label,
+.hidrante-form > .hidrante-bairro-field,
+.hidrante-form > .geolocation-actions,
+.hidrante-form > .location-map-preview,
+.hidrante-form > .hidrante-upload-panel,
+.hidrante-form > .hidrante-current-photos,
+.hidrante-form > .hidrante-form-footer {
+    padding: 16px;
+    border: 1px solid #dbe4f0;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.hidrante-form > label {
+    gap: 10px;
+}
+
+.hidrante-form input,
+.hidrante-form select {
+    min-height: 46px;
+    border-color: #cbd5e1;
+}
+
+.hidrante-form input:focus,
+.hidrante-form select:focus,
+.hidrante-form textarea:focus {
+    border-color: rgba(11, 79, 138, 0.4);
+    box-shadow: 0 0 0 4px rgba(11, 79, 138, 0.08);
+}
+
+.field-help[data-state='success'] {
+    color: #0f766e;
+}
+
+.field-help[data-state='warning'] {
+    color: #9a3412;
+}
+
+.field-help[data-state='error'] {
+    color: #b91c1c;
+}
+
+.hidrante-bairro-field {
+    display: grid;
+    gap: 10px;
+}
+
+.hidrante-bairro-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, max-content));
+    align-items: center;
+    gap: 8px;
+}
+
+.hidrante-bairro-button {
+    width: auto;
+}
+
+.hidrante-bairro-feedback {
+    grid-column: 1 / -1;
+    min-height: 20px;
+}
+
+.hidrante-bairro-modal-card {
+    width: min(560px, 100%);
+}
+
+.hidrante-bairro-modal-feedback {
+    min-height: 20px;
+}
+
+input[readonly] {
+    background: #f8fafc;
+    color: var(--text-soft);
+}
+
+.geolocation-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, max-content));
+    align-items: center;
+    gap: 10px;
+}
+
+.geolocation-button {
+    width: auto;
+}
+
+.geolocation-feedback {
+    grid-column: 1 / -1;
+    min-height: 20px;
+}
+
+.location-map-preview {
+    display: grid;
+    gap: 12px;
+}
+
+.location-map-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.location-map-preview-coordinates {
+    font-size: 13px;
+    color: var(--text-soft);
+}
+
+.location-map-frame {
+    width: 100%;
+    min-height: 320px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: #e5e7eb;
+}
+
+.hidrante-upload-panel {
+    display: grid;
+    gap: 12px;
+}
+
+.hidrante-current-photos {
+    display: grid;
+    gap: 12px;
+}
+
+.hidrante-current-photos strong {
+    font-size: 16px;
+}
+
+.hidrante-current-photos .actions-inline {
+    align-items: center;
+}
+
+.hidrante-current-photos .btn-secondary {
+    width: auto;
+}
+
+.hidrante-form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    background: linear-gradient(180deg, rgba(11, 79, 138, 0.05), #ffffff);
+}
+
+.hidrante-form-footer-copy strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 16px;
+}
+
+.hidrante-form-footer-copy p {
+    margin-bottom: 0;
+    color: var(--text-soft);
+    line-height: 1.5;
+}
+
+.hidrante-form-footer-actions {
+    align-items: center;
+}
+
+.hidrante-form-footer-actions button,
+.hidrante-form-footer-actions .btn-secondary {
+    width: auto;
+    min-width: 150px;
+}
+
 .upload-dropzone {
     display: grid;
     gap: 12px;
@@ -12,6 +274,11 @@
     border-color: var(--primary);
     background: rgba(11, 79, 138, 0.08);
     transform: translateY(-1px);
+}
+
+.upload-dropzone.is-limit-reached {
+    border-color: #d97706;
+    background: rgba(217, 119, 6, 0.08);
 }
 
 .upload-dropzone-title {
@@ -37,6 +304,20 @@
 .upload-dropzone-meta {
     color: var(--text-soft);
     font-size: 13px;
+}
+
+.upload-dropzone.is-limit-reached .upload-dropzone-meta {
+    color: #9a3412;
+    font-weight: 700;
+}
+
+.upload-dropzone button:disabled,
+.upload-dropzone button:disabled:hover {
+    cursor: not-allowed;
+    opacity: 0.7;
+    background: #cbd5e1;
+    border-color: #cbd5e1;
+    color: #475569;
 }
 
 .upload-input-hidden {
@@ -90,7 +371,49 @@
     margin: 0;
 }
 
+.upload-limit-feedback {
+    color: #9a3412;
+    font-size: 13px;
+    font-weight: 700;
+    margin: 0;
+}
+
 @media (max-width: 640px) {
+    .hidrante-form-header,
+    .hidrante-form-footer {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 18px;
+    }
+
+    .hidrante-bairro-button {
+        width: 100%;
+    }
+
+    .hidrante-form-header-badges {
+        justify-content: flex-start;
+    }
+
+    .hidrante-bairro-actions,
+    .geolocation-actions {
+        grid-template-columns: 1fr;
+        justify-content: stretch;
+    }
+
+    .geolocation-button {
+        width: 100%;
+    }
+
+    .hidrante-form-footer-actions button,
+    .hidrante-form-footer-actions .btn-secondary {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .location-map-frame {
+        min-height: 280px;
+    }
+
     .upload-preview-grid {
         grid-template-columns: 1fr;
     }

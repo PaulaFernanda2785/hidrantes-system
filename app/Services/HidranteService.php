@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Repositories\BairroRepository;
 use App\Repositories\HidranteRepository;
 use App\Validators\ValidationException;
 
@@ -9,11 +10,13 @@ class HidranteService
 {
     public function __construct(
         private ?HidranteRepository $hidranteRepository = null,
+        private ?BairroRepository $bairroRepository = null,
         private ?UploadService $uploadService = null,
         private ?GeoService $geoService = null,
         private ?AuditService $auditService = null,
     ) {
         $this->hidranteRepository ??= new HidranteRepository();
+        $this->bairroRepository ??= new BairroRepository();
         $this->uploadService ??= new UploadService();
         $this->geoService ??= new GeoService();
         $this->auditService ??= new AuditService();
@@ -69,6 +72,16 @@ class HidranteService
         }
 
         $payload = $this->validateAndNormalize($data);
+
+        if (($actor['perfil'] ?? '') === 'operador') {
+            if ($payload['numero_hidrante'] !== (string) $current['numero_hidrante']) {
+                throw new ValidationException([
+                    'numero_hidrante' => 'Operador nao pode alterar o numero do hidrante.',
+                ]);
+            }
+
+            $payload['numero_hidrante'] = (string) $current['numero_hidrante'];
+        }
 
         if ($this->hidranteRepository->existsByNumero($payload['numero_hidrante'], $id)) {
             throw new ValidationException([
@@ -230,6 +243,14 @@ class HidranteService
 
         if ($municipioId <= 0) {
             $errors['municipio_id'] = 'Municipio invalido.';
+        }
+
+        if ($bairroId !== null) {
+            if ($bairroId <= 0) {
+                $errors['bairro_id'] = 'Bairro invalido.';
+            } elseif ($municipioId > 0 && !$this->bairroRepository->belongsToMunicipio($bairroId, $municipioId)) {
+                $errors['bairro_id'] = 'O bairro selecionado nao pertence ao municipio informado.';
+            }
         }
 
         if ($testeRealizado === 'nao') {

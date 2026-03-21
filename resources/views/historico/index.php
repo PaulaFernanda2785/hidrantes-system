@@ -40,6 +40,18 @@ function historico_registro_relacionado(array $item): string
         return $referencia !== '' ? 'Usuario ID ' . $referencia : 'Usuario nao identificado';
     }
 
+    if ($entidade === 'bairros') {
+        if (!empty($item['bairro_nome_referencia'])) {
+            if (!empty($item['bairro_municipio_referencia'])) {
+                return 'Bairro ' . $item['bairro_nome_referencia'] . ' / ' . $item['bairro_municipio_referencia'];
+            }
+
+            return 'Bairro ' . $item['bairro_nome_referencia'];
+        }
+
+        return $referencia !== '' ? 'Bairro ID ' . $referencia : 'Bairro nao identificado';
+    }
+
     if ($entidade === 'relatorios') {
         return $referencia !== '' ? 'Relatorio ' . $referencia : 'Relatorio sem referencia';
     }

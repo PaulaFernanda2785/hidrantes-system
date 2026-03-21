@@ -52,7 +52,9 @@ class HistoricoRepository
         $sql = "SELECT
                 hu.*,
                 h.numero_hidrante AS hidrante_numero_referencia,
-                u.nome AS usuario_nome_referencia
+                u.nome AS usuario_nome_referencia,
+                b.nome AS bairro_nome_referencia,
+                mb.nome AS bairro_municipio_referencia
             FROM historico_usuario hu
             LEFT JOIN hidrantes h
                 ON hu.entidade = 'hidrantes'
@@ -60,6 +62,11 @@ class HistoricoRepository
             LEFT JOIN usuarios u
                 ON hu.entidade = 'usuarios'
                 AND CAST(hu.referencia_registro AS UNSIGNED) = u.id
+            LEFT JOIN bairros b
+                ON hu.entidade = 'bairros'
+                AND CAST(hu.referencia_registro AS UNSIGNED) = b.id
+            LEFT JOIN municipios mb
+                ON b.municipio_id = mb.id
             {$whereSql}
             ORDER BY hu.data_acao DESC, hu.id DESC
             LIMIT :limit OFFSET :offset";
