@@ -36,7 +36,7 @@ function build_page_url(int $page, array $filters): string
                 type="text"
                 name="q"
                 value="<?= e($filters['q'] ?? '') ?>"
-                placeholder="Número, endereço ou equipe responsável"
+                placeholder="Numero, endereco ou equipe responsavel"
             >
         </label>
 
@@ -51,7 +51,7 @@ function build_page_url(int $page, array $filters): string
             </select>
         </label>
 
-        <label>Município
+        <label>Municipio
             <select name="municipio_id">
                 <option value="">Todos</option>
                 <?php foreach ($municipios as $municipio): ?>
@@ -79,21 +79,21 @@ function build_page_url(int $page, array $filters): string
             <strong>Total:</strong> <?= (int) $pagination['total'] ?>
         </div>
         <div>
-            Exibindo <?= (int) $pagination['from'] ?>–<?= (int) $pagination['to'] ?>
+            Exibindo <?= (int) $pagination['from'] ?>-<?= (int) $pagination['to'] ?>
         </div>
     </div>
 
     <table>
         <thead>
         <tr>
-            <th>Número</th>
-            <th>Município</th>
+            <th>Numero</th>
+            <th>Municipio</th>
             <th>Bairro</th>
             <th>Status</th>
             <th>Tipo</th>
-            <th>Área</th>
+            <th>Area</th>
             <th>Atualizado em</th>
-            <th>Ações</th>
+            <th>Acoes</th>
         </tr>
         </thead>
         <tbody>
@@ -117,6 +117,7 @@ function build_page_url(int $page, array $filters): string
 
                             <?php if (in_array($perfil, ['admin', 'gestor'], true)): ?>
                                 <form method="POST" action="/hidrantes/<?= (int) $hidrante['id'] ?>/excluir" onsubmit="return confirm('Deseja realmente excluir este hidrante?');">
+                                    <?= csrf_field() ?>
                                     <button type="submit">Excluir</button>
                                 </form>
                             <?php endif; ?>
@@ -162,7 +163,7 @@ function build_page_url(int $page, array $filters): string
             <?php endif; ?>
 
             <a class="btn-secondary <?= $current >= $last ? 'is-disabled' : '' ?>" href="<?= $current < $last ? e(build_page_url($current + 1, $filters)) : '#' ?>">
-                Próxima
+                Proxima
             </a>
         </nav>
     <?php endif; ?>

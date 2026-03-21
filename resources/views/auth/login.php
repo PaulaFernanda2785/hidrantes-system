@@ -1,8 +1,9 @@
 <section class="card auth-card">
     <h1>Login</h1>
     <form method="POST" action="/login" class="form-grid">
+        <?= csrf_field() ?>
         <label>
-            Matrícula funcional
+            Matricula funcional
             <input type="text" name="matricula_funcional" required>
         </label>
         <label>

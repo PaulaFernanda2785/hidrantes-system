@@ -11,10 +11,10 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- =========================================================
 -- DATABASE (opcional)
 -- =========================================================
--- CREATE DATABASE IF NOT EXISTS hidrantes_db
+-- CREATE DATABASE IF NOT EXISTS hidrantes_system
 --   CHARACTER SET utf8mb4
 --   COLLATE utf8mb4_unicode_ci;
--- USE hidrantes_db;
+-- USE hidrantes_system;
 
 -- =========================================================
 -- DROP TABLES (ordem reversa das dependencias)
@@ -151,12 +151,12 @@ CREATE TABLE hidrantes (
         CHECK (
             (teste_realizado = 'sim')
             OR (teste_realizado = 'nao' AND resultado_teste IS NULL)
-        )
+        ),
     CONSTRAINT fk_hidrantes_deleted_por
         FOREIGN KEY (deleted_por_usuario_id)
         REFERENCES usuarios (id)
         ON UPDATE CASCADE
-        ON DELETE SET NULL,
+        ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE INDEX idx_hidrantes_status_operacional ON hidrantes (status_operacional);
@@ -209,10 +209,11 @@ CREATE INDEX idx_historico_usuario_usuario_acao ON historico_usuario (usuario_id
 
 -- =========================================================
 -- DADOS INICIAIS OPCIONAIS
+-- Login inicial: matricula 000000 / senha admin123
+-- Altere a senha apos o primeiro acesso.
 -- =========================================================
 INSERT INTO usuarios (nome, matricula_funcional, senha_hash, perfil, status)
 VALUES
-('Administrador do Sistema', '000000', '$2y$10$abcdefghijklmnopqrstuvabcdefghijklmnopqrstuvabcd', 'admin', 'ativo');
--- OBS.: substituir senha_hash por um hash real gerado com password_hash no PHP.
+('Administrador do Sistema', '000000', '$2y$10$rfFGVnRlf7BJx7jB0diaueGn8F3E7HJ3kt5Ah32h/aGIw/WxJ6esu', 'admin', 'ativo');
 
 SET FOREIGN_KEY_CHECKS = 1;

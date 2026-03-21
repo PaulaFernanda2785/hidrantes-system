@@ -4,7 +4,13 @@ namespace App\Services;
 
 class UploadService
 {
-    private array $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+    private array $allowedMimeTypes = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+    ];
+
+    private int $maxFileSize = 5242880;
 
     public function storeMultiple(array $files): array
     {
@@ -13,20 +19,32 @@ class UploadService
             return $stored;
         }
 
+        $directory = storage_path('uploads/hidrantes');
+        if (!is_dir($directory)) {
+            mkdir($directory, 0775, true);
+        }
+
         for ($i = 0; $i < min(3, count($files['name'])); $i++) {
             if (($files['error'][$i] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
                 continue;
             }
 
-            $name = $files['name'][$i];
             $tmp = $files['tmp_name'][$i];
-            $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-            if (!in_array($ext, $this->allowedExtensions, true)) {
+            $size = (int) ($files['size'][$i] ?? 0);
+
+            if (!is_uploaded_file($tmp) || $size <= 0 || $size > $this->maxFileSize) {
                 continue;
             }
 
-            $newName = uniqid('hidrante_', true) . '.' . $ext;
-            $destination = storage_path('uploads/hidrantes/' . $newName);
+            $mime = mime_content_type($tmp) ?: '';
+            $extension = $this->allowedMimeTypes[$mime] ?? null;
+            if ($extension === null) {
+                continue;
+            }
+
+            $newName = 'hidrante_' . bin2hex(random_bytes(16)) . '.' . $extension;
+            $destination = $directory . DIRECTORY_SEPARATOR . $newName;
+
             if (move_uploaded_file($tmp, $destination)) {
                 $stored['foto_0' . ($i + 1)] = $newName;
             }

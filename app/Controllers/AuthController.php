@@ -18,12 +18,17 @@ class AuthController extends Controller
         $senha = (string) $this->request->input('senha');
 
         if ($matricula === '' || $senha === '') {
-            $this->redirect('/login', null, 'Informe matrícula funcional e senha.');
+            $this->redirect('/login', null, 'Informe matricula funcional e senha.');
         }
 
-        $service = new AuthService();
-        if (!$service->attempt($matricula, $senha)) {
-            $this->redirect('/login', null, 'Credenciais inválidas ou usuário inativo.');
+        try {
+            $service = new AuthService();
+            if (!$service->attempt($matricula, $senha)) {
+                $this->redirect('/login', null, 'Credenciais invalidas ou usuario inativo.');
+            }
+        } catch (\Throwable $e) {
+            report_exception($e);
+            $this->redirect('/login', null, 'Nao foi possivel concluir o login agora.');
         }
 
         $this->redirect('/painel', 'Login realizado com sucesso.');
@@ -31,7 +36,12 @@ class AuthController extends Controller
 
     public function logout(): void
     {
-        (new AuthService())->logout();
+        try {
+            (new AuthService())->logout();
+        } catch (\Throwable $e) {
+            report_exception($e);
+        }
+
         redirect('/login');
     }
 }

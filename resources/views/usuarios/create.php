@@ -1,8 +1,9 @@
 <h1><?= e($title) ?></h1>
 <section class="card">
     <form method="POST" action="/usuarios/salvar" class="form-grid cols-2">
+        <?= csrf_field() ?>
         <label class="col-span-2">Nome<input type="text" name="nome" required></label>
-        <label>Matrícula funcional<input type="text" name="matricula_funcional" required></label>
+        <label>Matricula funcional<input type="text" name="matricula_funcional" required></label>
         <label>Senha<input type="password" name="senha" required></label>
         <label>Perfil
             <select name="perfil" required>

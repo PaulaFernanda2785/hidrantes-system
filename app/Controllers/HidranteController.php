@@ -63,7 +63,8 @@ class HidranteController extends Controller
         } catch (ValidationException $e) {
             $this->redirect('/hidrantes/novo', null, $e->getMessage());
         } catch (\Throwable $e) {
-            $this->redirect('/hidrantes/novo', null, $e->getMessage());
+            report_exception($e);
+            $this->redirect('/hidrantes/novo', null, 'Nao foi possivel salvar o hidrante agora.');
         }
     }
 
@@ -73,7 +74,7 @@ class HidranteController extends Controller
         $hidrante = $service->find((int) $id);
 
         if (!$hidrante) {
-            $this->redirect('/hidrantes', null, 'Hidrante não encontrado.');
+            $this->redirect('/hidrantes', null, 'Hidrante nao encontrado.');
         }
 
         $bairros = [];
@@ -106,7 +107,8 @@ class HidranteController extends Controller
         } catch (ValidationException $e) {
             $this->redirect('/hidrantes/' . (int) $id . '/editar', null, $e->getMessage());
         } catch (\Throwable $e) {
-            $this->redirect('/hidrantes/' . (int) $id . '/editar', null, $e->getMessage());
+            report_exception($e);
+            $this->redirect('/hidrantes/' . (int) $id . '/editar', null, 'Nao foi possivel atualizar o hidrante agora.');
         }
     }
 
@@ -116,9 +118,10 @@ class HidranteController extends Controller
 
         try {
             (new HidranteService())->delete((int) $id, $auth);
-            $this->redirect('/hidrantes', 'Hidrante excluído com sucesso.');
+            $this->redirect('/hidrantes', 'Hidrante excluido com sucesso.');
         } catch (\Throwable $e) {
-            $this->redirect('/hidrantes', null, $e->getMessage());
+            report_exception($e);
+            $this->redirect('/hidrantes', null, 'Nao foi possivel excluir o hidrante agora.');
         }
     }
 
@@ -130,5 +133,33 @@ class HidranteController extends Controller
     public function bairrosByMunicipio(string $municipioId): void
     {
         Response::json((new BairroRepository())->byMunicipio((int) $municipioId));
+    }
+
+    public function photo(string $filename): void
+    {
+        $safeFilename = basename($filename);
+        $path = storage_path('uploads/hidrantes/' . $safeFilename);
+
+        if ($safeFilename !== $filename || !is_file($path)) {
+            http_response_code(404);
+            echo 'Arquivo nao encontrado.';
+            return;
+        }
+
+        $extension = strtolower(pathinfo($safeFilename, PATHINFO_EXTENSION));
+        $contentType = match ($extension) {
+            'jpg', 'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'webp' => 'image/webp',
+            default => 'application/octet-stream',
+        };
+
+        header('Content-Type: ' . $contentType);
+        header('Content-Length: ' . (string) filesize($path));
+        header('Content-Disposition: inline; filename="' . rawurlencode($safeFilename) . '"');
+        header('X-Content-Type-Options: nosniff');
+
+        readfile($path);
+        exit;
     }
 }

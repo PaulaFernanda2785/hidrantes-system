@@ -21,6 +21,14 @@ class UsuarioRepository
         return $stmt->fetch() ?: null;
     }
 
+    public function existsByMatricula(string $matricula): bool
+    {
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM usuarios WHERE matricula_funcional = :matricula');
+        $stmt->execute(['matricula' => $matricula]);
+
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
     public function all(?string $nome = null): array
     {
         $sql = 'SELECT id, nome, matricula_funcional, perfil, status, criado_em FROM usuarios';
