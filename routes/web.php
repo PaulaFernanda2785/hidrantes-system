@@ -78,6 +78,31 @@ $router->post('/usuarios/salvar', [UsuarioController::class, 'store'], [
     RoleMiddleware::class . ':admin',
 ]);
 
+$router->get('/usuarios/{id}/editar', [UsuarioController::class, 'edit'], [
+    AuthMiddleware::class,
+    RoleMiddleware::class . ':admin',
+]);
+
+$router->post('/usuarios/{id}/atualizar', [UsuarioController::class, 'update'], [
+    AuthMiddleware::class,
+    RoleMiddleware::class . ':admin',
+]);
+
+$router->get('/usuarios/{id}/senha', [UsuarioController::class, 'password'], [
+    AuthMiddleware::class,
+    RoleMiddleware::class . ':admin',
+]);
+
+$router->post('/usuarios/{id}/senha', [UsuarioController::class, 'updatePassword'], [
+    AuthMiddleware::class,
+    RoleMiddleware::class . ':admin',
+]);
+
+$router->post('/usuarios/{id}/status', [UsuarioController::class, 'updateStatus'], [
+    AuthMiddleware::class,
+    RoleMiddleware::class . ':admin',
+]);
+
 $router->get('/relatorios/hidrantes', [RelatorioController::class, 'index'], [
     AuthMiddleware::class,
     RoleMiddleware::class . ':admin,gestor',

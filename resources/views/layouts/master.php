@@ -20,6 +20,7 @@ $stylesheets = [
     'components/tables.css',
     'components/pagination.css',
     'pages/auth.css',
+    'pages/hidrantes.css',
 ];
 
 function menu_active(string $path): string
