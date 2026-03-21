@@ -1,5 +1,6 @@
 <?php
 
+use App\Controllers\AssetController;
 use App\Controllers\AuthController;
 use App\Controllers\HistoricoController;
 use App\Controllers\HidranteController;
@@ -9,6 +10,9 @@ use App\Controllers\UsuarioController;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\GuestMiddleware;
 use App\Middleware\RoleMiddleware;
+
+$router->get('/assets/css/{file}', [AssetController::class, 'rootCss']);
+$router->get('/assets/css/{directory}/{file}', [AssetController::class, 'nestedCss']);
 
 $router->get('/login', [AuthController::class, 'showLogin'], [GuestMiddleware::class]);
 $router->post('/login', [AuthController::class, 'login'], [GuestMiddleware::class]);

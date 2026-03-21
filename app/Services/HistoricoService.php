@@ -11,8 +11,8 @@ class HistoricoService
         $this->historicoRepository ??= new HistoricoRepository();
     }
 
-    public function list(array $filters = []): array
+    public function list(array $filters = [], int $page = 1, int $perPage = 15): array
     {
-        return $this->historicoRepository->all($filters);
+        return $this->historicoRepository->paginate($filters, $page, $perPage);
     }
 }

@@ -1,11 +1,27 @@
-<?php use App\Core\Session; ?>
+<?php
+
+use App\Core\Session;
+
+$stylesheets = [
+    'globals/variables.css',
+    'globals/reset.css',
+    'globals/base.css',
+    'components/cards.css',
+    'components/alerts.css',
+    'components/forms.css',
+    'components/buttons.css',
+    'pages/auth.css',
+];
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($title ?? 'Login') ?></title>
-    <link rel="stylesheet" href="/assets/app.css">
+    <?php foreach ($stylesheets as $stylesheet): ?>
+        <link rel="stylesheet" href="<?= e(css_asset($stylesheet)) ?>">
+    <?php endforeach; ?>
 </head>
 <body class="auth-page">
     <main class="auth-wrapper">

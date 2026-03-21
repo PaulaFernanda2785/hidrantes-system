@@ -4,7 +4,7 @@
     padding: 24px 20px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 24px;
 }
 
@@ -66,6 +66,7 @@
 
 .sidebar-footer {
     padding-top: 20px;
+    text-align: center;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     font-size: 12px;
     line-height: 1.5;
@@ -73,5 +74,6 @@
 }
 
 .sidebar-footer p {
+    font-size: 10px;
     margin-bottom: 8px;
 }

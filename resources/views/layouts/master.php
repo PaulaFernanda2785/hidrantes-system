@@ -4,6 +4,22 @@ use App\Core\Session;
 
 $auth = Session::get('auth');
 $perfil = $auth['perfil'] ?? '';
+$stylesheets = [
+    'globals/variables.css',
+    'globals/reset.css',
+    'globals/base.css',
+    'layouts/layout.css',
+    'layouts/sidebar.css',
+    'layouts/topbar.css',
+    'layouts/responsive.css',
+    'components/cards.css',
+    'components/alerts.css',
+    'components/forms.css',
+    'components/buttons.css',
+    'components/tables.css',
+    'components/pagination.css',
+    'pages/auth.css',
+];
 
 function menu_active(string $path): string
 {
@@ -21,8 +37,10 @@ function menu_active(string $path): string
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= e($title ?? 'Sistema de Gestão de Hidrantes') ?></title>
-    <link rel="stylesheet" href="/assets/app.css">
+    <title><?= e($title ?? 'Sistema de Gestao de Hidrantes') ?></title>
+    <?php foreach ($stylesheets as $stylesheet): ?>
+        <link rel="stylesheet" href="<?= e(css_asset($stylesheet)) ?>">
+    <?php endforeach; ?>
 </head>
 <body>
 <div class="layout">
@@ -41,26 +59,26 @@ function menu_active(string $path): string
             <a href="/hidrantes" class="<?= menu_active('/hidrantes') ?>">Hidrantes</a>
 
             <?php if ($perfil === 'admin'): ?>
-                <a href="/usuarios" class="<?= menu_active('/usuarios') ?>">Usuários</a>
+                <a href="/usuarios" class="<?= menu_active('/usuarios') ?>">Usuarios</a>
             <?php endif; ?>
 
             <?php if (in_array($perfil, ['admin', 'gestor'], true)): ?>
-                <a href="/relatorios/hidrantes" class="<?= menu_active('/relatorios') ?>">Relatórios</a>
-                <a href="/historico" class="<?= menu_active('/historico') ?>">Histórico</a>
+                <a href="/relatorios/hidrantes" class="<?= menu_active('/relatorios') ?>">Relatorios</a>
+                <a href="/historico" class="<?= menu_active('/historico') ?>">Historico</a>
             <?php endif; ?>
         </nav>
 
         <div class="sidebar-footer">
-            <p>Corpo de Bombeiros Militar do Estado do Pará e Coordenadoria Estadual de Proteção e Defesa Civil.</p>
-            <p>Versão: 1.0.0</p>
-            <p>© 2026 Governo do Estado do Pará</p>
+            <p>Corpo de Bombeiros Militar do Estado do Para e Coordenadoria Estadual de Protecao e Defesa Civil.</p>
+            <p>Versao: 1.0.0</p>
+            <p>&copy; 2026 Governo do Estado do Para</p>
         </div>
     </aside>
 
     <div class="main">
         <header class="topbar">
             <div class="topbar-title">
-                <strong><?= e($title ?? 'Sistema de Gestão de Hidrantes') ?></strong>
+                <strong><?= e($title ?? 'Sistema de Gestao de Hidrantes') ?></strong>
             </div>
 
             <div class="topbar-user">
