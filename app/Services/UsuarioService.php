@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Core\Session;
 use App\Repositories\UsuarioRepository;
 use App\Validators\ValidationException;
 
@@ -17,28 +18,123 @@ class UsuarioService
         $this->auditService ??= new AuditService();
     }
 
-    public function list(?string $nome = null): array
+    public function metrics(): array
     {
-        return $this->usuarioRepository->all($nome);
+        return $this->usuarioRepository->metrics();
+    }
+
+    public function paginate(?string $nome = null, int $page = 1, int $perPage = 15): array
+    {
+        return $this->usuarioRepository->paginate($nome, $page, $perPage);
+    }
+
+    public function find(int $id): ?array
+    {
+        return $this->usuarioRepository->findById($id);
     }
 
     public function create(array $data, array $actor): int
     {
-        $payload = $this->validateAndNormalize($data);
+        $payload = $this->validateAndNormalize($data, true);
         $payload['senha_hash'] = $this->passwordService->hash((string) $data['senha']);
 
         $id = $this->usuarioRepository->create($payload);
 
-        try {
-            $this->auditService->record($actor, 'cadastrar', 'usuarios', (string) $id, 'Cadastro de usuario realizado.');
-        } catch (\Throwable $e) {
-            report_exception($e);
-        }
+        $this->recordAuditSafely($actor, 'cadastrar', 'usuarios', (string) $id, 'Cadastro de usuario realizado.');
 
         return $id;
     }
 
-    private function validateAndNormalize(array $data): array
+    public function update(int $id, array $data, array $actor): void
+    {
+        $current = $this->usuarioRepository->findById($id);
+        if (!$current) {
+            throw new \RuntimeException('Usuario nao encontrado.');
+        }
+
+        $payload = $this->validateAndNormalize($data, false, $id);
+
+        if ((int) $actor['id'] === $id) {
+            if (($payload['perfil'] ?? '') !== ($current['perfil'] ?? '')) {
+                throw new ValidationException(['perfil' => 'Nao altere o proprio perfil por esta tela.']);
+            }
+
+            if (($payload['status'] ?? '') !== ($current['status'] ?? '')) {
+                throw new ValidationException(['status' => 'Nao altere o proprio status por esta tela.']);
+            }
+        }
+
+        $this->usuarioRepository->update($id, $payload);
+
+        if ((int) $actor['id'] === $id) {
+            Session::put('auth', [
+                'id' => $id,
+                'nome' => $payload['nome'],
+                'matricula_funcional' => $payload['matricula_funcional'],
+                'perfil' => $current['perfil'],
+            ]);
+        }
+
+        $this->recordAuditSafely($actor, 'editar', 'usuarios', (string) $id, 'Edicao de usuario realizada.');
+    }
+
+    public function changePassword(int $id, array $data, array $actor): void
+    {
+        $current = $this->usuarioRepository->findById($id);
+        if (!$current) {
+            throw new \RuntimeException('Usuario nao encontrado.');
+        }
+
+        $newPassword = trim((string) ($data['nova_senha'] ?? ''));
+        $confirmation = trim((string) ($data['confirmacao_senha'] ?? ''));
+
+        if ($newPassword === '') {
+            throw new ValidationException(['nova_senha' => 'Informe a nova senha.']);
+        }
+
+        if (mb_strlen($newPassword) < 6) {
+            throw new ValidationException(['nova_senha' => 'A nova senha deve ter pelo menos 6 caracteres.']);
+        }
+
+        if ($newPassword !== $confirmation) {
+            throw new ValidationException(['confirmacao_senha' => 'A confirmacao de senha nao confere.']);
+        }
+
+        $this->usuarioRepository->updatePassword($id, $this->passwordService->hash($newPassword));
+        $this->recordAuditSafely($actor, 'alterar senha', 'usuarios', (string) $id, 'Senha do usuario alterada.');
+    }
+
+    public function updateStatus(int $id, string $status, array $actor): void
+    {
+        $current = $this->usuarioRepository->findById($id);
+        if (!$current) {
+            throw new \RuntimeException('Usuario nao encontrado.');
+        }
+
+        $status = trim($status);
+        if (!in_array($status, ['ativo', 'inativo'], true)) {
+            throw new ValidationException(['status' => 'Status invalido.']);
+        }
+
+        if ((int) $actor['id'] === $id) {
+            throw new ValidationException(['status' => 'Nao altere o proprio status por esta tela.']);
+        }
+
+        if (($current['status'] ?? null) === $status) {
+            throw new ValidationException(['status' => 'O usuario ja esta com esse status.']);
+        }
+
+        $this->usuarioRepository->updateStatus($id, $status);
+
+        $acao = $status === 'ativo' ? 'ativar' : 'inativar';
+        $detalhes = $status === 'ativo'
+            ? 'Usuario ativado.'
+            : 'Usuario inativado.';
+
+        $this->recordAuditSafely($actor, $acao, 'usuarios', (string) $id, $detalhes);
+    }
+
+    private function validateAndNormalize(array $data, bool $requirePassword = false, ?int $ignoreId = null): array
     {
         $errors = [];
 
@@ -58,11 +154,11 @@ class UsuarioService
             $errors['matricula_funcional'] = 'Informe a matricula funcional.';
         } elseif (mb_strlen($matricula) > 30) {
             $errors['matricula_funcional'] = 'A matricula funcional excede 30 caracteres.';
-        } elseif ($this->usuarioRepository->existsByMatricula($matricula)) {
+        } elseif ($this->usuarioRepository->existsByMatricula($matricula, $ignoreId)) {
             $errors['matricula_funcional'] = 'Ja existe um usuario com essa matricula.';
         }
 
-        if (trim($senha) === '') {
+        if ($requirePassword && trim($senha) === '') {
             $errors['senha'] = 'Informe a senha do usuario.';
         }
 
@@ -84,5 +180,14 @@ class UsuarioService
             'perfil' => $perfil,
             'status' => $status,
         ];
+    }
+
+    private function recordAuditSafely(array $actor, string $acao, string $entidade, string $referencia, string $detalhes): void
+    {
+        try {
+            $this->auditService->record($actor, $acao, $entidade, $referencia, $detalhes);
+        } catch (\Throwable $e) {
+            report_exception($e);
+        }
     }
 }

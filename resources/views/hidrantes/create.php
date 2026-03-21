@@ -203,9 +203,26 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
             <input type="text" name="longitude" value="<?= old_or_value($hidrante, 'longitude') ?>">
         </label>
 
-        <label class="col-span-2">Fotos (ate 3 imagens)
-            <input type="file" name="fotos[]" multiple accept=".jpg,.jpeg,.png,.webp">
-        </label>
+        <div class="col-span-2">
+            <span class="upload-dropzone-title">Anexar fotos</span>
+            <div class="upload-dropzone" id="upload-dropzone">
+                <p class="upload-dropzone-copy">Arraste ate 3 imagens para esta area ou clique no botao para selecionar.</p>
+                <div class="upload-dropzone-actions">
+                    <button type="button" class="upload-dropzone-button" id="upload-select-button">Selecionar imagens</button>
+                    <span class="upload-dropzone-meta" id="upload-selection-count">Nenhuma imagem selecionada.</span>
+                </div>
+                <input
+                    type="file"
+                    id="upload-fotos-input"
+                    class="upload-input-hidden"
+                    name="fotos[]"
+                    multiple
+                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                >
+                <div class="upload-preview-grid" id="upload-preview-grid"></div>
+                <p class="upload-empty" id="upload-empty-state">Voce pode anexar ate 3 fotos por hidrante.</p>
+            </div>
+        </div>
 
         <?php if ($isEdit): ?>
             <div class="col-span-2">
@@ -234,6 +251,109 @@ document.addEventListener('DOMContentLoaded', () => {
     const municipio = document.getElementById('municipio_id');
     const bairro = document.getElementById('bairro_id');
     const bairroSelecionado = '<?= e((string) ($hidrante['bairro_id'] ?? '')) ?>';
+    const fileInput = document.getElementById('upload-fotos-input');
+    const dropzone = document.getElementById('upload-dropzone');
+    const selectButton = document.getElementById('upload-select-button');
+    const previewGrid = document.getElementById('upload-preview-grid');
+    const emptyState = document.getElementById('upload-empty-state');
+    const selectionCount = document.getElementById('upload-selection-count');
+    const maxFiles = 3;
+    let selectedFiles = [];
+
+    const syncInputFiles = () => {
+        const transfer = new DataTransfer();
+        selectedFiles.forEach((file) => transfer.items.add(file));
+        fileInput.files = transfer.files;
+    };
+
+    const updateSelectionCount = () => {
+        if (selectedFiles.length === 0) {
+            selectionCount.textContent = 'Nenhuma imagem selecionada.';
+            emptyState.hidden = false;
+            return;
+        }
+
+        selectionCount.textContent = `${selectedFiles.length} imagem(ns) pronta(s) para envio.`;
+        emptyState.hidden = true;
+    };
+
+    const renderPreviews = () => {
+        previewGrid.innerHTML = '';
+
+        selectedFiles.forEach((file, index) => {
+            const card = document.createElement('div');
+            card.className = 'upload-preview-card';
+
+            const image = document.createElement('img');
+            image.className = 'upload-preview-media';
+            image.alt = file.name;
+            image.src = URL.createObjectURL(file);
+            image.addEventListener('load', () => URL.revokeObjectURL(image.src), { once: true });
+
+            const name = document.createElement('div');
+            name.className = 'upload-preview-name';
+            name.textContent = file.name;
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btn-secondary upload-preview-remove';
+            removeButton.textContent = 'Remover';
+            removeButton.addEventListener('click', () => {
+                selectedFiles = selectedFiles.filter((_, fileIndex) => fileIndex !== index);
+                syncInputFiles();
+                renderPreviews();
+                updateSelectionCount();
+            });
+
+            card.appendChild(image);
+            card.appendChild(name);
+            card.appendChild(removeButton);
+            previewGrid.appendChild(card);
+        });
+    };
+
+    const mergeFiles = (incomingFiles) => {
+        const validFiles = Array.from(incomingFiles).filter((file) => file.type.startsWith('image/'));
+
+        if (validFiles.length === 0) {
+            return;
+        }
+
+        const mergedFiles = [...selectedFiles, ...validFiles].slice(0, maxFiles);
+        selectedFiles = mergedFiles;
+        syncInputFiles();
+        renderPreviews();
+        updateSelectionCount();
+    };
+
+    selectButton.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', () => {
+        mergeFiles(fileInput.files);
+    });
+
+    ['dragenter', 'dragover'].forEach((eventName) => {
+        dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropzone.classList.add('is-dragover');
+        });
+    });
+
+    ['dragleave', 'drop'].forEach((eventName) => {
+        dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropzone.classList.remove('is-dragover');
+        });
+    });
+
+    dropzone.addEventListener('drop', (event) => {
+        const droppedFiles = event.dataTransfer?.files;
+        if (!droppedFiles || droppedFiles.length === 0) {
+            return;
+        }
+
+        mergeFiles(droppedFiles);
+    });
 
     municipio.addEventListener('change', async () => {
         bairro.innerHTML = '<option value="">Carregando...</option>';
@@ -260,5 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
             bairro.appendChild(option);
         });
     });
+
+    updateSelectionCount();
 });
 </script>
