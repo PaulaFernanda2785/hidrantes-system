@@ -15,16 +15,23 @@ class HidranteController extends Controller
     public function index(): void
     {
         $filters = [
+            'q' => trim((string) $this->request->input('q')),
             'status_operacional' => $this->request->input('status_operacional'),
             'municipio_id' => $this->request->input('municipio_id'),
         ];
 
+        $page = (int) ($this->request->input('page') ?: 1);
+        $perPage = 15;
+
         $service = new HidranteService();
+        $result = $service->list($filters, $page, $perPage);
+
         $municipios = (new MunicipioRepository())->all();
 
         $this->view('hidrantes/index', [
             'title' => 'Hidrantes',
-            'hidrantes' => $service->list($filters),
+            'hidrantes' => $result['data'],
+            'pagination' => $result['meta'],
             'filters' => $filters,
             'municipios' => $municipios,
         ]);

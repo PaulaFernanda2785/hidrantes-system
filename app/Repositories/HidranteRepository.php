@@ -32,8 +32,40 @@ class HidranteRepository
         ];
     }
 
-    public function all(array $filters = []): array
+    public function paginate(array $filters = [], int $page = 1, int $perPage = 15): array
     {
+        $page = max(1, $page);
+        $perPage = max(1, $perPage);
+        $offset = ($page - 1) * $perPage;
+
+        $where = ["h.deleted_at IS NULL"];
+        $params = [];
+
+        if (!empty($filters['status_operacional'])) {
+            $where[] = 'h.status_operacional = :status_operacional';
+            $params['status_operacional'] = $filters['status_operacional'];
+        }
+
+        if (!empty($filters['municipio_id'])) {
+            $where[] = 'h.municipio_id = :municipio_id';
+            $params['municipio_id'] = (int) $filters['municipio_id'];
+        }
+
+        if (!empty($filters['q'])) {
+            $where[] = '(h.numero_hidrante LIKE :q OR h.endereco LIKE :q OR h.equipe_responsavel LIKE :q)';
+            $params['q'] = '%' . trim($filters['q']) . '%';
+        }
+
+        $whereSql = 'WHERE ' . implode(' AND ', $where);
+
+        $countSql = "SELECT COUNT(*)
+                    FROM hidrantes h
+                    {$whereSql}";
+
+        $countStmt = $this->db->prepare($countSql);
+        $countStmt->execute($params);
+        $total = (int) $countStmt->fetchColumn();
+
         $sql = "SELECT 
                     h.id,
                     h.numero_hidrante,
@@ -47,25 +79,35 @@ class HidranteRepository
                 FROM hidrantes h
                 INNER JOIN municipios m ON m.id = h.municipio_id
                 LEFT JOIN bairros b ON b.id = h.bairro_id
-                WHERE h.deleted_at IS NULL";
-        $params = [];
-
-        if (!empty($filters['status_operacional'])) {
-            $sql .= ' AND h.status_operacional = :status_operacional';
-            $params['status_operacional'] = $filters['status_operacional'];
-        }
-
-        if (!empty($filters['municipio_id'])) {
-            $sql .= ' AND h.municipio_id = :municipio_id';
-            $params['municipio_id'] = $filters['municipio_id'];
-        }
-
-        $sql .= ' ORDER BY h.atualizado_em DESC LIMIT 100';
+                {$whereSql}
+                ORDER BY h.atualizado_em DESC, h.id DESC
+                LIMIT :limit OFFSET :offset";
 
         $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
 
-        return $stmt->fetchAll();
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(':' . $key, $value);
+        }
+
+        $stmt->bindValue(':limit', $perPage, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        $items = $stmt->fetchAll();
+
+        $lastPage = max(1, (int) ceil($total / $perPage));
+
+        return [
+            'data' => $items,
+            'meta' => [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'last_page' => $lastPage,
+                'from' => $total > 0 ? $offset + 1 : 0,
+                'to' => min($offset + $perPage, $total),
+            ],
+        ];
     }
 
     public function findById(int $id): ?array
@@ -259,4 +301,44 @@ class HidranteRepository
 
         return (int) $stmt->fetchColumn() > 0;
     }
+
+    public function report(array $filters = []): array
+    {
+        $where = ["h.deleted_at IS NULL"];
+        $params = [];
+
+        if (!empty($filters['status_operacional'])) {
+            $where[] = 'h.status_operacional = :status_operacional';
+            $params['status_operacional'] = $filters['status_operacional'];
+        }
+
+        if (!empty($filters['municipio_id'])) {
+            $where[] = 'h.municipio_id = :municipio_id';
+            $params['municipio_id'] = (int) $filters['municipio_id'];
+        }
+
+        $whereSql = 'WHERE ' . implode(' AND ', $where);
+
+        $sql = "SELECT
+                    h.id,
+                    h.numero_hidrante,
+                    h.status_operacional,
+                    h.tipo_hidrante,
+                    h.area,
+                    h.endereco,
+                    h.atualizado_em,
+                    m.nome AS municipio_nome,
+                    b.nome AS bairro_nome
+                FROM hidrantes h
+                INNER JOIN municipios m ON m.id = h.municipio_id
+                LEFT JOIN bairros b ON b.id = h.bairro_id
+                {$whereSql}
+                ORDER BY h.atualizado_em DESC, h.id DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll();
+    }
 }
+

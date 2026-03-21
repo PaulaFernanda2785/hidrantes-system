@@ -19,9 +19,9 @@ class HidranteService
         $this->auditService ??= new AuditService();
     }
 
-    public function list(array $filters = []): array
+    public function list(array $filters = [], int $page = 1, int $perPage = 15): array
     {
-        return $this->hidranteRepository->all($filters);
+        return $this->hidranteRepository->paginate($filters, $page, $perPage);
     }
 
     public function find(int $id): ?array

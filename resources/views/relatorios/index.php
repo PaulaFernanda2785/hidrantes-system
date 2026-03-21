@@ -31,12 +31,12 @@
         <tbody>
         <?php foreach ($items as $item): ?>
             <tr>
-                <td><?= e($item['numero_hidrante']) ?></td>
-                <td><?= e($item['municipio_nome']) ?></td>
+                <td><?= e($item['numero_hidrante'] ?? '-') ?></td>
+                <td><?= e($item['municipio_nome'] ?? '-') ?></td>
                 <td><?= e($item['bairro_nome'] ?? '-') ?></td>
-                <td><?= e($item['status_operacional']) ?></td>
-                <td><?= e($item['tipo_hidrante']) ?></td>
-                <td><?= e($item['area']) ?></td>
+                <td><?= e($item['status_operacional'] ?? '-') ?></td>
+                <td><?= e($item['tipo_hidrante'] ?? '-') ?></td>
+                <td><?= e($item['area'] ?? '-') ?></td>
             </tr>
         <?php endforeach; ?>
         </tbody>
