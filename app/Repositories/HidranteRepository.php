@@ -51,6 +51,11 @@ class HidranteRepository
             $params['municipio_id'] = (int) $filters['municipio_id'];
         }
 
+        if (!empty($filters['bairro_id'])) {
+            $where[] = 'h.bairro_id = :bairro_id';
+            $params['bairro_id'] = (int) $filters['bairro_id'];
+        }
+
         if (!empty($filters['q'])) {
             $search = '%' . trim((string) $filters['q']) . '%';
             $where[] = '(h.numero_hidrante LIKE :q_numero OR h.endereco LIKE :q_endereco OR h.equipe_responsavel LIKE :q_equipe)';
@@ -72,11 +77,29 @@ class HidranteRepository
         $sql = "SELECT 
                     h.id,
                     h.numero_hidrante,
+                    h.equipe_responsavel,
+                    h.existe_no_local,
                     h.status_operacional,
                     h.tipo_hidrante,
                     h.area,
+                    h.acessibilidade,
+                    h.tampo_conexoes,
+                    h.tampas_ausentes,
+                    h.caixa_protecao,
+                    h.condicao_caixa,
+                    h.presenca_agua_interior,
+                    h.teste_realizado,
+                    h.resultado_teste,
                     h.endereco,
+                    h.latitude,
+                    h.longitude,
+                    h.foto_01,
+                    h.foto_02,
+                    h.foto_03,
+                    h.criado_em,
                     h.atualizado_em,
+                    h.municipio_id,
+                    h.bairro_id,
                     m.nome AS municipio_nome,
                     b.nome AS bairro_nome
                 FROM hidrantes h
