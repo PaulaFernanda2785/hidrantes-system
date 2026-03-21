@@ -52,8 +52,11 @@ class HidranteRepository
         }
 
         if (!empty($filters['q'])) {
-            $where[] = '(h.numero_hidrante LIKE :q OR h.endereco LIKE :q OR h.equipe_responsavel LIKE :q)';
-            $params['q'] = '%' . trim($filters['q']) . '%';
+            $search = '%' . trim((string) $filters['q']) . '%';
+            $where[] = '(h.numero_hidrante LIKE :q_numero OR h.endereco LIKE :q_endereco OR h.equipe_responsavel LIKE :q_equipe)';
+            $params['q_numero'] = $search;
+            $params['q_endereco'] = $search;
+            $params['q_equipe'] = $search;
         }
 
         $whereSql = 'WHERE ' . implode(' AND ', $where);
