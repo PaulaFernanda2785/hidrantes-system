@@ -24,6 +24,7 @@ class HistoricoController extends Controller
             'items' => $result['data'],
             'pagination' => $result['meta'],
             'filters' => $filters,
+            'scripts' => ['pages/historico/index.js'],
         ]);
     }
 }

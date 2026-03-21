@@ -78,7 +78,12 @@ function build_usuario_page_url(int $page, ?string $nome): string
                             <?php if ($isCurrentUser): ?>
                                 <span class="btn-secondary">Conta atual</span>
                             <?php else: ?>
-                                <form method="POST" action="/usuarios/<?= (int) $usuario['id'] ?>/status" onsubmit="return confirm('Deseja realmente <?= $targetStatus === 'ativo' ? 'ativar' : 'inativar' ?> este usuario?');">
+                                <form
+                                    method="POST"
+                                    action="/usuarios/<?= (int) $usuario['id'] ?>/status"
+                                    data-confirm-submit
+                                    data-confirm-message="Deseja realmente <?= $targetStatus === 'ativo' ? 'ativar' : 'inativar' ?> este usuario?"
+                                >
                                     <?= csrf_field() ?>
                                     <input type="hidden" name="status" value="<?= e($targetStatus) ?>">
                                     <button type="submit"><?= $targetStatus === 'ativo' ? 'Ativar' : 'Inativar' ?></button>

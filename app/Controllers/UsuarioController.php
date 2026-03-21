@@ -25,6 +25,7 @@ class UsuarioController extends Controller
             'metrics' => $service->metrics(),
             'nome' => $nome,
             'currentUserId' => (int) (Session::get('auth')['id'] ?? 0),
+            'scripts' => ['pages/usuarios/index.js'],
         ]);
     }
 
