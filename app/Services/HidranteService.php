@@ -43,6 +43,11 @@ class HidranteService
         }
 
         $images = $this->uploadService->storeMultiple($files);
+        if ($this->uploadService->hasUploadedFiles($files) && !array_filter($images)) {
+            throw new ValidationException([
+                'fotos' => 'Nao foi possivel processar as imagens enviadas. Use arquivos JPG, PNG ou WEBP validos.',
+            ]);
+        }
 
         $payload['foto_01'] = $images['foto_01'];
         $payload['foto_02'] = $images['foto_02'];
@@ -90,10 +95,16 @@ class HidranteService
         }
 
         $images = $this->uploadService->storeMultiple($files);
+        if ($this->uploadService->hasUploadedFiles($files) && !array_filter($images)) {
+            throw new ValidationException([
+                'fotos' => 'Nao foi possivel processar as imagens enviadas. Use arquivos JPG, PNG ou WEBP validos.',
+            ]);
+        }
 
-        $payload['foto_01'] = $images['foto_01'] ?: $current['foto_01'];
-        $payload['foto_02'] = $images['foto_02'] ?: $current['foto_02'];
-        $payload['foto_03'] = $images['foto_03'] ?: $current['foto_03'];
+        $mergedPhotos = $this->mergePhotoSlots($current, $images);
+        $payload['foto_01'] = $mergedPhotos['foto_01'];
+        $payload['foto_02'] = $mergedPhotos['foto_02'];
+        $payload['foto_03'] = $mergedPhotos['foto_03'];
         $payload['atualizado_por_usuario_id'] = $actor['id'];
 
         $this->hidranteRepository->update($id, $payload);
@@ -303,6 +314,47 @@ class HidranteService
             'latitude' => $latitude,
             'longitude' => $longitude,
         ];
+    }
+
+    private function mergePhotoSlots(array $current, array $uploaded): array
+    {
+        $result = [
+            'foto_01' => $current['foto_01'] ?? null,
+            'foto_02' => $current['foto_02'] ?? null,
+            'foto_03' => $current['foto_03'] ?? null,
+        ];
+
+        $newFiles = array_values(array_filter([
+            $uploaded['foto_01'] ?? null,
+            $uploaded['foto_02'] ?? null,
+            $uploaded['foto_03'] ?? null,
+        ]));
+
+        if ($newFiles === []) {
+            return $result;
+        }
+
+        foreach (array_keys($result) as $slot) {
+            if ($newFiles === []) {
+                break;
+            }
+
+            if (!empty($result[$slot])) {
+                continue;
+            }
+
+            $result[$slot] = array_shift($newFiles);
+        }
+
+        foreach (array_keys($result) as $slot) {
+            if ($newFiles === []) {
+                break;
+            }
+
+            $result[$slot] = array_shift($newFiles);
+        }
+
+        return $result;
     }
 
     private function normalizePlainText(string $value): string

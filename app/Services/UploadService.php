@@ -15,6 +15,27 @@ class UploadService
     private int $maxImageHeight = 8000;
     private int $maxPixels = 40000000;
 
+    public function hasUploadedFiles(array $files): bool
+    {
+        $names = $files['name'] ?? [];
+        $errors = $files['error'] ?? [];
+
+        $names = is_array($names) ? $names : [$names];
+        $errors = is_array($errors) ? $errors : [$errors];
+
+        foreach ($names as $index => $name) {
+            if (trim((string) $name) === '') {
+                continue;
+            }
+
+            if (($errors[$index] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function storeMultiple(array $files): array
     {
         $stored = ['foto_01' => null, 'foto_02' => null, 'foto_03' => null];
@@ -55,8 +76,11 @@ class UploadService
                 continue;
             }
 
-            $finfo = new \finfo(FILEINFO_MIME_TYPE);
-            $mime = (string) $finfo->file($tmp);
+            $mime = (string) ($imageInfo['mime'] ?? '');
+            if ($mime === '') {
+                $finfo = new \finfo(FILEINFO_MIME_TYPE);
+                $mime = (string) $finfo->file($tmp);
+            }
             $extension = $this->allowedMimeTypes[$mime] ?? null;
             if ($extension === null) {
                 continue;

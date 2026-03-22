@@ -65,12 +65,13 @@ class HidranteController extends Controller
         try {
             (new HidranteService())->create(
                 $this->request->all(),
-                $this->request->file('fotos') ?? [],
+                $this->uploadedPhotoFiles(),
                 $auth
             );
 
             $this->redirect('/hidrantes', 'Hidrante cadastrado com sucesso.');
         } catch (ValidationException $e) {
+            $this->logUploadDebug('store', $e);
             $this->redirect('/hidrantes/novo', null, $e->getMessage());
         } catch (\Throwable $e) {
             report_exception($e);
@@ -110,12 +111,13 @@ class HidranteController extends Controller
             (new HidranteService())->update(
                 (int) $id,
                 $this->request->all(),
-                $this->request->file('fotos') ?? [],
+                $this->uploadedPhotoFiles(),
                 $auth
             );
 
             $this->redirect('/hidrantes', 'Hidrante atualizado com sucesso.');
         } catch (ValidationException $e) {
+            $this->logUploadDebug('update', $e);
             $this->redirect('/hidrantes/' . (int) $id . '/editar', null, $e->getMessage());
         } catch (\Throwable $e) {
             report_exception($e);
@@ -365,5 +367,67 @@ class HidranteController extends Controller
         }
 
         return $normalized;
+    }
+
+    private function uploadedPhotoFiles(): array
+    {
+        return $this->mergeUploadGroups([
+            $this->request->file('fotos'),
+            $this->request->file('fotos_camera'),
+        ]);
+    }
+
+    private function mergeUploadGroups(array $groups): array
+    {
+        $merged = [
+            'name' => [],
+            'type' => [],
+            'tmp_name' => [],
+            'error' => [],
+            'size' => [],
+        ];
+
+        foreach ($groups as $group) {
+            if (!is_array($group)) {
+                continue;
+            }
+
+            foreach (array_keys($merged) as $key) {
+                $values = $group[$key] ?? [];
+                $values = is_array($values) ? $values : [$values];
+
+                foreach ($values as $value) {
+                    $merged[$key][] = $value;
+                }
+            }
+        }
+
+        return $merged;
+    }
+
+    private function logUploadDebug(string $action, ValidationException $exception): void
+    {
+        if ((string) config('app.env', 'production') !== 'local') {
+            return;
+        }
+
+        $payload = [
+            'timestamp' => date('c'),
+            'action' => $action,
+            'message' => $exception->getMessage(),
+            'errors' => $exception->errors(),
+            'post_keys' => array_keys($this->request->all()),
+            'files' => $_FILES,
+            'merged_files' => $this->uploadedPhotoFiles(),
+        ];
+
+        $path = storage_path('framework/hidrante_upload_debug.log');
+        $directory = dirname($path);
+
+        if (!is_dir($directory)) {
+            mkdir($directory, 0775, true);
+        }
+
+        file_put_contents($path, json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL, FILE_APPEND);
     }
 }

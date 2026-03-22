@@ -1,0 +1,73 @@
+INDICE DA PASTA `documentos`
+
+1. `🔹 DOCUMENTO TÉCNICO FINAL🔹.md`
+   Consolidacao geral da arquitetura, escopo e limitacoes.
+
+2. `🔹 DOCUMENTO TÉCNICO — ETAPA 1🔹.md`
+   Marco de entrega da base funcional implementada.
+
+3. `🔹 Documento Técnico — Arquitetura do Projeto🔹.md`
+   Visao arquitetural do sistema.
+
+4. `🔹Documento Técnico — Camadas🔹.md`
+   Separacao entre bootstrap, middleware, controllers, services, repositories e views.
+
+5. `🔹Documento Técnico — Estrutura do Backend🔹.md`
+   Desenho tecnico do backend em execucao.
+
+6. `🔹Documento Técnico — Estrutura de Pastas🔹.md`
+   Mapa do repositorio e de seus diretorios principais.
+
+7. `🔹Documento Técnico — Organização de Arquivos🔹.md`
+   Convencoes de organizacao e responsabilidade dos arquivos.
+
+8. `🔹Documento Técnico — Controladores🔹.md`
+   Catalogo dos controllers e suas responsabilidades.
+
+9. `🔹Documento Técnico — Serviços🔹.md`
+   Catalogo dos services e regras de negocio.
+
+10. `🔹Documento Técnico — Funcionalidades🔹.md`
+    Escopo funcional implementado no sistema.
+
+11. `🔹 Documento Técnico — Requisitos Funcionais🔹.md`
+    Requisitos funcionais entregues ate a data de referencia.
+
+12. `🔹Documento Técnico — Requisitos Não Funcionais🔹.md`
+    Requisitos de seguranca, desempenho, usabilidade e manutencao.
+
+13. `🔹Documento Técnico — Controle de Acesso🔹.md`
+    Matriz de autenticacao, autorizacao e restricoes por perfil.
+
+14. `🔹Documento Técnico — Implementações Técnicas🔹.md`
+    Mecanismos tecnicos de infraestrutura, seguranca, upload, mapa e relatorio.
+
+15. `🔹Documento Técnico — Integrações🔹.md`
+    Integracoes externas e internas efetivamente utilizadas.
+
+16. `🔹Documento Técnico — Padrão de Layout e Navegação🔹.md`
+    Padrao de interface, navegacao e comportamento responsivo.
+
+17. `🔹Documento Técnico — Arquitetura de Banco de Dados🔹.md`
+    Desenho geral do banco de dados.
+
+18. `🔹Documento Técnico — Modelagem🔹.md`
+    Modelo conceitual e invariantes do dominio.
+
+19. `🔹Documento Técnico — Relacionamentos🔹.md`
+    Cardinalidades e politicas de relacionamento entre entidades.
+
+20. `🔹Documento Técnico — Tabelas🔹.md`
+    Finalidade operacional de cada tabela.
+
+21. `🔹Documento Técnico — Dicionário de Dados🔹.md`
+    Descricao dos campos persistidos.
+
+22. `🔹Documento Técnico — Chaves Primárias e Estrangeiras🔹.md`
+    Inventario de PKs e FKs.
+
+23. `🔹Documento Técnico — Índices e Constraints 🔹.md`
+    Inventario de indices, unicidade e checks.
+
+24. `🔹Documento Técnico — Ajustes e Otimizações🔹.md`
+    Endurecimentos e melhorias tecnicas aplicadas.

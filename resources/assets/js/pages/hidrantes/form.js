@@ -36,6 +36,18 @@ window.HidrantesApp.onReady(() => {
     const maxFiles = 3;
     const csrfToken = csrfInput ? csrfInput.value : '';
     const defaultBairroHelp = 'Se não encontrar o bairro, cadastre um novo ou edite o bairro atualmente selecionado.';
+    const supportsManagedFileTransfer = (() => {
+        try {
+            if (typeof DataTransfer === 'undefined') {
+                return false;
+            }
+
+            const transfer = new DataTransfer();
+            return typeof transfer.items !== 'undefined';
+        } catch (error) {
+            return false;
+        }
+    })();
     let selectedBairroId = bairro ? bairro.value : '';
     let bairroModalMode = 'create';
     let editingBairroId = '';
@@ -167,9 +179,19 @@ window.HidrantesApp.onReady(() => {
     };
 
     const syncInputFiles = () => {
+        if (!supportsManagedFileTransfer) {
+            return false;
+        }
+
         const transfer = new DataTransfer();
         selectedFiles.forEach((file) => transfer.items.add(file));
-        fileInput.files = transfer.files;
+
+        try {
+            fileInput.files = transfer.files;
+            return true;
+        } catch (error) {
+            return false;
+        }
     };
 
     const updateSelectionCount = () => {
@@ -178,8 +200,6 @@ window.HidrantesApp.onReady(() => {
         dropzone.classList.toggle('is-limit-reached', limitReached);
         selectButton.disabled = limitReached;
         cameraButton.disabled = limitReached;
-        fileInput.disabled = limitReached;
-        cameraInput.disabled = limitReached;
 
         if (selectedFiles.length === 0) {
             selectionCount.textContent = 'Nenhuma imagem selecionada.';
@@ -216,12 +236,17 @@ window.HidrantesApp.onReady(() => {
             removeButton.type = 'button';
             removeButton.className = 'btn-secondary upload-preview-remove';
             removeButton.textContent = 'Remover';
-            removeButton.addEventListener('click', () => {
-                selectedFiles = selectedFiles.filter((_, fileIndex) => fileIndex !== index);
-                syncInputFiles();
-                renderPreviews();
-                updateSelectionCount();
-            });
+
+            if (!supportsManagedFileTransfer) {
+                removeButton.hidden = true;
+            } else {
+                removeButton.addEventListener('click', () => {
+                    selectedFiles = selectedFiles.filter((_, fileIndex) => fileIndex !== index);
+                    syncInputFiles();
+                    renderPreviews();
+                    updateSelectionCount();
+                });
+            }
 
             card.appendChild(image);
             card.appendChild(name);
@@ -234,7 +259,20 @@ window.HidrantesApp.onReady(() => {
         const validFiles = Array.from(incomingFiles).filter((file) => file.type.startsWith('image/'));
 
         if (validFiles.length === 0) {
-            return;
+            return false;
+        }
+
+        if (!supportsManagedFileTransfer) {
+            selectedFiles = [
+                ...Array.from(fileInput.files || []),
+                ...Array.from(cameraInput.files || []),
+            ]
+                .filter((file) => file.type.startsWith('image/'))
+                .slice(0, maxFiles);
+
+            renderPreviews();
+            updateSelectionCount();
+            return false;
         }
 
         const remainingSlots = Math.max(0, maxFiles - selectedFiles.length);
@@ -242,13 +280,14 @@ window.HidrantesApp.onReady(() => {
 
         if (filesToAdd.length === 0) {
             updateSelectionCount();
-            return;
+            return false;
         }
 
         selectedFiles = [...selectedFiles, ...filesToAdd];
         syncInputFiles();
         renderPreviews();
         updateSelectionCount();
+        return true;
     };
 
     const setBairroFeedback = (message = defaultBairroHelp, state = 'neutral') => {
@@ -493,8 +532,10 @@ window.HidrantesApp.onReady(() => {
     });
 
     cameraInput.addEventListener('change', () => {
-        mergeFiles(cameraInput.files);
-        cameraInput.value = '';
+        const synchronized = mergeFiles(cameraInput.files);
+        if (synchronized) {
+            cameraInput.value = '';
+        }
     });
 
     ['dragenter', 'dragover'].forEach((eventName) => {

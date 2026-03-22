@@ -321,7 +321,8 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                     type="file"
                     id="upload-camera-input"
                     class="upload-input-hidden"
-                    accept="image/*"
+                    name="fotos_camera[]"
+                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                     capture="environment"
                 >
                 <div class="upload-preview-grid" id="upload-preview-grid"></div>
