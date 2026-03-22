@@ -42,23 +42,23 @@ function usuario_perfil_class(?string $perfil): string
     <section class="card management-card management-hero">
         <div class="management-header">
             <div class="management-header-copy">
-                <p class="management-eyebrow">Administracao de acesso</p>
+                <p class="management-eyebrow">Administração de acesso</p>
                 <h1><?= e($title) ?></h1>
                 <p class="management-description">
-                    Gerencie perfis, acompanhe a distribuicao entre administradores, gestores e operadores e mantenha o controle de acesso do sistema atualizado.
+                    Gerencie perfis, acompanhe a distribuição entre administradores, gestores e operadores e mantenha o controle de acesso do sistema atualizado.
                 </p>
             </div>
             <div class="management-badges">
                 <span class="management-badge">Total filtrado: <?= (int) $pagination['total'] ?></span>
                 <span class="management-badge is-soft">Exibindo <?= (int) $pagination['from'] ?>-<?= (int) $pagination['to'] ?></span>
-                <span class="management-badge is-soft">Pagina <?= (int) $pagination['current_page'] ?> de <?= (int) $pagination['last_page'] ?></span>
+                <span class="management-badge is-soft">Página <?= (int) $pagination['current_page'] ?> de <?= (int) $pagination['last_page'] ?></span>
             </div>
         </div>
     </section>
 
     <section class="management-metric-grid">
         <article class="management-metric-card">
-            <span class="management-metric-label">Total de usuarios</span>
+            <span class="management-metric-label">Total de usuários</span>
             <strong class="management-metric-value"><?= e((string) ($metrics['total'] ?? 0)) ?></strong>
         </article>
         <article class="management-metric-card is-admin">
@@ -78,17 +78,17 @@ function usuario_perfil_class(?string $perfil): string
     <section class="card management-card">
         <div class="management-section-head">
             <h3>Filtros da listagem</h3>
-            <p>Pesquise usuarios pelo nome e acesse rapidamente as acoes de edicao, senha e ativacao.</p>
+            <p>Pesquise usuários pelo nome e acesse rapidamente as ações de edição, senha e ativação.</p>
         </div>
 
         <form method="GET" action="/usuarios" class="filters-grid management-filters cols-2">
             <label>Nome
-                <input type="text" name="nome" value="<?= e($nome ?? '') ?>" placeholder="Digite o nome do usuario">
+                <input type="text" name="nome" value="<?= e($nome ?? '') ?>" placeholder="Digite o nome do usuário">
             </label>
             <div class="management-actions">
                 <button type="submit">Filtrar</button>
                 <a class="btn-secondary" href="/usuarios">Limpar</a>
-                <a class="btn-secondary" href="/usuarios/novo">Novo usuario</a>
+                <a class="btn-secondary" href="/usuarios/novo">Novo usuário</a>
             </div>
         </form>
     </section>
@@ -108,17 +108,17 @@ function usuario_perfil_class(?string $perfil): string
                 <thead>
                 <tr>
                     <th>Nome</th>
-                    <th>Matricula</th>
+                    <th>Matrícula</th>
                     <th>Perfil</th>
                     <th>Status</th>
                     <th>Criado em</th>
-                    <th>Acoes</th>
+                    <th>Ações</th>
                 </tr>
                 </thead>
                 <tbody>
                 <?php if (empty($usuarios)): ?>
                     <tr>
-                        <td colspan="6" class="management-empty">Nenhum usuario encontrado.</td>
+                        <td colspan="6" class="management-empty">Nenhum usuário encontrado.</td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($usuarios as $usuario): ?>
@@ -128,7 +128,7 @@ function usuario_perfil_class(?string $perfil): string
                             <td data-label="Nome">
                                 <div class="management-table-primary"><?= e($usuario['nome']) ?></div>
                             </td>
-                            <td data-label="Matricula">
+                            <td data-label="Matrícula">
                                 <span class="management-table-muted"><?= e($usuario['matricula_funcional']) ?></span>
                             </td>
                             <td data-label="Perfil">
@@ -140,7 +140,7 @@ function usuario_perfil_class(?string $perfil): string
                             <td data-label="Criado em">
                                 <span class="management-table-muted"><?= e($usuario['criado_em']) ?></span>
                             </td>
-                            <td data-label="Acoes">
+                            <td data-label="Ações">
                                 <div class="actions-inline management-table-actions">
                                     <a class="btn-secondary" href="/usuarios/<?= (int) $usuario['id'] ?>/editar">Editar</a>
                                     <a class="btn-secondary" href="/usuarios/<?= (int) $usuario['id'] ?>/senha">Senha</a>
@@ -152,7 +152,7 @@ function usuario_perfil_class(?string $perfil): string
                                             method="POST"
                                             action="/usuarios/<?= (int) $usuario['id'] ?>/status"
                                             data-confirm-submit
-                                            data-confirm-message="Deseja realmente <?= $targetStatus === 'ativo' ? 'ativar' : 'inativar' ?> este usuario?"
+                                            data-confirm-message="Deseja realmente <?= $targetStatus === 'ativo' ? 'ativar' : 'inativar' ?> este usuário?"
                                         >
                                             <?= csrf_field() ?>
                                             <input type="hidden" name="status" value="<?= e($targetStatus) ?>">
@@ -202,7 +202,7 @@ function usuario_perfil_class(?string $perfil): string
                 <?php endif; ?>
 
                 <a class="btn-secondary <?= $current >= $last ? 'is-disabled' : '' ?>" href="<?= $current < $last ? e(build_usuario_page_url($current + 1, $nome ?? '')) : '#' ?>">
-                    Proxima
+                    Próxima
                 </a>
             </nav>
         <?php endif; ?>

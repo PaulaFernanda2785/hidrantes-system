@@ -35,7 +35,7 @@ window.HidrantesApp.onReady(() => {
     const csrfInput = hidranteForm ? hidranteForm.querySelector('input[name="_token"]') : null;
     const maxFiles = 3;
     const csrfToken = csrfInput ? csrfInput.value : '';
-    const defaultBairroHelp = 'Se nao encontrar o bairro, cadastre um novo ou edite o bairro atualmente selecionado.';
+    const defaultBairroHelp = 'Se não encontrar o bairro, cadastre um novo ou edite o bairro atualmente selecionado.';
     let selectedBairroId = bairro ? bairro.value : '';
     let bairroModalMode = 'create';
     let editingBairroId = '';
@@ -284,13 +284,13 @@ window.HidrantesApp.onReady(() => {
 
         if (mode === 'edit') {
             bairroModalTitle.textContent = 'Editar bairro';
-            bairroModalSubtitle.textContent = 'Atualize o nome do bairro vinculado ao municipio selecionado.';
+            bairroModalSubtitle.textContent = 'Atualize o nome do bairro vinculado ao município selecionado.';
             bairroCreateSubmit.textContent = 'Atualizar bairro';
             return;
         }
 
         bairroModalTitle.textContent = 'Cadastrar bairro';
-        bairroModalSubtitle.textContent = 'O bairro sera vinculado ao municipio atualmente selecionado.';
+        bairroModalSubtitle.textContent = 'O bairro será vinculado ao município atualmente selecionado.';
         bairroCreateSubmit.textContent = 'Salvar bairro';
     };
 
@@ -300,7 +300,7 @@ window.HidrantesApp.onReady(() => {
         editBairroButton.disabled = !hasMunicipio || !bairro.value;
 
         if (!hasMunicipio) {
-            setBairroFeedback('Selecione um municipio para listar ou cadastrar bairros.', 'warning');
+            setBairroFeedback('Selecione um município para listar ou cadastrar bairros.', 'warning');
             return;
         }
 
@@ -352,9 +352,9 @@ window.HidrantesApp.onReady(() => {
             const items = await response.json();
             renderBairros(Array.isArray(items) ? items : [], selectedId);
         } catch (error) {
-            bairro.innerHTML = '<option value="">Nao foi possivel carregar</option>';
+            bairro.innerHTML = '<option value="">Não foi possível carregar</option>';
             selectedBairroId = '';
-            setBairroFeedback('Nao foi possivel carregar os bairros deste municipio agora.', 'error');
+            setBairroFeedback('Não foi possível carregar os bairros deste municipio agora.', 'error');
         }
 
         updateBairroActionState();
@@ -372,7 +372,7 @@ window.HidrantesApp.onReady(() => {
 
     const openBairroCreateModal = () => {
         if (!municipio.value) {
-            setBairroFeedback('Selecione um municipio antes de cadastrar um novo bairro.', 'warning');
+            setBairroFeedback('Selecione um município antes de cadastrar um novo bairro.', 'warning');
             return;
         }
 
@@ -388,7 +388,7 @@ window.HidrantesApp.onReady(() => {
 
     const openBairroEditModal = () => {
         if (!municipio.value) {
-            setBairroFeedback('Selecione um municipio antes de editar um bairro.', 'warning');
+            setBairroFeedback('Selecione um município antes de editar um bairro.', 'warning');
             return;
         }
 
@@ -410,13 +410,13 @@ window.HidrantesApp.onReady(() => {
     const geolocationErrorMessage = (error) => {
         switch (error && error.code) {
             case 1:
-                return 'Permita o acesso a localizacao do dispositivo para preencher as coordenadas.';
+                return 'Permita o acesso à localização do dispositivo para preencher as coordenadas.';
             case 2:
-                return 'Nao foi possivel obter a localizacao atual do dispositivo.';
+                return 'Não foi possível obter a localização atual do dispositivo.';
             case 3:
-                return 'A captura da localizacao demorou demais. Tente novamente em um local com melhor sinal.';
+                return 'A captura da localização demorou demais. Tente novamente em um local com melhor sinal.';
             default:
-                return 'Nao foi possivel obter a localizacao atual.';
+                return 'Não foi possível obter a localização atual.';
         }
     };
 
@@ -425,13 +425,13 @@ window.HidrantesApp.onReady(() => {
 
     useCurrentLocationButton.addEventListener('click', () => {
         if (!('geolocation' in navigator)) {
-            setGeolocationFeedback('Este dispositivo ou navegador nao oferece suporte a geolocalizacao.', 'error');
+            setGeolocationFeedback('Este dispositivo ou navegador não oferece suporte à geolocalização.', 'error');
             return;
         }
 
         useCurrentLocationButton.disabled = true;
-        useCurrentLocationButton.textContent = 'Obtendo localizacao...';
-        setGeolocationFeedback('Solicitando a localizacao atual do dispositivo...', 'warning');
+        useCurrentLocationButton.textContent = 'Obtendo localização...';
+        setGeolocationFeedback('Solicitando a localização atual do dispositivo...', 'warning');
 
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -440,16 +440,16 @@ window.HidrantesApp.onReady(() => {
                 updateGeolocationActionState();
                 renderMapPreview({ reveal: true, scroll: false });
                 setGeolocationFeedback(
-                    `Coordenadas preenchidas com sucesso. Precisao aproximada de ${Math.round(position.coords.accuracy)} metros. A previa do mapa foi atualizada abaixo.`,
+                    `Coordenadas preenchidas com sucesso. Precisão aproximada de ${Math.round(position.coords.accuracy)} metros. A previa do mapa foi atualizada abaixo.`,
                     'success'
                 );
                 useCurrentLocationButton.disabled = false;
-                useCurrentLocationButton.textContent = 'Atualizar localizacao atual';
+                useCurrentLocationButton.textContent = 'Atualizar localização atual';
             },
             (error) => {
                 setGeolocationFeedback(geolocationErrorMessage(error), 'error');
                 useCurrentLocationButton.disabled = false;
-                useCurrentLocationButton.textContent = 'Usar localizacao atual';
+                useCurrentLocationButton.textContent = 'Usar localização atual';
             },
             {
                 enableHighAccuracy: true,
@@ -461,12 +461,12 @@ window.HidrantesApp.onReady(() => {
 
     openLocationMapButton.addEventListener('click', () => {
         if (!renderMapPreview({ reveal: true, scroll: true })) {
-            setGeolocationFeedback('Informe latitude e longitude validas para conferir o ponto no mapa.', 'error');
+            setGeolocationFeedback('Informe latitude e longitude válidas para conferir o ponto no mapa.', 'error');
             updateGeolocationActionState();
             return;
         }
 
-        setGeolocationFeedback('Previa do ponto atualizada abaixo para conferencia antes de salvar.', 'success');
+        setGeolocationFeedback('Prévia do ponto atualizada abaixo para conferência antes de salvar.', 'success');
         updateGeolocationActionState();
     });
 
@@ -560,8 +560,8 @@ window.HidrantesApp.onReady(() => {
         if (!municipio.value) {
             setBairroModalFeedback(
                 bairroModalMode === 'edit'
-                    ? 'Selecione um municipio antes de editar o bairro.'
-                    : 'Selecione um municipio antes de cadastrar o bairro.',
+                    ? 'Selecione um município antes de editar o bairro.'
+                    : 'Selecione um município antes de cadastrar o bairro.',
                 'error'
             );
             return;
@@ -600,8 +600,8 @@ window.HidrantesApp.onReady(() => {
                 setBairroModalFeedback(
                     result.message || (
                         bairroModalMode === 'edit'
-                            ? 'Nao foi possivel atualizar o bairro agora.'
-                            : 'Nao foi possivel cadastrar o bairro agora.'
+                            ? 'Não foi possível atualizar o bairro agora.'
+                            : 'Não foi possível cadastrar o bairro agora.'
                     ),
                     'error'
                 );
@@ -620,8 +620,8 @@ window.HidrantesApp.onReady(() => {
         } catch (error) {
             setBairroModalFeedback(
                 bairroModalMode === 'edit'
-                    ? 'Nao foi possivel atualizar o bairro agora.'
-                    : 'Nao foi possivel cadastrar o bairro agora.',
+                    ? 'Não foi possível atualizar o bairro agora.'
+                    : 'Não foi possível cadastrar o bairro agora.',
                 'error'
             );
         } finally {

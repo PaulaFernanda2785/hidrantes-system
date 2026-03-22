@@ -2,7 +2,7 @@
 
 use App\Core\Session;
 
-$stylesheets = [
+$baseStylesheets = [
     'globals/variables.css',
     'globals/reset.css',
     'globals/base.css',
@@ -12,6 +12,12 @@ $stylesheets = [
     'components/buttons.css',
     'pages/auth.css',
 ];
+$stylesheets = array_values(array_unique(array_merge(
+    $baseStylesheets,
+    $pageStylesheets ?? []
+)));
+$headLinks = array_values(array_unique($headLinks ?? []));
+$externalScripts = array_values(array_unique($externalScripts ?? []));
 $pageScripts = array_values(array_unique(array_merge([
     'core/app.js',
 ], $scripts ?? [])));
@@ -25,6 +31,9 @@ $pageScripts = array_values(array_unique(array_merge([
     <?php foreach ($stylesheets as $stylesheet): ?>
         <link rel="stylesheet" href="<?= e(css_asset($stylesheet)) ?>">
     <?php endforeach; ?>
+    <?php foreach ($headLinks as $headLink): ?>
+        <link rel="stylesheet" href="<?= e($headLink) ?>">
+    <?php endforeach; ?>
 </head>
 <body class="auth-page">
     <main class="auth-wrapper">
@@ -36,6 +45,9 @@ $pageScripts = array_values(array_unique(array_merge([
         <?php endif; ?>
         <?= $content ?>
     </main>
+    <?php foreach ($externalScripts as $externalScript): ?>
+        <script src="<?= e($externalScript) ?>" defer></script>
+    <?php endforeach; ?>
     <?php foreach ($pageScripts as $script): ?>
         <script src="<?= e(js_asset($script)) ?>" defer></script>
     <?php endforeach; ?>

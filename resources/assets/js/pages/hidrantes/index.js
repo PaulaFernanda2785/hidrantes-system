@@ -17,7 +17,7 @@ window.HidrantesApp.onReady(() => {
     const filterMunicipio = document.getElementById('filter-municipio-id');
     const filterBairro = document.getElementById('filter-bairro-id');
     const filterBairroHelp = document.getElementById('filter-bairro-help');
-    const defaultBairroHelp = filterBairroHelp ? (filterBairroHelp.dataset.defaultMessage || 'Selecione um municipio para listar todos os bairros disponiveis.') : '';
+    const defaultBairroHelp = filterBairroHelp ? (filterBairroHelp.dataset.defaultMessage || 'Selecione um município para listar todos os bairros disponíveis.') : '';
     const initialSelectedBairroId = filterBairro ? (filterBairro.dataset.selectedBairroId || filterBairro.value || '') : '';
     let lastTrigger = null;
 
@@ -39,10 +39,19 @@ window.HidrantesApp.onReady(() => {
         }
     };
 
+    const statusLabel = (status) => {
+        switch (String(status ?? '').trim().toLowerCase()) {
+            case 'operante com restricao':
+                return 'operante com restrição';
+            default:
+                return textValue(status);
+        }
+    };
+
     const bindConfirmForms = () => {
         confirmForms.forEach((form) => {
             form.addEventListener('submit', (event) => {
-                const message = form.dataset.confirmMessage || 'Deseja continuar com esta operacao?';
+                const message = form.dataset.confirmMessage || 'Deseja continuar com esta operação?';
 
                 if (!window.confirm(message)) {
                     event.preventDefault();
@@ -98,7 +107,7 @@ window.HidrantesApp.onReady(() => {
 
         filterBairro.disabled = true;
         filterBairro.innerHTML = '<option value="">Carregando...</option>';
-        setBairroHelp('Carregando bairros do municipio selecionado...', 'warning');
+        setBairroHelp('Carregando bairros do município selecionado...', 'warning');
 
         try {
             const response = await fetch(`/api/bairros/municipio/${municipioId}`, {
@@ -117,16 +126,16 @@ window.HidrantesApp.onReady(() => {
             renderFilterBairros(bairros, selectedId);
 
             if (bairros.length === 0) {
-                setBairroHelp('Nenhum bairro ativo cadastrado para este municipio.', 'warning');
+                setBairroHelp('Nenhum bairro ativo cadastrado para este município.', 'warning');
                 return;
             }
 
-            setBairroHelp('Escolha um bairro especifico ou mantenha "Todos" para pesquisar no municipio inteiro.', 'neutral');
+            setBairroHelp('Escolha um bairro específico ou mantenha "Todos" para pesquisar no município inteiro.', 'neutral');
         } catch (error) {
-            filterBairro.innerHTML = '<option value="">Nao foi possivel carregar</option>';
+            filterBairro.innerHTML = '<option value="">Não foi possível carregar</option>';
             filterBairro.value = '';
             filterBairro.disabled = true;
-            setBairroHelp('Nao foi possivel carregar os bairros deste municipio agora.', 'error');
+            setBairroHelp('Não foi possível carregar os bairros deste município agora.', 'error');
         }
     };
 
@@ -146,11 +155,11 @@ window.HidrantesApp.onReady(() => {
             }
 
             if (!filterBairro.value) {
-                setBairroHelp('Filtrando todos os bairros do municipio selecionado.', 'neutral');
+                setBairroHelp('Filtrando todos os bairros do município selecionado.', 'neutral');
                 return;
             }
 
-            setBairroHelp('Filtro aplicado para o bairro selecionado dentro do municipio atual.', 'success');
+            setBairroHelp('Filtro aplicado para o bairro selecionado dentro do município atual.', 'success');
         });
 
         if (filterMunicipio.value) {
@@ -161,11 +170,11 @@ window.HidrantesApp.onReady(() => {
 
             filterBairro.disabled = false;
             if (initialSelectedBairroId) {
-                setBairroHelp('Filtro aplicado para o bairro selecionado dentro do municipio atual.', 'success');
+                setBairroHelp('Filtro aplicado para o bairro selecionado dentro do município atual.', 'success');
                 return;
             }
 
-            setBairroHelp('Escolha um bairro especifico ou mantenha "Todos" para pesquisar no municipio inteiro.', 'neutral');
+            setBairroHelp('Escolha um bairro específico ou mantenha "Todos" para pesquisar no município inteiro.', 'neutral');
             return;
         }
 
@@ -226,23 +235,23 @@ window.HidrantesApp.onReady(() => {
 
     const renderDetailGrid = (detail) => {
         const items = [
-            ['Numero do hidrante', detail.numero_hidrante],
-            ['Equipe responsavel', detail.equipe_responsavel],
-            ['Area', detail.area],
+            ['Número do hidrante', detail.numero_hidrante],
+            ['Equipe responsável', detail.equipe_responsavel],
+            ['Área', detail.area],
             ['Existe no local', detail.existe_no_local],
             ['Tipo de hidrante', detail.tipo_hidrante],
-            ['Status operacional', detail.status_operacional],
+            ['Status operacional', statusLabel(detail.status_operacional)],
             ['Acessibilidade', detail.acessibilidade],
-            ['Tampo e conexoes', detail.tampo_conexoes],
+            ['Tampo e conexões', detail.tampo_conexoes],
             ['Tampas ausentes', detail.tampas_ausentes],
-            ['Caixa de protecao', detail.caixa_protecao],
-            ['Condicao da caixa', detail.condicao_caixa],
-            ['Presenca de agua no interior', detail.presenca_agua_interior],
+            ['Caixa de proteção', detail.caixa_protecao],
+            ['Condição da caixa', detail.condicao_caixa],
+            ['Presença de água no interior', detail.presenca_agua_interior],
             ['Teste realizado', detail.teste_realizado],
             ['Resultado do teste', detail.resultado_teste],
-            ['Municipio', detail.municipio_nome],
+            ['Município', detail.municipio_nome],
             ['Bairro', detail.bairro_nome],
-            ['Endereco', detail.endereco, true],
+            ['Endereço', detail.endereco, true],
             ['Latitude', detail.latitude],
             ['Longitude', detail.longitude],
             ['Criado em', detail.criado_em],
@@ -330,7 +339,7 @@ window.HidrantesApp.onReady(() => {
 
         lastTrigger = trigger;
         badgeNumber.textContent = textValue(detail.numero_hidrante);
-        badgeStatus.textContent = textValue(detail.status_operacional);
+        badgeStatus.textContent = statusLabel(detail.status_operacional);
         badgeStatus.className = `hidrante-detail-badge ${statusClass(detail.status_operacional)}`;
         badgeRegion.textContent = `${textValue(detail.municipio_nome)} / ${textValue(detail.bairro_nome)}`;
         modalSubtitle.textContent = `${textValue(detail.endereco)} | atualizado em ${textValue(detail.atualizado_em)}`;

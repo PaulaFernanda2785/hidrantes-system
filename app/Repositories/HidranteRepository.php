@@ -130,17 +130,38 @@ class HidranteRepository
         $sql = "SELECT 
                     h.id,
                     h.numero_hidrante,
+                    h.equipe_responsavel,
+                    h.existe_no_local,
                     h.status_operacional,
                     h.tipo_hidrante,
                     h.area,
+                    h.acessibilidade,
+                    h.tampo_conexoes,
+                    h.tampas_ausentes,
+                    h.caixa_protecao,
+                    h.condicao_caixa,
+                    h.presenca_agua_interior,
+                    h.teste_realizado,
+                    h.resultado_teste,
                     h.endereco,
+                    h.foto_01,
+                    h.foto_02,
+                    h.foto_03,
+                    h.criado_em,
                     h.atualizado_em,
+                    h.municipio_id,
+                    h.bairro_id,
                     h.latitude,
-                    h.longitude
+                    h.longitude,
+                    m.nome AS municipio_nome,
+                    b.nome AS bairro_nome
                 FROM hidrantes h
+                INNER JOIN municipios m ON m.id = h.municipio_id
+                LEFT JOIN bairros b ON b.id = h.bairro_id
                 WHERE h.deleted_at IS NULL
                   AND h.latitude IS NOT NULL
-                  AND h.longitude IS NOT NULL";
+                  AND h.longitude IS NOT NULL
+                ORDER BY h.atualizado_em DESC, h.id DESC";
 
         return $this->db->query($sql)->fetchAll();
     }

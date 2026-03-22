@@ -4,12 +4,31 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Services\AuthService;
+use App\Services\PainelService;
 
 class AuthController extends Controller
 {
     public function showLogin(): void
     {
-        $this->view('auth/login', ['title' => 'Login'], 'layouts/auth');
+        $painelService = new PainelService();
+
+        $this->view('auth/login', [
+            'title' => 'Acesso ao Sistema',
+            'metrics' => $painelService->metrics(),
+            'mapPoints' => $painelService->mapPoints(),
+            'painelPhotoBasePath' => '/painel/fotos/hidrantes',
+            'pageStylesheets' => [
+                'pages/management.css',
+                'pages/painel.css',
+            ],
+            'headLinks' => [
+                'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+            ],
+            'externalScripts' => [
+                'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+            ],
+            'scripts' => ['pages/painel/index.js'],
+        ], 'layouts/auth');
     }
 
     public function login(): void

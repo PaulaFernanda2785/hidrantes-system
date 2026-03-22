@@ -57,7 +57,7 @@ window.HidrantesApp.onReady(() => {
                 const items = await response.json();
                 renderFilterBairros(Array.isArray(items) ? items : [], selectedId);
             } catch (error) {
-                filterBairro.innerHTML = '<option value="">Nao foi possivel carregar</option>';
+                filterBairro.innerHTML = '<option value="">Não foi possível carregar</option>';
                 filterBairro.value = '';
                 filterBairro.disabled = true;
             }

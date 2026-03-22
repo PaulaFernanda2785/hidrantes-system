@@ -40,6 +40,8 @@ $router->get('/hidrantes/exportar/csv', [HidranteController::class, 'exportCsv']
     RoleMiddleware::class . ':admin,gestor,operador',
 ]);
 
+$router->get('/painel/fotos/hidrantes/{filename}', [HidranteController::class, 'publicPhoto']);
+
 $router->get('/uploads/hidrantes/{filename}', [HidranteController::class, 'photo'], [
     AuthMiddleware::class,
     RoleMiddleware::class . ':admin,gestor,operador',
