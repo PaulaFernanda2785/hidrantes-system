@@ -7,16 +7,16 @@ $usuario = $usuario ?? null;
     <section class="card management-card management-hero">
         <div class="management-header">
             <div class="management-header-copy">
-                <p class="management-eyebrow"><?= $isEdit ? 'Atualizacao de acesso' : 'Cadastro de acesso' ?></p>
+                <p class="management-eyebrow"><?= $isEdit ? 'Atualização de acesso' : 'Cadastro de acesso' ?></p>
                 <h1><?= e($title) ?></h1>
                 <p class="management-description">
                     <?= $isEdit
-                        ? 'Atualize os dados cadastrais, perfil e status do usuario selecionado sem sair do fluxo administrativo.'
-                        : 'Crie novos usuarios com os perfis corretos para manter a operacao do sistema organizada e segura.' ?>
+                        ? 'Atualize os dados cadastrais, perfil e status do usuário selecionado sem sair do fluxo administrativo.'
+                        : 'Crie novos usuários com os perfis corretos para manter a operação do sistema organizada e segura.' ?>
                 </p>
             </div>
             <div class="management-badges">
-                <span class="management-badge"><?= $isEdit ? 'Modo edicao' : 'Novo cadastro' ?></span>
+                <span class="management-badge"><?= $isEdit ? 'Modo edição' : 'Novo cadastro' ?></span>
                 <span class="management-badge is-soft">Perfis: admin, gestor e operador</span>
             </div>
         </div>
@@ -24,8 +24,8 @@ $usuario = $usuario ?? null;
 
     <section class="card management-card management-form-card">
         <div class="management-section-head">
-            <h3>Dados do usuario</h3>
-            <p>Preencha as informacoes obrigatorias para salvar o cadastro e liberar o acesso ao sistema.</p>
+            <h3>Dados do usuário</h3>
+            <p>Preencha as informações obrigatórias para salvar o cadastro e liberar o acesso ao sistema.</p>
         </div>
 
         <form method="POST" action="<?= e($formAction ?? '/usuarios/salvar') ?>" class="form-grid cols-2 management-form-grid">
@@ -35,7 +35,7 @@ $usuario = $usuario ?? null;
                 <input type="text" name="nome" required value="<?= e((string) ($usuario['nome'] ?? '')) ?>">
             </label>
 
-            <label>Matricula funcional
+            <label>Matrícula funcional
                 <input type="text" name="matricula_funcional" required value="<?= e((string) ($usuario['matricula_funcional'] ?? '')) ?>">
             </label>
 
@@ -46,7 +46,7 @@ $usuario = $usuario ?? null;
             <?php else: ?>
                 <div class="management-form-note">
                     <strong>Senha</strong>
-                    <p>A alteracao de senha e feita pela acao "Senha" na listagem de usuarios.</p>
+                    <p>A alteração de senha é feita pela ação "Senha" na listagem de usuários.</p>
                 </div>
             <?php endif; ?>
 
@@ -71,7 +71,7 @@ $usuario = $usuario ?? null;
             </label>
 
             <div class="col-span-2 actions-inline management-form-actions">
-                <button type="submit"><?= $isEdit ? 'Atualizar usuario' : 'Salvar usuario' ?></button>
+                <button type="submit"><?= $isEdit ? 'Atualizar usuário' : 'Salvar usuário' ?></button>
                 <a class="btn-secondary" href="/usuarios">Cancelar</a>
             </div>
         </form>

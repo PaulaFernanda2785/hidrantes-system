@@ -29,15 +29,15 @@ function historico_registro_relacionado(array $item): string
             return 'Hidrante ' . $item['hidrante_numero_referencia'];
         }
 
-        return $referencia !== '' ? 'Hidrante ID ' . $referencia : 'Hidrante nao identificado';
+        return $referencia !== '' ? 'Hidrante ID ' . $referencia : 'Hidrante não identificado';
     }
 
     if ($entidade === 'usuarios') {
         if (!empty($item['usuario_nome_referencia'])) {
-            return 'Usuario ' . $item['usuario_nome_referencia'];
+            return 'Usuário ' . $item['usuario_nome_referencia'];
         }
 
-        return $referencia !== '' ? 'Usuario ID ' . $referencia : 'Usuario nao identificado';
+        return $referencia !== '' ? 'Usuário ID ' . $referencia : 'Usuário não identificado';
     }
 
     if ($entidade === 'bairros') {
@@ -49,15 +49,15 @@ function historico_registro_relacionado(array $item): string
             return 'Bairro ' . $item['bairro_nome_referencia'];
         }
 
-        return $referencia !== '' ? 'Bairro ID ' . $referencia : 'Bairro nao identificado';
+        return $referencia !== '' ? 'Bairro ID ' . $referencia : 'Bairro não identificado';
     }
 
     if ($entidade === 'relatorios') {
-        return $referencia !== '' ? 'Relatorio ' . $referencia : 'Relatorio sem referencia';
+        return $referencia !== '' ? 'Relatório ' . $referencia : 'Relatório sem referência';
     }
 
     if ($entidade === '') {
-        return $referencia !== '' ? 'Referencia ' . $referencia : 'Sem referencia';
+        return $referencia !== '' ? 'Referência ' . $referencia : 'Sem referência';
     }
 
     return $referencia !== '' ? ucfirst($entidade) . ' ' . $referencia : ucfirst($entidade);
@@ -104,31 +104,31 @@ function historico_entidade_class(?string $entidade): string
     <section class="card management-card management-hero">
         <div class="management-header">
             <div class="management-header-copy">
-                <p class="management-eyebrow">Auditoria de operacoes</p>
+                <p class="management-eyebrow">Auditoria de operações</p>
                 <h1><?= e($title) ?></h1>
                 <p class="management-description">
-                    Consulte o historico de acoes do sistema, filtre por usuario e acao e acompanhe o detalhamento de cada registro auditado.
+                    Consulte o histórico de ações do sistema, filtre por usuário e ação e acompanhe o detalhamento de cada registro auditado.
                 </p>
             </div>
             <div class="management-badges">
                 <span class="management-badge">Total: <?= (int) $pagination['total'] ?></span>
                 <span class="management-badge is-soft">Exibindo <?= (int) $pagination['from'] ?>-<?= (int) $pagination['to'] ?></span>
-                <span class="management-badge is-soft">Pagina <?= (int) $pagination['current_page'] ?> de <?= (int) $pagination['last_page'] ?></span>
+                <span class="management-badge is-soft">Página <?= (int) $pagination['current_page'] ?> de <?= (int) $pagination['last_page'] ?></span>
             </div>
         </div>
     </section>
 
     <section class="card management-card">
         <div class="management-section-head">
-            <h3>Filtros do historico</h3>
-            <p>Pesquise pelo nome do usuario e pela acao executada para localizar eventos especificos com mais rapidez.</p>
+            <h3>Filtros do histórico</h3>
+            <p>Pesquise pelo nome do usuário e pela ação executada para localizar eventos específicos com mais rapidez.</p>
         </div>
 
         <form method="GET" action="/historico" class="filters-grid management-filters cols-2">
-            <label>Nome do usuario
-                <input type="text" name="usuario_nome" value="<?= e((string) ($filters['usuario_nome'] ?? '')) ?>" placeholder="Digite o nome do usuario">
+            <label>Nome do usuário
+                <input type="text" name="usuario_nome" value="<?= e((string) ($filters['usuario_nome'] ?? '')) ?>" placeholder="Digite o nome do usuário">
             </label>
-            <label>Acao
+            <label>Ação
                 <input type="text" name="acao" value="<?= e((string) ($filters['acao'] ?? '')) ?>" placeholder="Ex.: cadastrar, editar, deletar">
             </label>
             <div class="management-actions col-span-2">
@@ -153,11 +153,11 @@ function historico_entidade_class(?string $entidade): string
                 <thead>
                 <tr>
                     <th>Data</th>
-                    <th>Usuario</th>
-                    <th>Acao</th>
+                    <th>Usuário</th>
+                    <th>Ação</th>
                     <th>Entidade</th>
                     <th>Detalhes</th>
-                    <th>Acoes</th>
+                    <th>Ações</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -172,10 +172,10 @@ function historico_entidade_class(?string $entidade): string
                             <td data-label="Data">
                                 <span class="management-table-muted"><?= e($item['data_acao']) ?></span>
                             </td>
-                            <td data-label="Usuario">
+                            <td data-label="Usuário">
                                 <div class="management-table-primary"><?= e($item['usuario_nome_snapshot']) ?></div>
                             </td>
-                            <td data-label="Acao">
+                            <td data-label="Ação">
                                 <span class="management-chip <?= e(historico_acao_class($item['acao'] ?? '')) ?>"><?= e($item['acao']) ?></span>
                             </td>
                             <td data-label="Entidade">
@@ -184,7 +184,7 @@ function historico_entidade_class(?string $entidade): string
                             <td data-label="Detalhes">
                                 <span class="management-table-muted"><?= e(historico_detalhes_resumidos($item['detalhes'] ?? null)) ?></span>
                             </td>
-                            <td data-label="Acoes">
+                            <td data-label="Ações">
                                 <div class="actions-inline management-table-actions">
                                     <button
                                         type="button"
@@ -242,7 +242,7 @@ function historico_entidade_class(?string $entidade): string
                 <?php endif; ?>
 
                 <a class="btn-secondary <?= $current >= $last ? 'is-disabled' : '' ?>" href="<?= $current < $last ? e(build_historico_page_url($current + 1, $filters)) : '#' ?>">
-                    Proxima
+                    Próxima
                 </a>
             </nav>
         <?php endif; ?>
@@ -253,7 +253,7 @@ function historico_entidade_class(?string $entidade): string
     <div class="modal-card management-modal-card" role="dialog" aria-modal="true" aria-labelledby="historico-detail-title">
         <div class="modal-header">
             <div>
-                <h2 id="historico-detail-title">Detalhes do historico</h2>
+                <h2 id="historico-detail-title">Detalhes do histórico</h2>
                 <p class="modal-subtitle" id="historico-detail-date">-</p>
             </div>
             <button type="button" class="btn-secondary modal-close-button" data-modal-close>Fechar</button>
@@ -262,11 +262,11 @@ function historico_entidade_class(?string $entidade): string
         <div class="modal-body">
             <dl class="modal-detail-grid">
                 <div class="modal-detail-item">
-                    <dt>Usuario</dt>
+                    <dt>Usuário</dt>
                     <dd id="historico-detail-user">-</dd>
                 </div>
                 <div class="modal-detail-item">
-                    <dt>Acao</dt>
+                    <dt>Ação</dt>
                     <dd id="historico-detail-action">-</dd>
                 </div>
                 <div class="modal-detail-item">

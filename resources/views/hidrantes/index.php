@@ -108,16 +108,16 @@ function hidrante_status_class(?string $status): string
     <section class="card hidrante-listing-card hidrante-listing-hero">
         <div class="hidrante-form-header">
             <div class="hidrante-form-header-copy">
-                <p class="hidrante-form-eyebrow">Gestao operacional</p>
+                <p class="hidrante-form-eyebrow">Gestão operacional</p>
                 <h1><?= e($title) ?></h1>
                 <p class="hidrante-form-description">
-                    Consulte rapidamente os hidrantes cadastrados, aplique filtros por municipio e status e acompanhe o ultimo registro atualizado em campo.
+                    Consulte rapidamente os hidrantes cadastrados, aplique filtros por município e status e acompanhe o último registro atualizado em campo.
                 </p>
             </div>
             <div class="hidrante-form-header-badges">
                 <span class="hidrante-form-badge">Total: <?= (int) $pagination['total'] ?></span>
                 <span class="hidrante-form-badge is-soft">Exibindo <?= (int) $pagination['from'] ?>-<?= (int) $pagination['to'] ?></span>
-                <span class="hidrante-form-badge is-soft">Pagina <?= (int) $pagination['current_page'] ?> de <?= (int) $pagination['last_page'] ?></span>
+                <span class="hidrante-form-badge is-soft">Página <?= (int) $pagination['current_page'] ?> de <?= (int) $pagination['last_page'] ?></span>
             </div>
         </div>
     </section>
@@ -125,7 +125,7 @@ function hidrante_status_class(?string $status): string
     <section class="card hidrante-listing-card">
         <div class="hidrante-form-divider">
             <h3>Filtros da listagem</h3>
-            <p>Refine a pesquisa por numero, endereco, equipe responsavel, municipio, bairro e condicao operacional.</p>
+            <p>Refine a pesquisa por número, endereço, equipe responsável, município, bairro e condição operacional.</p>
         </div>
 
         <form method="GET" action="/hidrantes" class="filters-grid hidrante-listing-filters">
@@ -134,7 +134,7 @@ function hidrante_status_class(?string $status): string
                     type="text"
                     name="q"
                     value="<?= e($filters['q'] ?? '') ?>"
-                    placeholder="Numero, endereco ou equipe responsavel"
+                    placeholder="Número, endereço ou equipe responsável"
                 >
             </label>
 
@@ -143,13 +143,16 @@ function hidrante_status_class(?string $status): string
                     <option value="">Todos</option>
                     <?php foreach (['operante', 'operante com restricao', 'inoperante'] as $status): ?>
                         <option value="<?= e($status) ?>" <?= ($filters['status_operacional'] ?? '') === $status ? 'selected' : '' ?>>
-                            <?= e($status) ?>
+                            <?= e(match ($status) {
+                                'operante com restricao' => 'operante com restrição',
+                                default => $status,
+                            }) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
             </label>
 
-            <label>Municipio
+            <label>Município
                 <select name="municipio_id" id="filter-municipio-id">
                     <option value="">Todos</option>
                     <?php foreach ($municipios as $municipio): ?>
@@ -202,14 +205,14 @@ function hidrante_status_class(?string $status): string
             <table class="hidrante-table">
                 <thead>
                 <tr>
-                    <th>Numero</th>
-                    <th>Municipio</th>
+                    <th>Número</th>
+                    <th>Município</th>
                     <th>Bairro</th>
                     <th>Status</th>
                     <th>Tipo</th>
-                    <th>Area</th>
+                    <th>Área</th>
                     <th>Atualizado em</th>
-                    <th>Acoes</th>
+                    <th>Ações</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -220,24 +223,27 @@ function hidrante_status_class(?string $status): string
                 <?php else: ?>
                     <?php foreach ($hidrantes as $hidrante): ?>
                         <tr>
-                            <td data-label="Numero">
+                            <td data-label="Número">
                                 <div class="hidrante-table-primary"><?= e($hidrante['numero_hidrante']) ?></div>
                             </td>
-                            <td data-label="Municipio"><?= e($hidrante['municipio_nome']) ?></td>
+                            <td data-label="Município"><?= e($hidrante['municipio_nome']) ?></td>
                             <td data-label="Bairro"><?= e($hidrante['bairro_nome'] ?? '-') ?></td>
                             <td data-label="Status">
                                 <span class="hidrante-status-badge <?= e(hidrante_status_class($hidrante['status_operacional'] ?? '')) ?>">
-                                    <?= e($hidrante['status_operacional']) ?>
+                                    <?= e(match (trim((string) ($hidrante['status_operacional'] ?? ''))) {
+                                        'operante com restricao' => 'operante com restrição',
+                                        default => (string) ($hidrante['status_operacional'] ?? ''),
+                                    }) ?>
                                 </span>
                             </td>
                             <td data-label="Tipo"><?= e($hidrante['tipo_hidrante']) ?></td>
-                            <td data-label="Area">
+                            <td data-label="Área">
                                 <span class="hidrante-table-chip"><?= e($hidrante['area']) ?></span>
                             </td>
                             <td data-label="Atualizado em">
                                 <span class="hidrante-table-muted"><?= e($hidrante['atualizado_em']) ?></span>
                             </td>
-                            <td data-label="Acoes">
+                            <td data-label="Ações">
                                 <div class="actions-inline hidrante-table-actions">
                                     <button
                                         type="button"
@@ -303,7 +309,7 @@ function hidrante_status_class(?string $status): string
                 <?php endif; ?>
 
                 <a class="btn-secondary <?= $current >= $last ? 'is-disabled' : '' ?>" href="<?= $current < $last ? e(build_page_url($current + 1, $filters)) : '#' ?>">
-                    Proxima
+                    Próxima
                 </a>
             </nav>
         <?php endif; ?>
@@ -315,7 +321,7 @@ function hidrante_status_class(?string $status): string
         <div class="modal-header">
             <div>
                 <h2 id="hidrante-detail-title">Detalhes do hidrante</h2>
-                <p class="modal-subtitle" id="hidrante-detail-subtitle">Confira todas as informacoes do registro selecionado.</p>
+                <p class="modal-subtitle" id="hidrante-detail-subtitle">Confira todas as informações do registro selecionado.</p>
             </div>
             <button type="button" class="btn-secondary modal-close-button" data-hidrante-detail-close>Fechar</button>
         </div>

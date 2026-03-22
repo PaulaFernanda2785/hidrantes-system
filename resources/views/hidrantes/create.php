@@ -20,24 +20,24 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
         <?= csrf_field() ?>
         <div class="col-span-2 hidrante-form-header">
             <div class="hidrante-form-header-copy">
-                <p class="hidrante-form-eyebrow">Cadastro tecnico</p>
-                <h2><?= $isEdit ? 'Atualize os dados do hidrante com seguranca e leitura clara.' : 'Preencha o cadastro completo do hidrante em uma unica tela.' ?></h2>
+                <p class="hidrante-form-eyebrow">Cadastro técnico</p>
+                <h2><?= $isEdit ? 'Atualize os dados do hidrante com segurança e leitura clara.' : 'Preencha o cadastro completo do hidrante em uma única tela.' ?></h2>
                 <p class="hidrante-form-description">
-                    O formulario foi reorganizado para facilitar preenchimento, revisao em campo e uso em telas menores.
+                    O formulário foi reorganizado para facilitar o preenchimento, a revisão em campo e o uso em telas menores.
                 </p>
             </div>
             <div class="hidrante-form-header-badges">
-                <span class="hidrante-form-badge"><?= $isEdit ? 'Modo edicao' : 'Novo cadastro' ?></span>
-                <span class="hidrante-form-badge is-soft">Fotos: ate 3</span>
+                <span class="hidrante-form-badge"><?= $isEdit ? 'Modo edição' : 'Novo cadastro' ?></span>
+                <span class="hidrante-form-badge is-soft">Fotos: até 3</span>
                 <span class="hidrante-form-badge is-soft">Mapa e GPS integrados</span>
             </div>
         </div>
 
         <div class="col-span-2 hidrante-form-divider">
-            <h3>Identificacao e operacao</h3>
+            <h3>Identificação e operação</h3>
             <p>Dados principais para identificar o hidrante e registrar seu status atual.</p>
         </div>
-        <label>Numero do hidrante
+        <label>Número do hidrante
             <input
                 type="text"
                 name="numero_hidrante"
@@ -46,15 +46,15 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                 <?= $canEditNumeroHidrante ? '' : 'readonly' ?>
             >
             <?php if (!$canEditNumeroHidrante): ?>
-                <small class="field-help">Perfil operador pode atualizar o cadastro, mas nao altera o numero do hidrante.</small>
+                <small class="field-help">O perfil operador pode atualizar o cadastro, mas não altera o número do hidrante.</small>
             <?php endif; ?>
         </label>
 
-        <label>Equipe responsavel
+        <label>Equipe responsável
             <input type="text" name="equipe_responsavel" required value="<?= old_or_value($hidrante, 'equipe_responsavel') ?>">
         </label>
 
-        <label>Area
+        <label>Área
             <select name="area" required>
                 <?php
                 $areaAtual = $hidrante['area'] ?? '';
@@ -71,7 +71,7 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                 $valorAtual = $hidrante['existe_no_local'] ?? '';
                 foreach (['sim', 'nao'] as $item):
                 ?>
-                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'nao' : 'sim' ?></option>
+                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'não' : 'sim' ?></option>
                 <?php endforeach; ?>
             </select>
         </label>
@@ -82,7 +82,7 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                 $valorAtual = $hidrante['tipo_hidrante'] ?? '';
                 $tipos = [
                     'coluna' => 'coluna',
-                    'subterraneo' => 'subterraneo',
+                    'subterraneo' => 'subterrâneo',
                     'parede' => 'parede',
                     'outro' => 'outro',
                 ];
@@ -94,8 +94,8 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
         </label>
 
         <div class="col-span-2 hidrante-form-divider">
-            <h3>Condicoes fisicas</h3>
-            <p>Informacoes de acesso, caixa, tampas e observacoes estruturais do hidrante.</p>
+            <h3>Condições físicas</h3>
+            <p>Informações de acesso, caixa, tampas e observações estruturais do hidrante.</p>
         </div>
 
         <label>Acessibilidade
@@ -104,12 +104,12 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                 $valorAtual = $hidrante['acessibilidade'] ?? '';
                 foreach (['sim', 'nao'] as $item):
                 ?>
-                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'nao' : 'sim' ?></option>
+                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'não' : 'sim' ?></option>
                 <?php endforeach; ?>
             </select>
         </label>
 
-        <label>Tampo/conexoes
+        <label>Tampo/conexões
             <select name="tampo_conexoes" required>
                 <?php
                 $valorAtual = $hidrante['tampo_conexoes'] ?? '';
@@ -129,18 +129,18 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
             <input type="text" name="tampas_ausentes" value="<?= old_or_value($hidrante, 'tampas_ausentes') ?>">
         </label>
 
-        <label>Caixa de protecao
+        <label>Caixa de proteção
             <select name="caixa_protecao" required>
                 <?php
                 $valorAtual = $hidrante['caixa_protecao'] ?? '';
                 foreach (['sim', 'nao'] as $item):
                 ?>
-                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'nao' : 'sim' ?></option>
+                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'não' : 'sim' ?></option>
                 <?php endforeach; ?>
             </select>
         </label>
 
-        <label>Condicao da caixa
+        <label>Condição da caixa
             <select name="condicao_caixa">
                 <option value="">-- selecione --</option>
                 <?php
@@ -152,20 +152,20 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
             </select>
         </label>
 
-        <label>Presenca de agua
+        <label>Presença de água
             <select name="presenca_agua_interior" required>
                 <?php
                 $valorAtual = $hidrante['presenca_agua_interior'] ?? '';
                 foreach (['sim', 'nao'] as $item):
                 ?>
-                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'nao' : 'sim' ?></option>
+                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'não' : 'sim' ?></option>
                 <?php endforeach; ?>
             </select>
         </label>
 
         <div class="col-span-2 hidrante-form-divider">
             <h3>Teste e desempenho</h3>
-            <p>Resultado do teste funcional e situacao operacional observada no momento da vistoria.</p>
+            <p>Resultado do teste funcional e situação operacional observada no momento da vistoria.</p>
         </div>
 
         <label>Teste realizado
@@ -174,7 +174,7 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                 $valorAtual = $hidrante['teste_realizado'] ?? '';
                 foreach (['sim', 'nao'] as $item):
                 ?>
-                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'nao' : 'sim' ?></option>
+                    <option value="<?= e($item) ?>" <?= $valorAtual === $item ? 'selected' : '' ?>><?= $item === 'nao' ? 'não' : 'sim' ?></option>
                 <?php endforeach; ?>
             </select>
         </label>
@@ -187,8 +187,8 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                 $opcoes = [
                     'funcionando normalmente' => 'funcionando normalmente',
                     'vazamento' => 'vazamento',
-                    'vazao insuficiente' => 'vazao insuficiente',
-                    'nao funcionou' => 'nao funcionou',
+                    'vazao insuficiente' => 'vazão insuficiente',
+                    'nao funcionou' => 'não funcionou',
                 ];
                 foreach ($opcoes as $value => $label):
                 ?>
@@ -203,7 +203,7 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                 $valorAtual = $hidrante['status_operacional'] ?? '';
                 $opcoes = [
                     'operante' => 'operante',
-                    'operante com restricao' => 'operante com restricao',
+                    'operante com restricao' => 'operante com restrição',
                     'inoperante' => 'inoperante',
                 ];
                 foreach ($opcoes as $value => $label):
@@ -214,11 +214,11 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
         </label>
 
         <div class="col-span-2 hidrante-form-divider">
-            <h3>Localizacao e referencia</h3>
-            <p>Defina municipio, bairro, endereco e coordenadas para localizar o ponto com mais precisao.</p>
+            <h3>Localização e referência</h3>
+            <p>Defina município, bairro, endereço e coordenadas para localizar o ponto com mais precisão.</p>
         </div>
 
-        <label>Municipio
+        <label>Município
             <select name="municipio_id" id="municipio_id" required>
                 <option value="">Selecione</option>
                 <?php foreach ($municipios as $municipio): ?>
@@ -249,12 +249,12 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                     Editar bairro
                 </button>
                 <p class="field-help hidrante-bairro-feedback" id="bairro-feedback">
-                    Se nao encontrar o bairro, cadastre um novo ou edite o bairro atualmente selecionado.
+                    Se não encontrar o bairro, cadastre um novo ou edite o bairro atualmente selecionado.
                 </p>
             </div>
         </div>
 
-        <label class="col-span-2">Endereco
+        <label class="col-span-2">Endereço
             <input type="text" name="endereco" required value="<?= old_or_value($hidrante, 'endereco') ?>">
         </label>
 
@@ -268,7 +268,7 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
 
         <div class="col-span-2 geolocation-actions">
             <button type="button" class="btn-secondary geolocation-button" id="use-current-location-button">
-                Usar localizacao atual
+                Usar localização atual
             </button>
             <button type="button" class="btn-secondary geolocation-button" id="open-location-map-button">
                 Ver no mapa
@@ -277,36 +277,36 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                 Limpar coordenadas
             </button>
             <p class="field-help geolocation-feedback" id="geolocation-feedback">
-                No celular, use a localizacao atual para preencher latitude e longitude automaticamente.
+                No celular, use a localização atual para preencher latitude e longitude automaticamente.
             </p>
         </div>
 
         <div class="col-span-2 location-map-preview" id="location-map-preview" hidden>
             <div class="location-map-preview-header">
-                <strong>Previa do ponto no mapa</strong>
+                <strong>Prévia do ponto no mapa</strong>
                 <span class="location-map-preview-coordinates" id="location-map-preview-coordinates">-</span>
             </div>
             <iframe
                 id="location-map-frame"
                 class="location-map-frame"
-                title="Previa do ponto do hidrante no mapa"
+                title="Prévia do ponto do hidrante no mapa"
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade"
             ></iframe>
         </div>
 
         <div class="col-span-2 hidrante-form-divider">
-            <h3>Registro fotografico</h3>
-            <p>Anexe imagens do hidrante usando arquivos, camera do celular ou arrastar e soltar.</p>
+            <h3>Registro fotográfico</h3>
+            <p>Anexe imagens do hidrante usando arquivos, câmera do celular ou arrastar e soltar.</p>
         </div>
 
         <div class="col-span-2 hidrante-upload-panel">
             <span class="upload-dropzone-title">Anexar fotos</span>
             <div class="upload-dropzone" id="upload-dropzone">
-                <p class="upload-dropzone-copy">Arraste ate 3 imagens para esta area, selecione arquivos ou tire a foto pela camera do celular.</p>
+                <p class="upload-dropzone-copy">Arraste até 3 imagens para esta área, selecione arquivos ou tire a foto pela câmera do celular.</p>
                 <div class="upload-dropzone-actions">
                     <button type="button" class="upload-dropzone-button" id="upload-select-button">Selecionar imagens</button>
-                    <button type="button" class="btn-secondary upload-dropzone-button" id="upload-camera-button">Usar camera</button>
+                    <button type="button" class="btn-secondary upload-dropzone-button" id="upload-camera-button">Usar câmera</button>
                     <span class="upload-dropzone-meta" id="upload-selection-count">Nenhuma imagem selecionada.</span>
                 </div>
                 <input
@@ -325,7 +325,7 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                     capture="environment"
                 >
                 <div class="upload-preview-grid" id="upload-preview-grid"></div>
-                <p class="upload-empty" id="upload-empty-state">Voce pode anexar ate 3 fotos por hidrante, inclusive tirando fotos na hora pelo celular.</p>
+                <p class="upload-empty" id="upload-empty-state">Você pode anexar até 3 fotos por hidrante, inclusive tirando fotos na hora pelo celular.</p>
                 <p class="upload-limit-feedback" id="upload-limit-feedback" hidden>Limite de 3 fotos atingido. Remova uma imagem para anexar outra.</p>
             </div>
         </div>
@@ -347,8 +347,8 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
 
         <div class="col-span-2 hidrante-form-footer">
             <div class="hidrante-form-footer-copy">
-                <strong><?= $isEdit ? 'Revise as alteracoes antes de atualizar.' : 'Revise os dados antes de salvar.' ?></strong>
-                <p>Todos os blocos do cadastro foram organizados para facilitar a conferencia final em desktop e celular.</p>
+                <strong><?= $isEdit ? 'Revise as alterações antes de atualizar.' : 'Revise os dados antes de salvar.' ?></strong>
+                <p>Todos os blocos do cadastro foram organizados para facilitar a conferência final em desktop e celular.</p>
             </div>
             <div class="actions-inline hidrante-form-footer-actions">
                 <button type="submit"><?= $isEdit ? 'Atualizar' : 'Salvar' ?></button>
@@ -363,14 +363,14 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
         <div class="modal-header">
             <div>
                 <h2 id="bairro-modal-title">Cadastrar bairro</h2>
-                <p class="modal-subtitle" id="bairro-modal-subtitle">O bairro sera vinculado ao municipio atualmente selecionado.</p>
+                <p class="modal-subtitle" id="bairro-modal-subtitle">O bairro será vinculado ao município atualmente selecionado.</p>
             </div>
             <button type="button" class="modal-close-button" data-bairro-modal-close>Fechar</button>
         </div>
 
         <div class="modal-body">
             <form id="bairro-create-form" class="form-grid">
-                <label>Municipio selecionado
+                <label>Município selecionado
                     <input type="text" id="bairro-modal-municipio" readonly>
                 </label>
 

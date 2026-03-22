@@ -283,6 +283,16 @@ class HidranteController extends Controller
 
     public function photo(string $filename): void
     {
+        $this->streamPhoto($filename);
+    }
+
+    public function publicPhoto(string $filename): void
+    {
+        $this->streamPhoto($filename);
+    }
+
+    private function streamPhoto(string $filename): void
+    {
         $safeFilename = basename($filename);
         $path = storage_path('uploads/hidrantes/' . $safeFilename);
 

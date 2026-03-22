@@ -4,7 +4,49 @@
     }
 
     .sidebar {
-        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: min(320px, calc(100vw - 28px));
+        z-index: 1200;
+        overflow-y: auto;
+        transform: translateX(-100%);
+        transition: transform 0.24s ease, box-shadow 0.24s ease;
+    }
+
+    body.has-sidebar-open {
+        overflow: hidden;
+    }
+
+    body.has-sidebar-open .sidebar {
+        transform: translateX(0);
+        box-shadow: 24px 0 48px rgba(15, 23, 42, 0.22);
+    }
+
+    .sidebar-close-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .topbar-menu-button {
+        display: inline-flex;
+    }
+
+    .sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 1190;
+        display: block;
+        border: 0;
+        padding: 0;
+        background: rgba(15, 23, 42, 0.46);
+    }
+
+    .sidebar-backdrop[hidden] {
+        display: none !important;
     }
 
     .cards-grid {
@@ -28,10 +70,30 @@
     .topbar {
         flex-direction: column;
         align-items: flex-start;
+        padding: 14px 16px;
+    }
+
+    .topbar-main,
+    .topbar-user {
+        width: 100%;
+    }
+
+    .topbar-title {
+        min-width: 0;
+    }
+
+    .topbar-title strong {
+        display: block;
+        font-size: 16px;
+        line-height: 1.3;
     }
 
     .actions-inline {
         flex-direction: column;
         align-items: stretch;
+    }
+
+    .content {
+        padding: 16px;
     }
 }

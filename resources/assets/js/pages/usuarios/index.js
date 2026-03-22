@@ -7,7 +7,7 @@ window.HidrantesApp.onReady(() => {
 
     confirmForms.forEach((form) => {
         form.addEventListener('submit', (event) => {
-            const message = form.dataset.confirmMessage || 'Deseja continuar com esta operacao?';
+            const message = form.dataset.confirmMessage || 'Deseja continuar com esta operação?';
 
             if (!window.confirm(message)) {
                 event.preventDefault();
