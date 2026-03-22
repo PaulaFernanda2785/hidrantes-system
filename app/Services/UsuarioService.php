@@ -92,8 +92,10 @@ class UsuarioService
             throw new ValidationException(['nova_senha' => 'Informe a nova senha.']);
         }
 
-        if (mb_strlen($newPassword) < 6) {
-            throw new ValidationException(['nova_senha' => 'A nova senha deve ter pelo menos 6 caracteres.']);
+        if (!$this->isStrongPassword($newPassword)) {
+            throw new ValidationException([
+                'nova_senha' => 'A nova senha deve ter pelo menos 8 caracteres, com letras e numeros.',
+            ]);
         }
 
         if ($newPassword !== $confirmation) {
@@ -138,8 +140,8 @@ class UsuarioService
     {
         $errors = [];
 
-        $nome = trim((string) ($data['nome'] ?? ''));
-        $matricula = trim((string) ($data['matricula_funcional'] ?? ''));
+        $nome = $this->normalizePlainText((string) ($data['nome'] ?? ''));
+        $matricula = $this->normalizeIdentifier((string) ($data['matricula_funcional'] ?? ''));
         $senha = (string) ($data['senha'] ?? '');
         $perfil = trim((string) ($data['perfil'] ?? ''));
         $status = trim((string) ($data['status'] ?? ''));
@@ -160,6 +162,8 @@ class UsuarioService
 
         if ($requirePassword && trim($senha) === '') {
             $errors['senha'] = 'Informe a senha do usuario.';
+        } elseif ($requirePassword && !$this->isStrongPassword($senha)) {
+            $errors['senha'] = 'A senha do usuario deve ter pelo menos 8 caracteres, com letras e numeros.';
         }
 
         if (!in_array($perfil, ['admin', 'gestor', 'operador'], true)) {
@@ -180,6 +184,27 @@ class UsuarioService
             'perfil' => $perfil,
             'status' => $status,
         ];
+    }
+
+    private function normalizePlainText(string $value): string
+    {
+        $normalized = preg_replace('/[\x00-\x1F\x7F]+/u', ' ', $value);
+
+        return trim(preg_replace('/\s+/u', ' ', (string) $normalized) ?? '');
+    }
+
+    private function normalizeIdentifier(string $value): string
+    {
+        $normalized = $this->normalizePlainText($value);
+
+        return preg_replace('/[^A-Za-z0-9._\-\/]/', '', $normalized) ?? '';
+    }
+
+    private function isStrongPassword(string $password): bool
+    {
+        return mb_strlen($password) >= 8
+            && preg_match('/[A-Za-z]/', $password) === 1
+            && preg_match('/\d/', $password) === 1;
     }
 
     private function recordAuditSafely(array $actor, string $acao, string $entidade, string $referencia, string $detalhes): void

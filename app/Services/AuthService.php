@@ -41,6 +41,11 @@ class AuthService
 
         Session::regenerate(true);
         Session::put('auth', $auth);
+        Session::put('_auth_context', [
+            'fingerprint' => auth_session_fingerprint(),
+            'last_activity' => time(),
+        ]);
+        Session::forget('_csrf_token');
 
         try {
             $this->auditService->record($auth, 'login', 'usuarios', (string) $usuario['id'], 'Login realizado com sucesso.');

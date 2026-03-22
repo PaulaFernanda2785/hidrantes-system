@@ -20,7 +20,7 @@ class AuditService
             'entidade' => $entidade,
             'referencia_registro' => $referencia,
             'detalhes' => $detalhes,
-            'ip_origem' => $_SERVER['REMOTE_ADDR'] ?? null,
+            'ip_origem' => client_ip(),
         ]);
     }
 }

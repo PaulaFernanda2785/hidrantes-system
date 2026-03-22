@@ -42,6 +42,8 @@ use App\Core\Session;
 
 Env::load(BASE_PATH . '/.env');
 Session::start();
+register_error_handlers();
+send_security_headers();
 
 $router = new Router();
 

@@ -137,7 +137,7 @@ class BairroService
     private function validate(array $data): array
     {
         $municipioId = (int) ($data['municipio_id'] ?? 0);
-        $nome = preg_replace('/\s+/', ' ', trim((string) ($data['nome'] ?? '')));
+        $nome = $this->normalizePlainText((string) ($data['nome'] ?? ''));
         $errors = [];
 
         if ($municipioId <= 0) {
@@ -160,6 +160,13 @@ class BairroService
             'municipio_id' => $municipioId,
             'nome' => $nome,
         ];
+    }
+
+    private function normalizePlainText(string $value): string
+    {
+        $normalized = preg_replace('/[\x00-\x1F\x7F]+/u', ' ', $value);
+
+        return trim(preg_replace('/\s+/u', ' ', (string) $normalized) ?? '');
     }
 
     private function recordAuditSafely(array $actor, string $acao, string $entidade, string $referencia, string $detalhes): void

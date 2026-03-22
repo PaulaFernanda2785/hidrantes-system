@@ -10,7 +10,12 @@ class Session
             return;
         }
 
-        $secure = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+        $secure = app_is_secure_request();
+
+        ini_set('session.use_only_cookies', '1');
+        ini_set('session.use_strict_mode', '1');
+        ini_set('session.cookie_httponly', '1');
+        ini_set('session.cookie_secure', $secure ? '1' : '0');
 
         session_name(config('session.name', 'hidrantes_session'));
         session_set_cookie_params([
@@ -40,6 +45,10 @@ class Session
 
     public static function destroy(): void
     {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            return;
+        }
+
         $_SESSION = [];
         if (ini_get('session.use_cookies')) {
             $params = session_get_cookie_params();
@@ -53,6 +62,16 @@ class Session
             ]);
         }
         session_destroy();
+    }
+
+    public static function invalidate(?string $flashError = null): void
+    {
+        self::destroy();
+        self::start();
+
+        if ($flashError !== null && $flashError !== '') {
+            self::flash('error', $flashError);
+        }
     }
 
     public static function regenerate(bool $deleteOldSession = true): void

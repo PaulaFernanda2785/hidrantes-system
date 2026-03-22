@@ -170,14 +170,14 @@ class HidranteService
         $resultadosTeste = ['funcionando normalmente', 'vazamento', 'vazao insuficiente', 'nao funcionou'];
         $statusOperacional = ['operante', 'operante com restricao', 'inoperante'];
 
-        $numero = trim((string) ($data['numero_hidrante'] ?? ''));
-        $equipe = trim((string) ($data['equipe_responsavel'] ?? ''));
+        $numero = $this->normalizeIdentifier((string) ($data['numero_hidrante'] ?? ''));
+        $equipe = $this->normalizePlainText((string) ($data['equipe_responsavel'] ?? ''));
         $area = trim((string) ($data['area'] ?? ''));
         $existeNoLocal = trim((string) ($data['existe_no_local'] ?? ''));
         $tipo = trim((string) ($data['tipo_hidrante'] ?? ''));
         $acessibilidade = trim((string) ($data['acessibilidade'] ?? ''));
         $tampo = trim((string) ($data['tampo_conexoes'] ?? ''));
-        $tampasAusentes = trim((string) ($data['tampas_ausentes'] ?? ''));
+        $tampasAusentes = $this->normalizePlainText((string) ($data['tampas_ausentes'] ?? ''));
         $caixaProtecao = trim((string) ($data['caixa_protecao'] ?? ''));
         $condicaoCaixa = trim((string) ($data['condicao_caixa'] ?? ''));
         $presencaAgua = trim((string) ($data['presenca_agua_interior'] ?? ''));
@@ -186,7 +186,7 @@ class HidranteService
         $status = trim((string) ($data['status_operacional'] ?? ''));
         $municipioId = (int) ($data['municipio_id'] ?? 0);
         $bairroId = !empty($data['bairro_id']) ? (int) $data['bairro_id'] : null;
-        $endereco = trim((string) ($data['endereco'] ?? ''));
+        $endereco = $this->normalizePlainText((string) ($data['endereco'] ?? ''));
         $latitudeRaw = trim((string) ($data['latitude'] ?? ''));
         $longitudeRaw = trim((string) ($data['longitude'] ?? ''));
 
@@ -303,6 +303,20 @@ class HidranteService
             'latitude' => $latitude,
             'longitude' => $longitude,
         ];
+    }
+
+    private function normalizePlainText(string $value): string
+    {
+        $normalized = preg_replace('/[\x00-\x1F\x7F]+/u', ' ', $value);
+
+        return trim(preg_replace('/\s+/u', ' ', (string) $normalized) ?? '');
+    }
+
+    private function normalizeIdentifier(string $value): string
+    {
+        $normalized = $this->normalizePlainText($value);
+
+        return preg_replace('/[^A-Za-z0-9._\-\/]/', '', $normalized) ?? '';
     }
 
     private function recordAuditSafely(array $actor, string $acao, string $entidade, string $referencia, string $detalhes): void
