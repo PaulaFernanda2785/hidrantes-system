@@ -688,6 +688,72 @@
     font-weight: 700;
 }
 
+.painel-hero-side {
+    display: grid;
+    gap: 12px;
+    justify-items: end;
+}
+
+.painel-hero-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.painel-manual-trigger {
+    width: auto;
+}
+
+.painel-manual-modal-card {
+    width: min(1240px, 100%);
+    max-height: calc(100vh - 48px);
+}
+
+.painel-manual-modal-header {
+    align-items: flex-start;
+}
+
+.painel-manual-modal-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.painel-manual-modal-actions .btn-secondary,
+.painel-manual-modal-actions button {
+    width: auto;
+}
+
+.painel-manual-modal-body {
+    display: grid;
+    gap: 12px;
+    padding-top: 16px;
+}
+
+.painel-manual-status {
+    margin: 0;
+    color: var(--text-soft);
+    line-height: 1.5;
+}
+
+.painel-manual-status[hidden] {
+    display: none !important;
+}
+
+.painel-manual-frame {
+    width: 100%;
+    min-height: min(78vh, 980px);
+    border: 1px solid #dbe4f0;
+    border-radius: 18px;
+    background: #fff;
+}
+
+.painel-manual-modal-actions button:disabled {
+    cursor: wait;
+    opacity: 0.72;
+}
+
 @media (max-width: 1180px) {
     .painel-layout {
         grid-template-columns: 1fr;
@@ -695,6 +761,18 @@
 
     .painel-side-stack {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 960px) {
+    .painel-hero-side,
+    .painel-hero-actions {
+        justify-items: start;
+        justify-content: flex-start;
+    }
+
+    .painel-manual-modal-card {
+        width: min(100%, 100%);
     }
 }
 
@@ -779,6 +857,21 @@
     .painel-drawer-actions .btn-secondary {
         width: 100%;
         justify-self: stretch;
+    }
+
+    .painel-manual-modal-actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .painel-manual-modal-actions .btn-secondary,
+    .painel-manual-modal-actions button {
+        width: 100%;
+    }
+
+    .painel-manual-frame {
+        min-height: 68vh;
     }
 }
 

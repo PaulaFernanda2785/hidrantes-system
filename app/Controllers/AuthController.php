@@ -18,6 +18,7 @@ class AuthController extends Controller
             'metrics' => $painelService->metrics(),
             'mapPoints' => $painelService->mapPoints(),
             'painelPhotoBasePath' => '/painel/fotos/hidrantes',
+            'showManualButton' => false,
             'pageStylesheets' => [
                 'pages/management.css',
                 'pages/painel.css',

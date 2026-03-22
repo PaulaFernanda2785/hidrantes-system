@@ -30,6 +30,11 @@ $router->get('/painel', [PainelController::class, 'index'], [
     RoleMiddleware::class . ':admin,gestor,operador',
 ]);
 
+$router->get('/painel/manual/usuario', [PainelController::class, 'manualUsuario'], [
+    AuthMiddleware::class,
+    RoleMiddleware::class . ':admin,gestor,operador',
+]);
+
 $router->get('/hidrantes', [HidranteController::class, 'index'], [
     AuthMiddleware::class,
     RoleMiddleware::class . ':admin,gestor,operador',

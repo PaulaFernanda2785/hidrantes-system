@@ -1,4 +1,4 @@
-window.HidrantesApp.onReady(() => {
+﻿window.HidrantesApp.onReady(() => {
     const mapContainer = document.getElementById('painel-map');
     const mapEmpty = document.getElementById('painel-map-empty');
     const mapHint = document.getElementById('painel-map-hint');
@@ -11,6 +11,12 @@ window.HidrantesApp.onReady(() => {
     const nearestList = document.getElementById('painel-nearest-list');
     const drawer = document.getElementById('painel-hidrante-drawer');
     const drawerCloseButtons = drawer ? drawer.querySelectorAll('[data-painel-drawer-close]') : [];
+    const manualOpenButton = document.getElementById('painel-open-manual-button');
+    const manualModal = document.getElementById('painel-manual-modal');
+    const manualCloseButtons = manualModal ? manualModal.querySelectorAll('[data-painel-manual-close]') : [];
+    const manualPrintButton = document.getElementById('painel-manual-print-button');
+    const manualFrame = document.getElementById('painel-manual-frame');
+    const manualStatus = document.getElementById('painel-manual-status');
     const drawerTitle = document.getElementById('painel-drawer-title');
     const drawerSubtitle = document.getElementById('painel-drawer-subtitle');
     const badgeNumber = document.getElementById('painel-drawer-badge-number');
@@ -124,7 +130,7 @@ window.HidrantesApp.onReady(() => {
     const statusLabel = (status) => {
         switch (String(status ?? '').trim().toLowerCase()) {
             case 'operante com restricao':
-                return 'operante com restrição';
+                return 'operante com restriÃ§Ã£o';
             default:
                 return textValue(status);
         }
@@ -136,6 +142,14 @@ window.HidrantesApp.onReady(() => {
     let userMarker = null;
     let userAccuracyCircle = null;
     const markerEntries = [];
+    const hasManualModal = Boolean(manualOpenButton && manualModal && manualPrintButton && manualFrame && manualStatus);
+
+    const syncModalOpenState = () => {
+        const hasOpenDrawer = drawer && !drawer.hidden;
+        const hasOpenManualModal = manualModal && !manualModal.hidden;
+
+        document.body.classList.toggle('modal-open', Boolean(hasOpenDrawer || hasOpenManualModal));
+    };
 
     const updateLayerButtons = (activeLayerName) => {
         layerButtons.forEach((button) => {
@@ -188,7 +202,7 @@ window.HidrantesApp.onReady(() => {
         term.textContent = label;
 
         const description = document.createElement('dd');
-        description.textContent = textValue(value, 'Não informado');
+        description.textContent = textValue(value, 'NÃ£o informado');
 
         wrapper.appendChild(term);
         wrapper.appendChild(description);
@@ -254,16 +268,16 @@ window.HidrantesApp.onReady(() => {
 
     const renderDrawer = (item) => {
         drawerTitle.textContent = `Hidrante ${textValue(item.numero_hidrante)}`;
-        drawerSubtitle.textContent = `${textValue(item.endereco, 'Endereço não informado')} | Atualizado em ${textValue(item.atualizado_em, 'Não informado')}`;
+        drawerSubtitle.textContent = `${textValue(item.endereco, 'EndereÃ§o nÃ£o informado')} | Atualizado em ${textValue(item.atualizado_em, 'NÃ£o informado')}`;
         badgeNumber.textContent = textValue(item.numero_hidrante);
         badgeRegion.textContent = `${textValue(item.municipio_nome)} / ${textValue(item.bairro_nome)}`;
         badgeStatus.textContent = statusLabel(item.status_operacional);
         badgeStatus.className = `painel-drawer-badge ${statusClass(item.status_operacional)}`;
 
         renderSection(operacaoSection, [
-            ['Número do hidrante', item.numero_hidrante],
-            ['Equipe responsável', item.equipe_responsavel],
-            ['Área', item.area],
+            ['NÃºmero do hidrante', item.numero_hidrante],
+            ['Equipe responsÃ¡vel', item.equipe_responsavel],
+            ['Ãrea', item.area],
             ['Existe no local', item.existe_no_local],
             ['Tipo do hidrante', item.tipo_hidrante, true],
             ['Status operacional', statusLabel(item.status_operacional), true],
@@ -271,11 +285,11 @@ window.HidrantesApp.onReady(() => {
 
         renderSection(condicoesSection, [
             ['Acessibilidade', item.acessibilidade],
-            ['Tampo e conexões', item.tampo_conexoes],
+            ['Tampo e conexÃµes', item.tampo_conexoes],
             ['Tampas ausentes', item.tampas_ausentes],
-            ['Caixa de proteção', item.caixa_protecao],
-            ['Condição da caixa', item.condicao_caixa],
-            ['Presença de água', item.presenca_agua_interior],
+            ['Caixa de proteÃ§Ã£o', item.caixa_protecao],
+            ['CondiÃ§Ã£o da caixa', item.condicao_caixa],
+            ['PresenÃ§a de Ã¡gua', item.presenca_agua_interior],
         ]);
 
         renderSection(testeSection, [
@@ -284,9 +298,9 @@ window.HidrantesApp.onReady(() => {
         ]);
 
         renderSection(localizacaoSection, [
-            ['Município', item.municipio_nome],
+            ['MunicÃ­pio', item.municipio_nome],
             ['Bairro', item.bairro_nome],
-            ['Endereço', item.endereco, true],
+            ['EndereÃ§o', item.endereco, true],
             ['Latitude', item.latitude],
             ['Longitude', item.longitude],
             ['Criado em', item.criado_em],
@@ -299,14 +313,42 @@ window.HidrantesApp.onReady(() => {
 
     const closeDrawer = () => {
         drawer.hidden = true;
-        document.body.classList.remove('modal-open');
         mapFrame.removeAttribute('src');
+        syncModalOpenState();
     };
 
     const openDrawer = (item) => {
         renderDrawer(item);
         drawer.hidden = false;
-        document.body.classList.add('modal-open');
+        syncModalOpenState();
+    };
+
+    const setManualLoadingState = (isLoading, message = '') => {
+        if (!hasManualModal) {
+            return;
+        }
+
+        manualPrintButton.disabled = isLoading;
+        manualStatus.hidden = !isLoading && message === '';
+        manualStatus.textContent = message;
+    };
+
+    const closeManualModal = () => {
+        if (!hasManualModal) {
+            return;
+        }
+
+        manualModal.hidden = true;
+        syncModalOpenState();
+    };
+
+    const openManualModal = () => {
+        if (!hasManualModal) {
+            return;
+        }
+
+        manualModal.hidden = false;
+        syncModalOpenState();
     };
 
     const setLocationFeedback = (message, state = 'neutral') => {
@@ -320,7 +362,7 @@ window.HidrantesApp.onReady(() => {
         locationFeedback.dataset.state = state;
     };
 
-    const resetNearestHydrants = (message = 'Ative sua localização para mostrar seu ponto no mapa e calcular os hidrantes mais próximos.') => {
+    const resetNearestHydrants = (message = 'Ative sua localizaÃ§Ã£o para mostrar seu ponto no mapa e calcular os hidrantes mais prÃ³ximos.') => {
         nearestList.hidden = true;
         nearestList.innerHTML = '';
         nearestEmpty.hidden = false;
@@ -388,7 +430,7 @@ window.HidrantesApp.onReady(() => {
         nearestList.innerHTML = '';
 
         if (items.length === 0) {
-            resetNearestHydrants('Não foi possível calcular os hidrantes próximos com os dados atuais.');
+            resetNearestHydrants('NÃ£o foi possÃ­vel calcular os hidrantes prÃ³ximos com os dados atuais.');
             return;
         }
 
@@ -418,10 +460,10 @@ window.HidrantesApp.onReady(() => {
 
             const status = document.createElement('span');
             status.className = `painel-nearest-status ${statusClass(entry.item.status_operacional)}`;
-            status.textContent = statusLabel(entry.item.status_operacional || 'Status não informado');
+            status.textContent = statusLabel(entry.item.status_operacional || 'Status nÃ£o informado');
 
             const address = document.createElement('small');
-            address.textContent = textValue(entry.item.endereco, 'Endereço não informado');
+            address.textContent = textValue(entry.item.endereco, 'EndereÃ§o nÃ£o informado');
 
             head.appendChild(title);
             head.appendChild(distance);
@@ -486,13 +528,13 @@ window.HidrantesApp.onReady(() => {
     const geolocationErrorMessage = (error) => {
         switch (error && error.code) {
             case 1:
-                return 'Permita o acesso à localização do dispositivo para mostrar o seu ponto no mapa.';
+                return 'Permita o acesso Ã  localizaÃ§Ã£o do dispositivo para mostrar o seu ponto no mapa.';
             case 2:
-                return 'Não foi possível obter a localização atual do dispositivo.';
+                return 'NÃ£o foi possÃ­vel obter a localizaÃ§Ã£o atual do dispositivo.';
             case 3:
-                return 'A captura da localização demorou demais. Tente novamente em um local com melhor sinal.';
+                return 'A captura da localizaÃ§Ã£o demorou demais. Tente novamente em um local com melhor sinal.';
             default:
-                return 'Não foi possível obter a localização atual.';
+                return 'NÃ£o foi possÃ­vel obter a localizaÃ§Ã£o atual.';
         }
     };
 
@@ -513,7 +555,7 @@ window.HidrantesApp.onReady(() => {
                 fillOpacity: 1,
             }).addTo(leafletMap);
 
-            userMarker.bindTooltip('Sua localização aproximada', {
+            userMarker.bindTooltip('Sua localizaÃ§Ã£o aproximada', {
                 direction: 'top',
                 offset: [0, -8],
             });
@@ -539,27 +581,27 @@ window.HidrantesApp.onReady(() => {
 
     const captureUserLocation = () => {
         if (!leafletMap) {
-            setLocationFeedback('O mapa ainda não está pronto para capturar localização.', 'warning');
+            setLocationFeedback('O mapa ainda nÃ£o estÃ¡ pronto para capturar localizaÃ§Ã£o.', 'warning');
             return;
         }
 
         if (!('geolocation' in navigator)) {
-            setLocationFeedback('Este navegador não oferece suporte à geolocalização.', 'error');
+            setLocationFeedback('Este navegador nÃ£o oferece suporte Ã  geolocalizaÃ§Ã£o.', 'error');
             return;
         }
 
         const loopbackHosts = new Set(['localhost', '127.0.0.1', '::1']);
         if (!window.isSecureContext && !loopbackHosts.has(window.location.hostname)) {
             setLocationFeedback(
-                `O navegador só libera localização em HTTPS ou localhost. No endereço atual (${window.location.hostname}), ative HTTPS no Wamp para testar.`,
+                `O navegador sÃ³ libera localizaÃ§Ã£o em HTTPS ou localhost. No endereÃ§o atual (${window.location.hostname}), ative HTTPS no Wamp para testar.`,
                 'error',
             );
             return;
         }
 
         useLocationButton.disabled = true;
-        useLocationButton.textContent = 'Obtendo localização...';
-        setLocationFeedback('Solicitando a localização atual do dispositivo...', 'warning');
+        useLocationButton.textContent = 'Obtendo localizaÃ§Ã£o...';
+        setLocationFeedback('Solicitando a localizaÃ§Ã£o atual do dispositivo...', 'warning');
 
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -573,16 +615,16 @@ window.HidrantesApp.onReady(() => {
                 updateNearestHydrants(true);
                 pulseMapHint();
                 setLocationFeedback(
-                    `Sua localização foi marcada no mapa. Precisão aproximada de ${Math.round(position.coords.accuracy)} metros.`,
+                    `Sua localizaÃ§Ã£o foi marcada no mapa. PrecisÃ£o aproximada de ${Math.round(position.coords.accuracy)} metros.`,
                     'success',
                 );
                 useLocationButton.disabled = false;
-                useLocationButton.textContent = 'Atualizar minha localização';
+                useLocationButton.textContent = 'Atualizar minha localizaÃ§Ã£o';
             },
             (error) => {
                 setLocationFeedback(geolocationErrorMessage(error), 'error');
                 useLocationButton.disabled = false;
-                useLocationButton.textContent = 'Usar minha localização';
+                useLocationButton.textContent = 'Usar minha localizaÃ§Ã£o';
             },
             {
                 enableHighAccuracy: true,
@@ -598,17 +640,17 @@ window.HidrantesApp.onReady(() => {
 
     if (points.length === 0) {
         showMapEmpty(
-            'Nenhum ponto georreferenciado disponível.',
+            'Nenhum ponto georreferenciado disponÃ­vel.',
             'Cadastre latitude e longitude nos hidrantes para visualizar a cobertura operacional no mapa do painel.',
         );
-        setLocationFeedback('Não há hidrantes georreferenciados suficientes para calcular proximidade.', 'warning');
+        setLocationFeedback('NÃ£o hÃ¡ hidrantes georreferenciados suficientes para calcular proximidade.', 'warning');
         useLocationButton.disabled = true;
     } else if (!window.L) {
         showMapEmpty(
-            'Não foi possível carregar o mapa.',
-            'Verifique a conexão com a internet para carregar a biblioteca do mapa e tente novamente.',
+            'NÃ£o foi possÃ­vel carregar o mapa.',
+            'Verifique a conexÃ£o com a internet para carregar a biblioteca do mapa e tente novamente.',
         );
-        setLocationFeedback('O mapa não carregou, então a localização atual não pode ser mostrada agora.', 'error');
+        setLocationFeedback('O mapa nÃ£o carregou, entÃ£o a localizaÃ§Ã£o atual nÃ£o pode ser mostrada agora.', 'error');
         useLocationButton.disabled = true;
     } else {
         const streetsLayer = window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -732,11 +774,46 @@ window.HidrantesApp.onReady(() => {
             map.invalidateSize();
         }, 0);
 
-        setLocationFeedback('Ative sua localização para marcar o seu ponto no mapa e listar os hidrantes mais próximos.', 'neutral');
+        setLocationFeedback('Ative sua localizaÃ§Ã£o para marcar o seu ponto no mapa e listar os hidrantes mais prÃ³ximos.', 'neutral');
         pulseMapHint();
     }
 
     useLocationButton.addEventListener('click', captureUserLocation);
+
+    if (hasManualModal) {
+        setManualLoadingState(true, 'Carregando manual do usuario...');
+
+        manualOpenButton.addEventListener('click', openManualModal);
+
+        manualCloseButtons.forEach((button) => {
+            button.addEventListener('click', closeManualModal);
+        });
+
+        manualModal.addEventListener('click', (event) => {
+            if (event.target === manualModal) {
+                closeManualModal();
+            }
+        });
+
+        manualFrame.addEventListener('load', () => {
+            setManualLoadingState(false, '');
+        });
+
+        manualFrame.addEventListener('error', () => {
+            setManualLoadingState(true, 'Nao foi possivel carregar o manual do usuario agora.');
+        });
+
+        manualPrintButton.addEventListener('click', () => {
+            const frameWindow = manualFrame.contentWindow;
+
+            if (!frameWindow) {
+                return;
+            }
+
+            frameWindow.focus();
+            frameWindow.print();
+        });
+    }
 
     centerUserButton.addEventListener('click', () => {
         if (!leafletMap || userLocation === null) {
@@ -759,9 +836,19 @@ window.HidrantesApp.onReady(() => {
     });
 
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && !drawer.hidden) {
+        if (event.key !== 'Escape') {
+            return;
+        }
+
+        if (hasManualModal && !manualModal.hidden) {
+            closeManualModal();
+            return;
+        }
+
+        if (!drawer.hidden) {
             closeDrawer();
         }
     });
 });
+
 

@@ -7,6 +7,8 @@ $metrics = $metrics ?? [
 ];
 $mapPoints = $mapPoints ?? [];
 $painelPhotoBasePath = $painelPhotoBasePath ?? '/painel/fotos/hidrantes';
+$showManualButton = (bool) ($showManualButton ?? false);
+$manualUrl = (string) ($manualUrl ?? '');
 
 if (!function_exists('painel_value')) {
     function painel_value(mixed $value, string $fallback = 'Não informado'): string
@@ -118,10 +120,19 @@ $mapPayloadJson = json_encode(
                     Acompanhe a distribuição dos hidrantes georreferenciados no mapa, identifique rapidamente a situação operacional de cada ponto e abra a ficha completa do hidrante com rota direta para deslocamento.
                 </p>
             </div>
-            <div class="management-badges">
-                <span class="management-badge">Georreferenciados: <?= (int) $mapPointCount ?></span>
-                <span class="management-badge is-soft">Sem coordenadas: <?= (int) $withoutCoordinates ?></span>
-                <span class="management-badge is-soft">Clique no ponto para abrir o detalhe</span>
+            <div class="painel-hero-side">
+                <div class="management-badges">
+                    <span class="management-badge">Georreferenciados: <?= (int) $mapPointCount ?></span>
+                    <span class="management-badge is-soft">Sem coordenadas: <?= (int) $withoutCoordinates ?></span>
+                    <span class="management-badge is-soft">Clique no ponto para abrir o detalhe</span>
+                </div>
+                <?php if ($showManualButton && $manualUrl !== ''): ?>
+                    <div class="painel-hero-actions">
+                        <button type="button" class="btn-secondary painel-manual-trigger" id="painel-open-manual-button">
+                            Manual do usuario
+                        </button>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -259,6 +270,35 @@ $mapPayloadJson = json_encode(
 </div>
 
 <script type="application/json" id="painel-map-points"><?= $mapPayloadJson === false ? '[]' : $mapPayloadJson ?></script>
+
+<?php if ($showManualButton && $manualUrl !== ''): ?>
+    <div class="modal-backdrop" id="painel-manual-modal" hidden>
+        <div class="modal-card painel-manual-modal-card" role="dialog" aria-modal="true" aria-labelledby="painel-manual-title">
+            <div class="modal-header painel-manual-modal-header">
+                <div>
+                    <p class="management-eyebrow">Apoio ao usuario</p>
+                    <h2 id="painel-manual-title">Manual do usuario do sistema</h2>
+                    <p class="modal-subtitle">Consulte o manual completo na tela e use a acao abaixo para imprimir o documento.</p>
+                </div>
+                <div class="painel-manual-modal-actions">
+                    <button type="button" id="painel-manual-print-button" disabled>Imprimir manual</button>
+                    <button type="button" class="btn-secondary modal-close-button" data-painel-manual-close>Fechar</button>
+                </div>
+            </div>
+
+            <div class="modal-body painel-manual-modal-body">
+                <p class="painel-manual-status" id="painel-manual-status">Carregando manual do usuario...</p>
+                <iframe
+                    id="painel-manual-frame"
+                    class="painel-manual-frame"
+                    src="<?= e($manualUrl) ?>"
+                    title="Manual do usuario do sistema"
+                    loading="lazy"
+                ></iframe>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
 
 <div class="painel-drawer-backdrop" id="painel-hidrante-drawer" hidden>
     <aside class="painel-drawer-card" role="dialog" aria-modal="true" aria-labelledby="painel-drawer-title">
