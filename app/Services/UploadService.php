@@ -11,6 +11,9 @@ class UploadService
     ];
 
     private int $maxFileSize = 5242880;
+    private int $maxImageWidth = 8000;
+    private int $maxImageHeight = 8000;
+    private int $maxPixels = 40000000;
 
     public function storeMultiple(array $files): array
     {
@@ -36,7 +39,24 @@ class UploadService
                 continue;
             }
 
-            $mime = mime_content_type($tmp) ?: '';
+            $imageInfo = @getimagesize($tmp);
+            if ($imageInfo === false) {
+                continue;
+            }
+
+            [$width, $height] = $imageInfo;
+            if (
+                $width <= 0
+                || $height <= 0
+                || $width > $this->maxImageWidth
+                || $height > $this->maxImageHeight
+                || ($width * $height) > $this->maxPixels
+            ) {
+                continue;
+            }
+
+            $finfo = new \finfo(FILEINFO_MIME_TYPE);
+            $mime = (string) $finfo->file($tmp);
             $extension = $this->allowedMimeTypes[$mime] ?? null;
             if ($extension === null) {
                 continue;
@@ -46,6 +66,7 @@ class UploadService
             $destination = $directory . DIRECTORY_SEPARATOR . $newName;
 
             if (move_uploaded_file($tmp, $destination)) {
+                @chmod($destination, 0640);
                 $stored['foto_0' . ($i + 1)] = $newName;
             }
         }

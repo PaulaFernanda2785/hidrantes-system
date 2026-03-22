@@ -201,7 +201,7 @@ class HidranteController extends Controller
         ], ';');
 
         foreach ($items as $item) {
-            fputcsv($output, [
+            $row = [
                 $item['id'] ?? '',
                 $item['numero_hidrante'] ?? '',
                 $item['equipe_responsavel'] ?? '',
@@ -231,7 +231,12 @@ class HidranteController extends Controller
                 $item['atualizado_em'] ?? '',
                 $item['criado_por_usuario_id'] ?? '',
                 $item['atualizado_por_usuario_id'] ?? '',
-            ], ';');
+            ];
+
+            fputcsv($output, array_map(
+                fn(mixed $value): string => $this->sanitizeCsvValue($value),
+                $row
+            ), ';');
         }
 
         fclose($output);
@@ -296,19 +301,29 @@ class HidranteController extends Controller
         $safeFilename = basename($filename);
         $path = storage_path('uploads/hidrantes/' . $safeFilename);
 
-        if ($safeFilename !== $filename || !is_file($path)) {
+        if (
+            $safeFilename !== $filename
+            || !preg_match('/^hidrante_[a-f0-9]{32}\.(jpg|jpeg|png|webp)$/i', $safeFilename)
+            || !is_file($path)
+        ) {
             http_response_code(404);
             echo 'Arquivo nao encontrado.';
             return;
         }
 
-        $extension = strtolower(pathinfo($safeFilename, PATHINFO_EXTENSION));
-        $contentType = match ($extension) {
-            'jpg', 'jpeg' => 'image/jpeg',
-            'png' => 'image/png',
-            'webp' => 'image/webp',
-            default => 'application/octet-stream',
-        };
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $contentType = (string) $finfo->file($path);
+        $allowedContentTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+        ];
+
+        if (!in_array($contentType, $allowedContentTypes, true)) {
+            http_response_code(404);
+            echo 'Arquivo nao encontrado.';
+            return;
+        }
 
         header('Content-Type: ' . $contentType);
         header('Content-Length: ' . (string) filesize($path));
@@ -322,14 +337,33 @@ class HidranteController extends Controller
     private function photoUrl(string $filename): string
     {
         $safeFilename = trim($filename);
-        if ($safeFilename === '') {
+        if (
+            $safeFilename === ''
+            || !preg_match('/^hidrante_[a-f0-9]{32}\.(jpg|jpeg|png|webp)$/i', $safeFilename)
+        ) {
             return '';
         }
 
-        $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'] ?? '';
         $path = '/uploads/hidrantes/' . rawurlencode($safeFilename);
 
-        return $host !== '' ? $scheme . '://' . $host . $path : $path;
+        return app_url($path);
+    }
+
+    private function sanitizeCsvValue(mixed $value): string
+    {
+        $normalized = trim((string) $value);
+        $normalized = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/u', ' ', $normalized);
+        $normalized = str_replace(["\r", "\n", "\t"], ' ', (string) $normalized);
+        $normalized = trim((string) $normalized);
+
+        if ($normalized === '') {
+            return '';
+        }
+
+        if (preg_match('/^[=+\-@]/', $normalized)) {
+            return "'" . $normalized;
+        }
+
+        return $normalized;
     }
 }
