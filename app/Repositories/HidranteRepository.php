@@ -304,28 +304,7 @@ class HidranteRepository
 
     public function report(array $filters = []): array
     {
-        ['where_sql' => $whereSql, 'params' => $params] = $this->buildFilterQuery($filters);
-
-        $sql = "SELECT
-                    h.id,
-                    h.numero_hidrante,
-                    h.status_operacional,
-                    h.tipo_hidrante,
-                    h.area,
-                    h.endereco,
-                    h.atualizado_em,
-                    m.nome AS municipio_nome,
-                    b.nome AS bairro_nome
-                FROM hidrantes h
-                INNER JOIN municipios m ON m.id = h.municipio_id
-                LEFT JOIN bairros b ON b.id = h.bairro_id
-                {$whereSql}
-                ORDER BY h.atualizado_em DESC, h.id DESC";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-
-        return $stmt->fetchAll();
+        return $this->export($filters);
     }
 
     public function export(array $filters = []): array
