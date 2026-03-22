@@ -129,7 +129,7 @@ $mapPayloadJson = json_encode(
                 <?php if ($showManualButton && $manualUrl !== ''): ?>
                     <div class="painel-hero-actions">
                         <button type="button" class="btn-secondary painel-manual-trigger" id="painel-open-manual-button">
-                            Manual do usuario
+                            Manual do usuário
                         </button>
                     </div>
                 <?php endif; ?>
@@ -276,9 +276,9 @@ $mapPayloadJson = json_encode(
         <div class="modal-card painel-manual-modal-card" role="dialog" aria-modal="true" aria-labelledby="painel-manual-title">
             <div class="modal-header painel-manual-modal-header">
                 <div>
-                    <p class="management-eyebrow">Apoio ao usuario</p>
-                    <h2 id="painel-manual-title">Manual do usuario do sistema</h2>
-                    <p class="modal-subtitle">Consulte o manual completo na tela e use a acao abaixo para imprimir o documento.</p>
+                    <p class="management-eyebrow">Apoio ao usuário</p>
+                    <h2 id="painel-manual-title">Manual do usuário do sistema</h2>
+                    <p class="modal-subtitle">Consulte o manual completo na tela e use a ação abaixo para imprimir o documento.</p>
                 </div>
                 <div class="painel-manual-modal-actions">
                     <button type="button" id="painel-manual-print-button" disabled>Imprimir manual</button>
@@ -287,12 +287,12 @@ $mapPayloadJson = json_encode(
             </div>
 
             <div class="modal-body painel-manual-modal-body">
-                <p class="painel-manual-status" id="painel-manual-status">Carregando manual do usuario...</p>
+                <p class="painel-manual-status" id="painel-manual-status">Carregando manual do usuário...</p>
                 <iframe
                     id="painel-manual-frame"
                     class="painel-manual-frame"
                     src="<?= e($manualUrl) ?>"
-                    title="Manual do usuario do sistema"
+                    title="Manual do usuário do sistema"
                     loading="lazy"
                 ></iframe>
             </div>

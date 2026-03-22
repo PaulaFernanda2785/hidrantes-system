@@ -1,4 +1,4 @@
-﻿window.HidrantesApp.onReady(() => {
+window.HidrantesApp.onReady(() => {
     const mapContainer = document.getElementById('painel-map');
     const mapEmpty = document.getElementById('painel-map-empty');
     const mapHint = document.getElementById('painel-map-hint');
@@ -781,7 +781,7 @@
     useLocationButton.addEventListener('click', captureUserLocation);
 
     if (hasManualModal) {
-        setManualLoadingState(true, 'Carregando manual do usuario...');
+        setManualLoadingState(true, 'Carregando manual do usuário...');
 
         manualOpenButton.addEventListener('click', openManualModal);
 
@@ -800,7 +800,7 @@
         });
 
         manualFrame.addEventListener('error', () => {
-            setManualLoadingState(true, 'Nao foi possivel carregar o manual do usuario agora.');
+            setManualLoadingState(true, 'Não foi possível carregar o manual do usuário agora.');
         });
 
         manualPrintButton.addEventListener('click', () => {
