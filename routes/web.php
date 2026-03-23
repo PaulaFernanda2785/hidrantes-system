@@ -122,6 +122,11 @@ $router->get('/relatorios/hidrantes', [RelatorioController::class, 'index'], [
     RoleMiddleware::class . ':admin,gestor',
 ]);
 
+$router->get('/relatorios/hidrantes/impressao', [RelatorioController::class, 'print'], [
+    AuthMiddleware::class,
+    RoleMiddleware::class . ':admin,gestor',
+]);
+
 $router->get('/historico', [HistoricoController::class, 'index'], [
     AuthMiddleware::class,
     RoleMiddleware::class . ':admin,gestor',

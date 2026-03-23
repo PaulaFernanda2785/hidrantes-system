@@ -5,6 +5,8 @@ window.HidrantesApp.onReady(() => {
     const printModal = document.getElementById('report-print-modal');
     const printCloseButtons = printModal ? printModal.querySelectorAll('[data-report-print-close]') : [];
     const printTriggerButton = document.getElementById('trigger-report-print');
+    const printFrame = document.getElementById('report-print-frame');
+    const printStatus = document.getElementById('report-preview-status');
 
     const setupBairroFilter = () => {
         if (!filterMunicipio || !filterBairro) {
@@ -57,7 +59,7 @@ window.HidrantesApp.onReady(() => {
                 const items = await response.json();
                 renderFilterBairros(Array.isArray(items) ? items : [], selectedId);
             } catch (error) {
-                filterBairro.innerHTML = '<option value="">Não foi possível carregar</option>';
+                filterBairro.innerHTML = '<option value="">N\u00e3o foi poss\u00edvel carregar</option>';
                 filterBairro.value = '';
                 filterBairro.disabled = true;
             }
@@ -98,20 +100,37 @@ window.HidrantesApp.onReady(() => {
         document.body.classList.add('modal-open');
     };
 
-    const triggerPrint = () => {
-        document.body.classList.add('report-print-mode');
-        window.print();
+    const setPrintLoadingState = (isLoading, message = '') => {
+        if (printTriggerButton) {
+            printTriggerButton.disabled = isLoading;
+        }
+
+        if (!printStatus) {
+            return;
+        }
+
+        printStatus.textContent = message;
+        printStatus.hidden = !isLoading;
     };
 
-    window.addEventListener('afterprint', () => {
-        document.body.classList.remove('report-print-mode');
-    });
+    const triggerPrint = () => {
+        const frameWindow = printFrame ? printFrame.contentWindow : null;
+
+        if (!frameWindow) {
+            return;
+        }
+
+        frameWindow.focus();
+        frameWindow.print();
+    };
 
     setupBairroFilter();
 
-    if (!printModal || !printPreviewButton || !printTriggerButton) {
+    if (!printModal || !printPreviewButton || !printTriggerButton || !printFrame) {
         return;
     }
+
+    setPrintLoadingState(true, 'Carregando pr\u00e9-visualiza\u00e7\u00e3o do relat\u00f3rio...');
 
     printPreviewButton.addEventListener('click', openPrintModal);
 
@@ -129,6 +148,14 @@ window.HidrantesApp.onReady(() => {
         if (event.key === 'Escape' && !printModal.hidden) {
             closePrintModal();
         }
+    });
+
+    printFrame.addEventListener('load', () => {
+        setPrintLoadingState(false, '');
+    });
+
+    printFrame.addEventListener('error', () => {
+        setPrintLoadingState(true, 'N\u00e3o foi poss\u00edvel carregar a pr\u00e9-visualiza\u00e7\u00e3o do relat\u00f3rio.');
     });
 
     printTriggerButton.addEventListener('click', triggerPrint);
