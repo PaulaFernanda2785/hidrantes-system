@@ -1,0 +1,75 @@
+.report-preview-modal-card {
+    width: min(1240px, 100%);
+    max-height: calc(100vh - 48px);
+}
+
+.report-preview-modal-header {
+    align-items: flex-start;
+}
+
+.report-preview-modal-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.report-preview-modal-actions .btn-secondary,
+.report-preview-modal-actions button {
+    width: auto;
+}
+
+.report-preview-modal-body {
+    display: grid;
+    gap: 12px;
+    padding-top: 16px;
+}
+
+.report-preview-status {
+    margin: 0;
+    color: var(--text-soft);
+    line-height: 1.5;
+}
+
+.report-preview-status[hidden] {
+    display: none !important;
+}
+
+.report-preview-frame {
+    width: 100%;
+    min-height: min(78vh, 1000px);
+    border: 1px solid #dbe4f0;
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at top, rgba(11, 79, 138, 0.1), transparent 42%),
+        linear-gradient(180deg, #eef5fb, #ffffff 45%);
+}
+
+.report-preview-modal-actions button:disabled {
+    cursor: wait;
+    opacity: 0.72;
+}
+
+@media (max-width: 960px) {
+    .report-preview-modal-card {
+        width: min(100%, 100%);
+    }
+}
+
+@media (max-width: 640px) {
+    .report-preview-modal-actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .report-preview-modal-actions .btn-secondary,
+    .report-preview-modal-actions button {
+        width: 100%;
+    }
+
+    .report-preview-frame {
+        min-height: 68vh;
+    }
+}

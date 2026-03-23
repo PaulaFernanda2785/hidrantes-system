@@ -1,0 +1,34 @@
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: var(--text-soft);
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.pagination .btn-secondary.is-active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    font-weight: 700;
+}
+
+.pagination .btn-secondary.is-disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.pagination-ellipsis {
+    color: var(--text-soft);
+    padding: 0 4px;
+}

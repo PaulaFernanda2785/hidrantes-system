@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documento Técnico - Manual do Usuário</title>
+    <style>
+        :root {
+            --brand-blue: #0b3a67;
+            --brand-blue-strong: #082846;
+            --brand-blue-deep: #061d34;
+            --brand-soft: #eaf2f9;
+            --ink: #16202a;
+            --muted: #5c6b79;
+            --line: #ced8e2;
+            --paper: #ffffff;
+            --page-bg: #f2f5f8;
+            --gold-soft: #d7b87a;
+        }
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: var(--page-bg);
+            color: var(--ink);
+            font-family: "Segoe UI", Calibri, Arial, sans-serif;
+            line-height: 1.45;
+        }
+        body { padding: 18px; }
+        .manual { max-width: 860px; margin: 0 auto; }
+        .page {
+            position: relative;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto 22px;
+            padding: 22mm 18mm 20mm;
+            background: var(--paper);
+            box-shadow: 0 18px 42px rgba(12, 26, 40, 0.10);
+            page-break-after: always;
+            overflow: hidden;
+        }
+        .page:last-child { page-break-after: auto; }
+        .page::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 8mm;
+            background: linear-gradient(90deg, var(--brand-blue-deep) 0%, var(--brand-blue) 62%, #2f7cb8 100%);
+            pointer-events: none;
+        }
+        .page::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border: 1px solid #d7e1eb;
+            pointer-events: none;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 10px 12px 12px;
+            border: 1px solid #d7e1eb;
+            border-bottom: 2px solid var(--brand-blue);
+            border-radius: 12px;
+            background: linear-gradient(180deg, #f9fbfd 0%, #eef4f9 100%);
+        }
+        .header-brand { display: flex; align-items: center; gap: 12px; }
+        .header-brand img { width: 54px; height: 54px; object-fit: contain; }
+        .header-brand-copy strong {
+            display: block;
+            font-size: 15px;
+            color: var(--brand-blue-strong);
+        }
+        .header-brand-copy span {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+        }
+        .header-meta { text-align: right; font-size: 11px; color: var(--muted); }
+        .content { min-height: 232mm; padding-top: 12px; }
+        .footer {
+            position: absolute;
+            left: 18mm;
+            right: 18mm;
+            bottom: 12mm;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 9px 12px 0;
+            border-top: 1px solid var(--line);
+            font-size: 11px;
+            color: var(--muted);
+            background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(246,250,253,0.9) 100%);
+        }
+        .footer-page { font-weight: 700; color: var(--brand-blue); }
+        .cover {
+            background:
+                radial-gradient(circle at top right, rgba(31, 111, 178, 0.16), transparent 24%),
+                linear-gradient(180deg, #ffffff 0%, #f5f9fd 100%);
+        }
+        .cover .content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 18px;
+            min-height: 232mm;
+        }
+        .cover-mark {
+            display: inline-flex;
+            width: fit-content;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(11, 58, 103, 0.08);
+            color: var(--brand-blue);
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .cover-title {
+            margin: 0;
+            font-size: 34px;
+            line-height: 1.12;
+            color: var(--brand-blue-strong);
+        }
+        .cover-subtitle { margin: 0; max-width: 620px; font-size: 17px; color: var(--muted); }
+        .cover-shell {
+            position: relative;
+            padding: 22px 22px 18px;
+            border: 1px solid #d9e4ef;
+            border-radius: 18px;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,251,254,0.98) 100%);
+            overflow: hidden;
+        }
+        .cover-shell::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 10px;
+            background: linear-gradient(180deg, var(--brand-blue-deep) 0%, var(--brand-blue) 100%);
+        }
+        .cover-seal {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            width: fit-content;
+            border: 1px solid rgba(11, 58, 103, 0.16);
+            border-radius: 14px;
+            background: rgba(234, 242, 249, 0.72);
+        }
+        .cover-seal img {
+            width: 58px;
+            height: 58px;
+            object-fit: contain;
+        }
+        .cover-seal-copy strong {
+            display: block;
+            color: var(--brand-blue-strong);
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+        .cover-seal-copy span {
+            display: block;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .cover-grid, .two-col, .support-grid {
+            display: grid;
+            gap: 14px;
+        }
+        .cover-grid, .two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .support-grid { grid-template-columns: 1.15fr 0.85fr; }
+        .cover-card, .card {
+            padding: 14px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: #fff;
+        }
+        .cover-card strong { display: block; margin-bottom: 6px; color: var(--brand-blue); font-size: 13px; text-transform: uppercase; }
+        .document-control {
+            margin-top: 6px;
+            border: 1px solid #d9e4ef;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .document-control table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        .document-control th,
+        .document-control td {
+            padding: 9px 10px;
+            border: 1px solid #d9e4ef;
+            text-align: left;
+            vertical-align: top;
+        }
+        .document-control th {
+            width: 26%;
+            background: #eef4f9;
+            color: var(--brand-blue-strong);
+        }
+        .section-kicker {
+            display: inline-block;
+            margin-bottom: 8px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: rgba(11, 58, 103, 0.08);
+            color: var(--brand-blue);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        h1, h2, h3 { margin-top: 0; color: var(--brand-blue-strong); }
+        h1 { font-size: 28px; margin-bottom: 10px; }
+        h2 { font-size: 19px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+        h3 { font-size: 15px; margin-bottom: 6px; }
+        p { margin: 0 0 10px; font-size: 13px; }
+        ul, ol { margin: 0 0 12px 20px; padding: 0; font-size: 13px; }
+        li { margin-bottom: 5px; }
+        .lead { font-size: 15px; color: var(--muted); }
+        .note, .alert, .tip {
+            padding: 12px 14px;
+            border-radius: 12px;
+            margin: 10px 0 14px;
+            font-size: 13px;
+        }
+        .note { background: #f6f9fc; border: 1px solid #dbe7f2; }
+        .alert { background: #fff6ea; border: 1px solid #f4d5a4; }
+        .tip { background: #eef9f1; border: 1px solid #b9dfc2; }
+        .index-list {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .index-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            padding: 11px 14px;
+            border-bottom: 1px solid var(--line);
+            font-size: 13px;
+        }
+        .index-row:last-child { border-bottom: none; }
+        .index-row a { color: var(--ink); text-decoration: none; }
+        .index-row strong, .index-page { color: var(--brand-blue); }
+        .index-page { font-weight: 700; }
+        .step-list { counter-reset: step; list-style: none; margin-left: 0; }
+        .step-list li {
+            position: relative;
+            padding-left: 42px;
+            margin-bottom: 12px;
+        }
+        .step-list li::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--brand-blue);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .module-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0 14px;
+            font-size: 12px;
+        }
+        .module-table th, .module-table td {
+            padding: 8px 9px;
+            border: 1px solid var(--line);
+            vertical-align: top;
+            text-align: left;
+        }
+        .module-table th { background: var(--brand-soft); color: var(--brand-blue-strong); }
+        .checklist {
+            columns: 2;
+            column-gap: 18px;
+            margin-left: 18px;
+        }
+        .small { font-size: 12px; color: var(--muted); }
+        .anchor-fix { position: relative; top: -4mm; visibility: hidden; }
+        @media print {
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            body { padding: 0; background: #fff; }
+            .manual { max-width: none; }
+            .page {
+                width: 210mm;
+                min-height: 297mm;
+                margin: 0;
+                box-shadow: none;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="manual">
+    <section class="page cover" id="pagina-1">
+        <header class="header">
+            <div class="header-brand">
+                <img src="../public/img/logos/logo.cbmpa.png" alt="Logo CBMPA">
+                <div class="header-brand-copy">
+                    <strong>Corpo de Bombeiros Militar do Estado do Pará</strong>
+                    <span>Coordenadoria Estadual de Proteção e Defesa Civil</span>
+                </div>
+            </div>
+            <div class="header-meta">
+                Manual do Usuário<br>
+                Sistema de Gestão de Hidrantes<br>
+                Versão do sistema: 1.0.0
+            </div>
+        </header>
+        <main class="content">
+            <div class="cover-shell">
+                <span class="cover-mark">Documento Técnico</span>
+                <div class="cover-seal">
+                    <img src="../public/img/logos/logo.cbmpa.png" alt="Logo CBMPA">
+                    <div class="cover-seal-copy">
+                        <strong>Manual Institucional de Operação</strong>
+                        <span>Sistema de Gestão de Hidrantes</span>
+                    </div>
+                </div>
+                <h1 class="cover-title">Manual do Usuário<br> Sistema de Gestão de Hidrantes</h1>
+                <p class="cover-subtitle">
+                    Documento orientado ao usuário final para operação do sistema, cobrindo acesso, navegação,
+                    cadastro, atualização, consulta, relatórios e boas práticas de uso.
+                </p>
+                <div class="cover-grid">
+                    <div class="cover-card">
+                        <strong>Referência</strong>
+                        <span>Estado do sistema em 22/03/2026</span>
+                    </div>
+                    <div class="cover-card">
+                        <strong>Ambiente-alvo</strong>
+                        <span>Aplicação web responsiva para desktop e dispositivos móveis</span>
+                    </div>
+                    <div class="cover-card">
+                        <strong>Público</strong>
+                        <span>Usuários com perfis admin, gestor e operador</span>
+                    </div>
+                    <div class="cover-card">
+                        <strong>Objetivo</strong>
+                        <span>Orientar o uso correto e seguro do sistema</span>
+                    </div>
+                </div>
+                <div class="document-control">
+                    <table>
+                        <tr><th>Instituição</th><td>Corpo de Bombeiros Militar do Estado do Pará / CEDEC-PA</td></tr>
+                        <tr><th>Tipo documental</th><td>Manual do Usuário</td></tr>
+                        <tr><th>Código documental</th><td>MU-SGH-001</td></tr>
+                        <tr><th>Versão</th><td>1.0.0</td></tr>
+                        <tr><th>Data de referência</th><td>22/03/2026</td></tr>
+                    </table>
+                </div>
+            </div>
+        </main>
+        <footer class="footer"><span>Documento Técnico - Manual do Usuário</span><span class="footer-page">Página 1 de 12</span></footer>
+    </section>
+
+    <section class="page" id="pagina-2">
+        <header class="header">
+            <div class="header-brand">
+                <img src="../public/img/logos/logo.cbmpa.png" alt="Logo CBMPA">
+                <div class="header-brand-copy">
+                    <strong>Sistema de Gestão de Hidrantes</strong>
+                    <span>Manual do Usuário</span>
+                </div>
+            </div>
+            <div class="header-meta">Cabeçalho padrão<br>Rodapé institucional<br>Paginação sequencial</div>
+        </header>
+        <main class="content">
+            <h1>Índice</h1>
+            <p class="lead">A estrutura abaixo organiza o manual por fluxo de uso. Os títulos também funcionam como referência para consulta rápida durante treinamento e operação.</p>
+            <div class="index-list">
+                <div class="index-row"><a href="#secao-1"><strong>1.</strong> Apresentação do sistema e perfis de usuário</a><span class="index-page">3</span></div>
+                <div class="index-row"><a href="#secao-2"><strong>2.</strong> Acesso ao sistema: login, logout, bloqueio e sessão</a><span class="index-page">4</span></div>
+                <div class="index-row"><a href="#secao-3"><strong>3.</strong> Painel operacional e mapa interativo</a><span class="index-page">5</span></div>
+                <div class="index-row"><a href="#secao-4"><strong>4.</strong> Listagem de hidrantes, filtros e visualização de detalhes</a><span class="index-page">6</span></div>
+                <div class="index-row"><a href="#secao-5"><strong>5.</strong> Cadastro e edição de hidrantes</a><span class="index-page">7</span></div>
+                <div class="index-row"><a href="#secao-6"><strong>6.</strong> Coordenadas, bairros e registro fotográfico</a><span class="index-page">8</span></div>
+                <div class="index-row"><a href="#secao-7"><strong>7.</strong> Gestão de usuários</a><span class="index-page">9</span></div>
+                <div class="index-row"><a href="#secao-8"><strong>8.</strong> Relatórios e impressão</a><span class="index-page">10</span></div>
+                <div class="index-row"><a href="#secao-9"><strong>9.</strong> Histórico de operações e auditoria</a><span class="index-page">11</span></div>
+                <div class="index-row"><a href="#secao-10"><strong>10.</strong> Boas práticas, cuidados e solução de problemas</a><span class="index-page">12</span></div>
+            </div>
+            <div class="note"><strong>Observação:</strong> este manual foi construído com base na implementação atual do sistema. Caso novas telas ou funcionalidades sejam adicionadas, o documento deverá ser revisado.</div>
+        </main>
+        <footer class="footer"><span>CBMPA / CEDEC-PA - Manual do Usuário</span><span class="footer-page">Página 2 de 12</span></footer>
+    </section>
+
+    <section class="page" id="pagina-3">
+        <header class="header">
+            <div class="header-brand">
+                <img src="../public/img/logos/logo.cbmpa.png" alt="Logo CBMPA">
+                <div class="header-brand-copy"><strong>Manual do Usuário</strong><span>Apresentação e perfis</span></div>
+            </div>
+            <div class="header-meta">Seção 1</div>
+        </header>
+        <main class="content">
+            <span id="secao-1" class="anchor-fix"></span>
+            <h1>1. Apresentação do sistema e perfis de usuário</h1>
+            <p>O Sistema de Gestão de Hidrantes centraliza o cadastro, a consulta operacional, a visualização georreferenciada e o acompanhamento histórico dos hidrantes. A aplicação pode ser utilizada em desktop, tablet ou celular, respeitando as permissões do perfil autenticado.</p>
+            <h2>1.1 Objetivos de uso</h2>
+            <ul>
+                <li>Consultar rapidamente a distribuição e o status operacional dos hidrantes.</li>
+                <li>Cadastrar e atualizar registros técnicos de forma padronizada.</li>
+                <li>Manter fotos e coordenadas associadas ao ponto cadastrado.</li>
+                <li>Gerar relatórios para análise e impressão.</li>
+                <li>Registrar rastreabilidade de operações realizadas pelos usuários.</li>
+            </ul>
+            <h2>1.2 Perfis de acesso</h2>
+            <table class="module-table">
+                <thead><tr><th>Perfil</th><th>Acesso principal</th><th>Restrições relevantes</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Admin</strong></td><td>Painel, hidrantes, usuários, relatórios e histórico.</td><td>Sem restrições funcionais relevantes na interface atual.</td></tr>
+                    <tr><td><strong>Gestor</strong></td><td>Painel, hidrantes, relatórios e histórico.</td><td>Não acessa a administração de usuários.</td></tr>
+                    <tr><td><strong>Operador</strong></td><td>Painel, listagem de hidrantes, edição operacional e APIs internas de apoio.</td><td>Não cria nem exclui hidrantes. Não acessa usuários, relatórios ou histórico. Não altera o número do hidrante.</td></tr>
+                </tbody>
+            </table>
+            <div class="tip"><strong>Dica de operação:</strong> antes de iniciar qualquer cadastro ou atualização, confirme qual perfil está autenticado no topo da aplicação.</div>
+        </main>
+        <footer class="footer"><span>Seção 1 - Apresentação e perfis</span><span class="footer-page">Página 3 de 12</span></footer>
+    </section>    <section class="page" id="pagina-4">
+        <header class="header">
+            <div class="header-brand"><img src="../public/img/logos/logo.cbmpa.png" alt="Logo CBMPA"><div class="header-brand-copy"><strong>Manual do Usuário</strong><span>Acesso e sessão</span></div></div>
+            <div class="header-meta">Seção 2</div>
+        </header>
+        <main class="content">
+            <span id="secao-2" class="anchor-fix"></span>
+            <h1>2. Acesso ao sistema: login, logout, bloqueio e sessão</h1>
+            <h2>2.1 Como entrar no sistema</h2>
+            <ol class="step-list">
+                <li>Acesse a tela inicial do sistema.</li>
+                <li>No formulário de acesso, informe sua <strong>matrícula funcional</strong>.</li>
+                <li>Informe sua <strong>senha</strong>.</li>
+                <li>Clique em <strong>Entrar</strong>.</li>
+                <li>Se as credenciais estiverem corretas, você será redirecionado ao painel.</li>
+            </ol>
+            <h2>2.2 Informações importantes sobre o login</h2>
+            <ul>
+                <li>A conta precisa estar com status <strong>ativo</strong>.</li>
+                <li>Depois de 5 tentativas falhas, o sistema bloqueia novas tentativas por aproximadamente 15 minutos.</li>
+                <li>Login e logout ficam sujeitos a registro em histórico operacional.</li>
+            </ul>
+            <div class="alert"><strong>Atenção:</strong> não compartilhe matrícula e senha. O sistema registra trilha de uso por usuário autenticado.</div>
+            <h2>2.3 Encerramento e expiração da sessão</h2>
+            <p>Para sair, utilize o botão <strong>Sair</strong> no topo da área autenticada. Em caso de inatividade prolongada, a sessão pode expirar por segurança. Na configuração atual, o tempo padrão é de aproximadamente 2 horas.</p>
+            <div class="note">A tela de login também exibe um painel operacional visual. Menus e operações de manutenção continuam restritos aos usuários autenticados.</div>
+        </main>
+        <footer class="footer"><span>Seção 2 - Login, logout e sessão</span><span class="footer-page">Página 4 de 12</span></footer>
+    </section>
+
+    <section class="page" id="pagina-5">
+        <header class="header">
+            <div class="header-brand"><img src="../public/img/logos/logo.cbmpa.png" alt="Logo CBMPA"><div class="header-brand-copy"><strong>Manual do Usuário</strong><span>Painel operacional</span></div></div>
+            <div class="header-meta">Seção 3</div>
+        </header>
+        <main class="content">
+            <span id="secao-3" class="anchor-fix"></span>
+            <h1>3. Painel operacional e mapa interativo</h1>
+            <p>O painel operacional é a principal tela de consulta visual do sistema. Nela o usuário encontra métricas resumidas, mapa georreferenciado, legenda por status e o detalhe técnico do hidrante selecionado.</p>
+            <div class="two-col">
+                <div class="card">
+                    <h3>Indicadores exibidos</h3>
+                    <ul>
+                        <li>Total de hidrantes.</li>
+                        <li>Operantes.</li>
+                        <li>Operantes com restrição.</li>
+                        <li>Inoperantes.</li>
+                        <li>Pontos georreferenciados.</li>
+                        <li>Cadastros sem coordenadas.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Recursos do mapa</h3>
+                    <ul>
+                        <li>Camadas Ruas, Operacional e Satélite.</li>
+                        <li>Zoom por rolagem do mouse.</li>
+                        <li>Arraste para navegação.</li>
+                        <li>Clique no ponto para abrir detalhe.</li>
+                        <li>Link para rota no Google Maps.</li>
+                    </ul>
+                </div>
+            </div>
+            <h2>3.1 Uso da localização atual</h2>
+            <ul>
+                <li>Clique em <strong>Usar minha localização</strong> para marcar seu ponto no mapa.</li>
+                <li>O sistema lista os hidrantes mais próximos a partir da coordenada capturada.</li>
+                <li>O botão <strong>Centralizar no mapa</strong> aparece quando a localização já estiver carregada.</li>
+            </ul>
+            <div class="alert">A geolocalização do navegador depende de permissão do usuário e de contexto seguro. Em geral, o recurso funciona em <strong>HTTPS</strong> ou em <strong>localhost</strong>.</div>
+            <h2>3.2 Drawer de detalhe</h2>
+            <p>Ao clicar em um ponto, o sistema abre uma ficha lateral com identificação, condições físicas, resultado do teste, localização, mapa do ponto e fotos cadastradas.</p>
+        </main>
+        <footer class="footer"><span>Seção 3 - Painel e mapa interativo</span><span class="footer-page">Página 5 de 12</span></footer>
+    </section>
+
+    <section class="page" id="pagina-6">
+        <header class="header">
+            <div class="header-brand"><img src="../public/img/logos/logo.cbmpa.png" alt="Logo CBMPA"><div class="header-brand-copy"><strong>Manual do Usuário</strong><span>Hidrantes: consulta e filtros</span></div></div>
+            <div class="header-meta">Seção 4</div>
+        </header>
+        <main class="content">
+            <span id="secao-4" class="anchor-fix"></span>
+            <h1>4. Listagem de hidrantes, filtros e visualização de detalhes</h1>
+            <h2>4.1 Acesso à tela</h2>
+            <p>Utilize o menu lateral e clique em <strong>Hidrantes</strong>. A tela exibirá os registros cadastrados, com indicadores de paginação e ações disponíveis conforme o perfil autenticado.</p>
+            <h2>4.2 Filtros disponíveis</h2>
+            <ul>
+                <li><strong>Busca:</strong> pesquisa por número do hidrante, endereço ou equipe responsável.</li>
+                <li><strong>Status:</strong> operante, operante com restrição ou inoperante.</li>
+                <li><strong>Município:</strong> restringe os resultados ao município escolhido.</li>
+                <li><strong>Bairro:</strong> é carregado dinamicamente conforme o município selecionado.</li>
+            </ul>
+            <div class="tip">Depois de definir os filtros, clique em <strong>Filtrar</strong>. Para voltar ao conjunto completo, utilize <strong>Limpar</strong>.</div>
+            <h2>4.3 Ações na listagem</h2>
+            <ul>
+                <li><strong>Ver detalhe:</strong> abre um modal com as informações técnicas do hidrante.</li>
+                <li><strong>Editar:</strong> abre o formulário para atualização.</li>
+                <li><strong>Excluir:</strong> realiza exclusão lógica. Disponível apenas para `admin` e `gestor`.</li>
+                <li><strong>Baixar CSV:</strong> exporta a listagem filtrada.</li>
+                <li><strong>Novo hidrante:</strong> disponível apenas para `admin` e `gestor`.</li>
+            </ul>
+            <h2>4.4 Modal de detalhe</h2>
+            <p>O modal apresenta dados como número, equipe responsável, área, status, tipo, endereço, coordenadas, resultado do teste e fotos anexadas.</p>
+        </main>
+        <footer class="footer"><span>Seção 4 - Listagem, filtros e detalhe</span><span class="footer-page">Página 6 de 12</span></footer>
+    </section>    <section class="page" id="pagina-7">
+        <header class="header">
+            <div class="header-brand"><img src="../public/img/logos/logo.cbmpa.png" alt="Logo CBMPA"><div class="header-brand-copy"><strong>Manual do Usuário</strong><span>Hidrantes: cadastro e edição</span></div></div>
+            <div class="header-meta">Seção 5</div>
+        </header>
+        <main class="content">
+            <span id="secao-5" class="anchor-fix"></span>
+            <h1>5. Cadastro e edição de hidrantes</h1>
+            <p>O formulário de hidrante foi organizado em blocos técnicos para facilitar o preenchimento e a revisão dos dados em escritório ou em campo.</p>
+            <h2>5.1 Blocos do formulário</h2>
+            <ul class="checklist">
+                <li>Identificação e operação.</li>
+                <li>Condições físicas.</li>
+                <li>Teste e desempenho.</li>
+                <li>Localização e referência.</li>
+                <li>Registro fotográfico.</li>
+            </ul>
+            <h2>5.2 Campos principais</h2>
+            <ul>
+                <li>Número do hidrante.</li>
+                <li>Equipe responsável.</li>
+                <li>Área.</li>
+                <li>Existe no local.</li>
+                <li>Tipo do hidrante.</li>
+                <li>Status operacional.</li>
+                <li>Município, bairro e endereço.</li>
+                <li>Latitude e longitude, quando disponíveis.</li>
+            </ul>
+            <h2>5.3 Regras importantes na edição</h2>
+            <ul>
+                <li>O número do hidrante deve ser único no sistema.</li>
+                <li>Se um bairro for selecionado, ele precisa pertencer ao município informado.</li>
+                <li>O perfil `operador` pode editar o registro, mas não pode alterar o número do hidrante.</li>
+                <li>Se o teste não tiver sido realizado, o resultado do teste não deve ser informado.</li>
+            </ul>
+            <div class="alert">Antes de salvar, revise o município, o bairro, o endereço e as coordenadas. Esses dados impactam diretamente a localização no mapa e os relatórios.</div>
+        </main>
+        <footer class="footer"><span>Seção 5 - Cadastro e edição de hidrantes</span><span class="footer-page">Página 7 de 12</span></footer>
+    </section>
+
+    <section class="page" id="pagina-8">
+        <header class="header">
+            <div class="header-brand"><img src="../public/img/logos/logo.cbmpa.png" alt="Logo CBMPA"><div class="header-brand-copy"><strong>Manual do Usuário</strong><span>Coordenadas, bairros e fotos</span></div></div>
+            <div class="header-meta">Seção 6</div>
+        </header>
+        <main class="content">
+            <span id="secao-6" class="anchor-fix"></span>
+            <h1>6. Coordenadas, bairros e registro fotográfico</h1>
+            <h2>6.1 Preenchimento das coordenadas</h2>
+            <ul>
+                <li>Você pode digitar latitude e longitude manualmente.</li>
+                <li>Também pode usar o botão <strong>Usar localização atual</strong>.</li>
+                <li>O botão <strong>Ver no mapa</strong> abre uma pré-visualização do ponto informado.</li>
+                <li>O botão <strong>Limpar coordenadas</strong> remove os valores do formulário.</li>
+            </ul>
+            <div class="note">Se a geolocalização não funcionar, verifique permissão do navegador, sinal do dispositivo e uso em HTTPS ou localhost.</div>
+            <h2>6.2 Cadastro e edição de bairro</h2>
+            <ol class="step-list">
+                <li>Selecione primeiro o município.</li>
+                <li>Se o bairro não existir, clique em <strong>Cadastrar bairro</strong>.</li>
+                <li>Informe o nome do bairro e confirme.</li>
+                <li>Para corrigir o nome de um bairro já selecionado, clique em <strong>Editar bairro</strong>.</li>
+            </ol>
+            <h2>6.3 Fotos do hidrante</h2>
+            <ul>
+                <li>O sistema aceita até <strong>3 imagens</strong> por hidrante.</li>
+                <li>Formatos esperados: <strong>JPG, PNG ou WEBP</strong>.</li>
+                <li>As imagens podem ser adicionadas por arquivo, arrastar e soltar ou câmera do celular.</li>
+                <li>Na edição, as fotos já existentes ficam disponíveis para consulta.</li>
+            </ul>
+            <div class="tip">Sempre que possível, utilize fotos nítidas, com boa iluminação e enquadramento do hidrante e de seu entorno imediato.</div>
+        </main>
+        <footer class="footer"><span>Seção 6 - Coordenadas, bairros e fotos</span><span class="footer-page">Página 8 de 12</span></footer>
+    </section>
+
+    <section class="page" id="pagina-9">
+        <header class="header">
+            <div class="header-brand"><img src="../public/img/logos/logo.cbmpa.png" alt="Logo CBMPA"><div class="header-brand-copy"><strong>Manual do Usuário</strong><span>Gestão de usuários</span></div></div>
+            <div class="header-meta">Seção 7</div>
+        </header>
+        <main class="content">
+            <span id="secao-7" class="anchor-fix"></span>
+            <h1>7. Gestão de usuários</h1>
+            <div class="alert">Esta seção é exclusiva do perfil <strong>admin</strong>.</div>
+            <h2>7.1 Funções disponíveis</h2>
+            <ul>
+                <li>Listar usuários cadastrados.</li>
+                <li>Filtrar por nome.</li>
+                <li>Cadastrar novo usuário.</li>
+                <li>Editar dados cadastrais.</li>
+                <li>Alterar senha.</li>
+                <li>Ativar ou inativar conta.</li>
+            </ul>
+            <h2>7.2 Cadastro de usuário</h2>
+            <p>No cadastro, informe nome, matrícula funcional, senha inicial, perfil e status.</p>
+            <h2>7.3 Cuidados na administração</h2>
+            <ul>
+                <li>A matrícula funcional não pode se repetir.</li>
+                <li>A senha deve ter pelo menos 8 caracteres, com letras e números.</li>
+                <li>O próprio administrador não pode alterar seu próprio perfil ou status por esta tela.</li>
+                <li>Também não pode inativar a própria conta pela ação de status.</li>
+            </ul>
+            <div class="note">Use a ação <strong>Senha</strong> para redefinir a senha de um usuário. Essa operação é separada da tela de edição.</div>
+        </main>
+        <footer class="footer"><span>Seção 7 - Gestão de usuários</span><span class="footer-page">Página 9 de 12</span></footer>
+    </section>    <section class="page" id="pagina-10">
+        <header class="header">
+            <div class="header-brand"><img src="../public/img/logos/logo.cbmpa.png" alt="Logo CBMPA"><div class="header-brand-copy"><strong>Manual do Usuário</strong><span>Relatórios e impressão</span></div></div>
+            <div class="header-meta">Seção 8</div>
+        </header>
+        <main class="content">
+            <span id="secao-8" class="anchor-fix"></span>
+            <h1>8. Relatórios e impressão</h1>
+            <div class="alert">O módulo de relatórios está disponível para os perfis <strong>admin</strong> e <strong>gestor</strong>.</div>
+            <h2>8.1 Como gerar um relatório</h2>
+            <ol class="step-list">
+                <li>Acesse <strong>Relatórios</strong> no menu lateral.</li>
+                <li>Defina os filtros de busca, status, município e bairro.</li>
+                <li>Clique em <strong>Gerar relatório</strong>.</li>
+                <li>Revise a listagem sintética apresentada na tela.</li>
+            </ol>
+            <h2>8.2 Impressão</h2>
+            <ul>
+                <li>Clique em <strong>Imprimir relatório</strong> para abrir a pré-visualização.</li>
+                <li>No modal de pré-visualização, clique em <strong>Imprimir</strong>.</li>
+                <li>O navegador abrirá a janela de impressão do sistema operacional.</li>
+            </ul>
+            <h2>8.3 Conteúdo do relatório</h2>
+            <ul>
+                <li>Capa institucional.</li>
+                <li>Resumo dos filtros aplicados.</li>
+                <li>Métricas por status.</li>
+                <li>Ficha técnica individual de cada hidrante.</li>
+                <li>Páginas fotográficas quando houver imagens anexadas.</li>
+            </ul>
+            <div class="tip">Para gerar um relatório mais objetivo, aplique filtros específicos por município, bairro ou status operacional antes da impressão.</div>
+            <h2>8.4 Exportação CSV</h2>
+            <p>A exportação CSV fica disponível na tela de <strong>Hidrantes</strong> e respeita os filtros aplicados na listagem.</p>
+        </main>
+        <footer class="footer"><span>Seção 8 - Relatórios e exportação</span><span class="footer-page">Página 10 de 12</span></footer>
+    </section>
+
+    <section class="page" id="pagina-11">
+        <header class="header">
+            <div class="header-brand"><img src="../public/img/logos/logo.cbmpa.png" alt="Logo CBMPA"><div class="header-brand-copy"><strong>Manual do Usuário</strong><span>Histórico e auditoria</span></div></div>
+            <div class="header-meta">Seção 9</div>
+        </header>
+        <main class="content">
+            <span id="secao-9" class="anchor-fix"></span>
+            <h1>9. Histórico de operações e auditoria</h1>
+            <div class="alert">O módulo de histórico está disponível para os perfis <strong>admin</strong> e <strong>gestor</strong>.</div>
+            <h2>9.1 Finalidade do histórico</h2>
+            <p>O histórico registra eventos relevantes de uso do sistema, como autenticação e manutenção de registros. Essa trilha apoia auditoria, rastreabilidade e análise administrativa.</p>
+            <h2>9.2 Filtros disponíveis</h2>
+            <ul>
+                <li>Nome do usuário.</li>
+                <li>Ação executada.</li>
+            </ul>
+            <h2>9.3 Consulta detalhada</h2>
+            <p>A ação <strong>Ver detalhe</strong> abre um modal com data, usuário, ação, entidade relacionada, referência do registro e detalhes adicionais da operação.</p>
+            <h2>9.4 Eventos normalmente registrados</h2>
+            <ul>
+                <li>Login e logout.</li>
+                <li>Cadastro, edição e exclusão lógica de hidrantes.</li>
+                <li>Cadastro, edição e reativação de bairros.</li>
+                <li>Cadastro, edição, alteração de senha e mudança de status de usuários.</li>
+            </ul>
+        </main>
+        <footer class="footer"><span>Seção 9 - Histórico e auditoria</span><span class="footer-page">Página 11 de 12</span></footer>
+    </section>
+
+    <section class="page" id="pagina-12">
+        <header class="header">
+            <div class="header-brand"><img src="../public/img/logos/logo.cbmpa.png" alt="Logo CBMPA"><div class="header-brand-copy"><strong>Manual do Usuário</strong><span>Boas práticas e suporte</span></div></div>
+            <div class="header-meta">Seção 10</div>
+        </header>
+        <main class="content">
+            <span id="secao-10" class="anchor-fix"></span>
+            <h1>10. Boas práticas, cuidados e solução de problemas</h1>
+            <div class="support-grid">
+                <div class="card">
+                    <h2>10.1 Boas práticas de uso</h2>
+                    <ul>
+                        <li>Confirme o perfil autenticado antes de iniciar operações administrativas.</li>
+                        <li>Revise endereço, município, bairro e coordenadas antes de salvar o hidrante.</li>
+                        <li>Use fotos claras e atualizadas.</li>
+                        <li>Finalize a sessão pelo botão <strong>Sair</strong> ao encerrar o uso.</li>
+                        <li>Evite tentativas repetidas de login com credenciais incertas.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h2>10.2 Problemas comuns</h2>
+                    <ul>
+                        <li><strong>Login negado:</strong> revise matrícula, senha e status da conta.</li>
+                        <li><strong>Bairro não aparece:</strong> selecione o município primeiro ou cadastre o bairro.</li>
+                        <li><strong>Mapa sem localização:</strong> verifique se há coordenadas válidas no cadastro.</li>
+                        <li><strong>Geolocalização falhou:</strong> habilite permissão do navegador e use HTTPS ou localhost.</li>
+                        <li><strong>Upload recusado:</strong> revise formato, tamanho e quantidade de fotos.</li>
+                    </ul>
+                </div>
+            </div>
+            <h2>10.3 Fluxo recomendado em campo</h2>
+            <ol class="step-list">
+                <li>Consultar o ponto no painel ou na listagem.</li>
+                <li>Editar o hidrante existente sempre que o ponto já estiver cadastrado.</li>
+                <li>Atualizar status, coordenadas e imagens no mesmo atendimento.</li>
+                <li>Revisar o resultado do teste e salvar.</li>
+            </ol>
+            <h2>10.4 Encerramento</h2>
+            <p>Este manual deve acompanhar o treinamento dos usuários e servir como referência para operação diária. Em caso de mudança relevante no sistema, recomenda-se atualizar o documento antes de redistribuí-lo.</p>
+            <p class="small">Referência documental: sistema observado em 22/03/2026.</p>
+        </main>
+        <footer class="footer"><span>Seção 10 - Boas práticas e suporte</span><span class="footer-page">Página 12 de 12</span></footer>
+    </section>
+</div>
+</body>
+</html>
