@@ -6,6 +6,9 @@ $isEdit = !empty($hidrante);
 $auth = Session::get('auth', []);
 $perfil = (string) ($auth['perfil'] ?? '');
 $canEditNumeroHidrante = !$isEdit || in_array($perfil, ['admin', 'gestor'], true);
+$uploadMaxFiles = (int) config('uploads.max_files', 3);
+$uploadMaxFileSizeBytes = (int) config('uploads.max_file_size', 5 * 1024 * 1024);
+$uploadMaxFileSizeMb = max(1, (int) round($uploadMaxFileSizeBytes / (1024 * 1024)));
 
 function old_or_value(?array $hidrante, string $key, string $default = ''): string
 {
@@ -16,7 +19,14 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
 <h1><?= e($title) ?></h1>
 
 <section class="card hidrante-form-card">
-    <form method="POST" action="<?= e($formAction ?? '/hidrantes/salvar') ?>" enctype="multipart/form-data" class="form-grid cols-2 hidrante-form">
+    <form
+        method="POST"
+        action="<?= e($formAction ?? '/hidrantes/salvar') ?>"
+        enctype="multipart/form-data"
+        class="form-grid cols-2 hidrante-form"
+        data-upload-max-files="<?= e((string) $uploadMaxFiles) ?>"
+        data-upload-max-size-bytes="<?= e((string) $uploadMaxFileSizeBytes) ?>"
+    >
         <?= csrf_field() ?>
         <div class="col-span-2 hidrante-form-header">
             <div class="hidrante-form-header-copy">
@@ -28,7 +38,7 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
             </div>
             <div class="hidrante-form-header-badges">
                 <span class="hidrante-form-badge"><?= $isEdit ? 'Modo edição' : 'Novo cadastro' ?></span>
-                <span class="hidrante-form-badge is-soft">Fotos: até 3</span>
+                <span class="hidrante-form-badge is-soft">Fotos: até <?= e((string) $uploadMaxFiles) ?> de <?= e((string) $uploadMaxFileSizeMb) ?> MB</span>
                 <span class="hidrante-form-badge is-soft">Mapa e GPS integrados</span>
             </div>
         </div>
@@ -303,7 +313,7 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
         <div class="col-span-2 hidrante-upload-panel">
             <span class="upload-dropzone-title">Anexar fotos</span>
             <div class="upload-dropzone" id="upload-dropzone">
-                <p class="upload-dropzone-copy">Arraste até 3 imagens para esta área, selecione arquivos ou tire a foto pela câmera do celular.</p>
+                <p class="upload-dropzone-copy">Arraste até <?= e((string) $uploadMaxFiles) ?> imagens para esta área, selecione arquivos ou tire a foto pela câmera do celular. Cada arquivo pode ter até <?= e((string) $uploadMaxFileSizeMb) ?> MB.</p>
                 <div class="upload-dropzone-actions">
                     <button type="button" class="upload-dropzone-button" id="upload-select-button">Selecionar imagens</button>
                     <button type="button" class="btn-secondary upload-dropzone-button" id="upload-camera-button">Usar câmera</button>
@@ -326,8 +336,8 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
                     capture="environment"
                 >
                 <div class="upload-preview-grid" id="upload-preview-grid"></div>
-                <p class="upload-empty" id="upload-empty-state">Você pode anexar até 3 fotos por hidrante, inclusive tirando fotos na hora pelo celular.</p>
-                <p class="upload-limit-feedback" id="upload-limit-feedback" hidden>Limite de 3 fotos atingido. Remova uma imagem para anexar outra.</p>
+                <p class="upload-empty" id="upload-empty-state">Você pode anexar até <?= e((string) $uploadMaxFiles) ?> fotos por hidrante, inclusive tirando fotos na hora pelo celular.</p>
+                <p class="upload-limit-feedback" id="upload-limit-feedback" hidden>Limite de <?= e((string) $uploadMaxFiles) ?> fotos atingido. Remova uma imagem para anexar outra.</p>
             </div>
         </div>
 

@@ -10,10 +10,15 @@ class UploadService
         'image/webp' => 'webp',
     ];
 
-    private int $maxFileSize = 5242880;
+    private int $maxFileSize;
     private int $maxImageWidth = 8000;
     private int $maxImageHeight = 8000;
     private int $maxPixels = 40000000;
+
+    public function __construct()
+    {
+        $this->maxFileSize = (int) config('uploads.max_file_size', 5 * 1024 * 1024);
+    }
 
     public function hasUploadedFiles(array $files): bool
     {
@@ -48,7 +53,9 @@ class UploadService
             mkdir($directory, 0775, true);
         }
 
-        for ($i = 0; $i < min(3, count($files['name'])); $i++) {
+        $maxFiles = (int) config('uploads.max_files', 3);
+
+        for ($i = 0; $i < min($maxFiles, count($files['name'])); $i++) {
             if (($files['error'][$i] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
                 continue;
             }

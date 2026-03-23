@@ -44,8 +44,6 @@ class Router
 
             array_shift($matches);
 
-            $this->validateCsrf($request);
-
             foreach ($route['middlewares'] as $middlewareDefinition) {
                 [$middlewareClass, $middlewareArgs] = $this->parseMiddleware($middlewareDefinition);
 
@@ -56,6 +54,8 @@ class Router
                 $middleware = new $middlewareClass(...$middlewareArgs);
                 $middleware->handle($request);
             }
+
+            $this->validateCsrf($request);
 
             [$controllerClass, $method] = $route['handler'];
             $controller = new $controllerClass();
@@ -72,6 +72,18 @@ class Router
     {
         if (!in_array($request->method(), ['POST', 'PUT', 'PATCH', 'DELETE'], true)) {
             return;
+        }
+
+        if ($this->requestExceededPostMaxSize()) {
+            $maxFiles = (int) config('uploads.max_files', 3);
+            $maxFileSize = $this->humanReadableBytes((int) config('uploads.max_file_size', 5 * 1024 * 1024));
+            $postMaxSize = $this->humanReadableBytes($this->iniSizeToBytes((string) ini_get('post_max_size')));
+
+            Session::flash(
+                'error',
+                "O envio excedeu o limite aceito pelo servidor. Envie ate {$maxFiles} foto(s) de {$maxFileSize} cada, com no maximo {$postMaxSize} por formulario."
+            );
+            redirect(previous_path('/'));
         }
 
         if (csrf_token_is_valid((string) $request->input('_token'))) {
@@ -96,5 +108,58 @@ class Router
         ), static fn(string $item): bool => $item !== ''));
 
         return [$middlewareClass, [$args]];
+    }
+
+    private function requestExceededPostMaxSize(): bool
+    {
+        $contentLength = (int) ($_SERVER['CONTENT_LENGTH'] ?? 0);
+        if ($contentLength <= 0) {
+            return false;
+        }
+
+        $postMaxSize = $this->iniSizeToBytes((string) ini_get('post_max_size'));
+        if ($postMaxSize <= 0 || $contentLength <= $postMaxSize) {
+            return false;
+        }
+
+        return empty($_POST) && empty($_FILES);
+    }
+
+    private function iniSizeToBytes(string $value): int
+    {
+        $normalized = trim($value);
+        if ($normalized === '') {
+            return 0;
+        }
+
+        $unit = strtolower(substr($normalized, -1));
+        $bytes = (float) $normalized;
+
+        return match ($unit) {
+            'g' => (int) round($bytes * 1024 * 1024 * 1024),
+            'm' => (int) round($bytes * 1024 * 1024),
+            'k' => (int) round($bytes * 1024),
+            default => (int) round((float) $normalized),
+        };
+    }
+
+    private function humanReadableBytes(int $bytes): string
+    {
+        if ($bytes <= 0) {
+            return '0 B';
+        }
+
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $size = (float) $bytes;
+        $unitIndex = 0;
+
+        while ($size >= 1024 && $unitIndex < count($units) - 1) {
+            $size /= 1024;
+            $unitIndex++;
+        }
+
+        $precision = $size >= 10 || $unitIndex === 0 ? 0 : 1;
+
+        return number_format($size, $precision, ',', '.') . ' ' . $units[$unitIndex];
     }
 }

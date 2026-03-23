@@ -33,9 +33,11 @@ window.HidrantesApp.onReady(() => {
     const bairroCreateSubmit = document.getElementById('bairro-create-submit');
     const hidranteForm = document.querySelector('.hidrante-form');
     const csrfInput = hidranteForm ? hidranteForm.querySelector('input[name="_token"]') : null;
-    const maxFiles = 3;
     const csrfToken = csrfInput ? csrfInput.value : '';
+    const maxFiles = Number.parseInt(hidranteForm ? (hidranteForm.dataset.uploadMaxFiles || '3') : '3', 10) || 3;
+    const maxFileSizeBytes = Number.parseInt(hidranteForm ? (hidranteForm.dataset.uploadMaxSizeBytes || '5242880') : '5242880', 10) || 5242880;
     const defaultBairroHelp = 'Se não encontrar o bairro, cadastre um novo ou edite o bairro atualmente selecionado.';
+    const defaultLimitFeedback = `Limite de ${maxFiles} fotos atingido. Remova uma imagem para anexar outra.`;
     const supportsManagedFileTransfer = (() => {
         try {
             if (typeof DataTransfer === 'undefined') {
@@ -52,6 +54,7 @@ window.HidrantesApp.onReady(() => {
     let bairroModalMode = 'create';
     let editingBairroId = '';
     let selectedFiles = [];
+    let uploadFeedbackMessage = '';
 
     if (
         !municipio
@@ -78,6 +81,8 @@ window.HidrantesApp.onReady(() => {
         || !bairroModalNome
         || !bairroModalFeedback
         || !bairroCreateSubmit
+        || !hidranteForm
+        || !csrfInput
         || !useCurrentLocationButton
         || !openLocationMapButton
         || !clearCurrentLocationButton
@@ -92,6 +97,37 @@ window.HidrantesApp.onReady(() => {
     const setGeolocationFeedback = (message, state = 'neutral') => {
         geolocationFeedback.textContent = message;
         geolocationFeedback.dataset.state = state;
+    };
+
+    const formatFileSize = (bytes) => {
+        if (!Number.isFinite(bytes) || bytes <= 0) {
+            return '0 B';
+        }
+
+        const units = ['B', 'KB', 'MB', 'GB'];
+        let size = bytes;
+        let unitIndex = 0;
+
+        while (size >= 1024 && unitIndex < units.length - 1) {
+            size /= 1024;
+            unitIndex += 1;
+        }
+
+        const precision = size >= 10 || unitIndex === 0 ? 0 : 1;
+
+        return `${size.toFixed(precision)} ${units[unitIndex]}`;
+    };
+
+    const refreshUploadFeedback = () => {
+        if (uploadFeedbackMessage) {
+            limitFeedback.textContent = uploadFeedbackMessage;
+            limitFeedback.hidden = false;
+            return;
+        }
+
+        const limitReached = selectedFiles.length >= maxFiles;
+        limitFeedback.textContent = defaultLimitFeedback;
+        limitFeedback.hidden = !limitReached;
     };
 
     const getCoordinatePair = () => {
@@ -204,7 +240,7 @@ window.HidrantesApp.onReady(() => {
         if (selectedFiles.length === 0) {
             selectionCount.textContent = 'Nenhuma imagem selecionada.';
             emptyState.hidden = false;
-            limitFeedback.hidden = true;
+            refreshUploadFeedback();
             return;
         }
 
@@ -212,7 +248,7 @@ window.HidrantesApp.onReady(() => {
             ? `${selectedFiles.length} imagem(ns) pronta(s). Limite atingido.`
             : `${selectedFiles.length} imagem(ns) pronta(s) para envio.`;
         emptyState.hidden = true;
-        limitFeedback.hidden = !limitReached;
+        refreshUploadFeedback();
     };
 
     const renderPreviews = () => {
@@ -242,6 +278,7 @@ window.HidrantesApp.onReady(() => {
             } else {
                 removeButton.addEventListener('click', () => {
                     selectedFiles = selectedFiles.filter((_, fileIndex) => fileIndex !== index);
+                    uploadFeedbackMessage = '';
                     syncInputFiles();
                     renderPreviews();
                     updateSelectionCount();
@@ -256,9 +293,23 @@ window.HidrantesApp.onReady(() => {
     };
 
     const mergeFiles = (incomingFiles) => {
-        const validFiles = Array.from(incomingFiles).filter((file) => file.type.startsWith('image/'));
+        const allFiles = Array.from(incomingFiles);
+        const validFiles = allFiles.filter((file) => file.type.startsWith('image/') && file.size <= maxFileSizeBytes);
+        const oversizedFiles = allFiles.filter((file) => file.type.startsWith('image/') && file.size > maxFileSizeBytes);
+        const invalidFiles = allFiles.filter((file) => !file.type.startsWith('image/'));
+
+        if (oversizedFiles.length > 0) {
+            uploadFeedbackMessage = oversizedFiles.length === 1
+                ? `A imagem "${oversizedFiles[0].name}" excede o limite de ${formatFileSize(maxFileSizeBytes)}.`
+                : `${oversizedFiles.length} imagens excedem o limite de ${formatFileSize(maxFileSizeBytes)} por arquivo.`;
+        } else if (invalidFiles.length > 0) {
+            uploadFeedbackMessage = 'Envie apenas imagens JPG, PNG ou WEBP.';
+        } else {
+            uploadFeedbackMessage = '';
+        }
 
         if (validFiles.length === 0) {
+            refreshUploadFeedback();
             return false;
         }
 
@@ -267,7 +318,7 @@ window.HidrantesApp.onReady(() => {
                 ...Array.from(fileInput.files || []),
                 ...Array.from(cameraInput.files || []),
             ]
-                .filter((file) => file.type.startsWith('image/'))
+                .filter((file) => file.type.startsWith('image/') && file.size <= maxFileSizeBytes)
                 .slice(0, maxFiles);
 
             renderPreviews();
