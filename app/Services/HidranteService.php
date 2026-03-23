@@ -188,7 +188,7 @@ class HidranteService
         $tipo = trim((string) ($data['tipo_hidrante'] ?? ''));
         $acessibilidade = trim((string) ($data['acessibilidade'] ?? ''));
         $tampo = trim((string) ($data['tampo_conexoes'] ?? ''));
-        $tampasAusentes = $this->normalizePlainText((string) ($data['tampas_ausentes'] ?? ''));
+        $tampasAusentes = $this->normalizeTampasAusentes($data['tampas_ausentes'] ?? []);
         $caixaProtecao = trim((string) ($data['caixa_protecao'] ?? ''));
         $condicaoCaixa = trim((string) ($data['condicao_caixa'] ?? ''));
         $presencaAgua = trim((string) ($data['presenca_agua_interior'] ?? ''));
@@ -369,6 +369,46 @@ class HidranteService
         $normalized = $this->normalizePlainText($value);
 
         return preg_replace('/[^A-Za-z0-9._\-\/]/', '', $normalized) ?? '';
+    }
+
+    private function normalizeTampasAusentes(mixed $value): string
+    {
+        $allowed = [
+            'direita' => 'Direita',
+            'esquerda' => 'Esquerda',
+            'central' => 'Central',
+        ];
+
+        if (is_array($value)) {
+            $tokens = $value;
+        } else {
+            $normalizedValue = $this->normalizePlainText((string) $value);
+            $tokens = $normalizedValue === ''
+                ? []
+                : (preg_split('/\s*[,;|\/]\s*/', mb_strtolower($normalizedValue)) ?: []);
+        }
+
+        $selected = [];
+
+        foreach ($tokens as $token) {
+            $normalized = mb_strtolower($this->normalizePlainText((string) $token));
+
+            if ($normalized === '' || !isset($allowed[$normalized])) {
+                continue;
+            }
+
+            $selected[$normalized] = true;
+        }
+
+        $labels = [];
+
+        foreach ($allowed as $key => $label) {
+            if (isset($selected[$key])) {
+                $labels[] = $label;
+            }
+        }
+
+        return implode(', ', $labels);
     }
 
     private function recordAuditSafely(array $actor, string $acao, string $entidade, string $referencia, string $detalhes): void

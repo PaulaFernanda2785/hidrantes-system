@@ -564,9 +564,12 @@ body.document-layout {
     .report-detail-grid,
     .report-summary-grid,
     .report-detail-grid--compact,
-    .report-photo-page-grid,
     .report-cover-document-grid {
         grid-template-columns: 1fr;
+    }
+
+    .report-photo-page-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .report-page-footer-copy {
@@ -575,6 +578,12 @@ body.document-layout {
 
     .report-photo-image {
         height: 220px;
+    }
+}
+
+@media (max-width: 720px) {
+    .report-photo-page-grid {
+        grid-template-columns: 1fr;
     }
 }
 

@@ -96,6 +96,7 @@
 }
 
 .hidrante-form > label,
+.hidrante-form > .hidrante-multi-select-field,
 .hidrante-form > .hidrante-bairro-field,
 .hidrante-form > .geolocation-actions,
 .hidrante-form > .location-map-preview,
@@ -111,6 +112,56 @@
 
 .hidrante-form > label {
     gap: 10px;
+}
+
+.hidrante-multi-select-field {
+    display: grid;
+    gap: 12px;
+}
+
+.hidrante-multi-select-label {
+    font-size: 14px;
+}
+
+.hidrante-multi-option-list {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.hidrante-multi-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 46px;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 14px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.hidrante-multi-option:hover,
+.hidrante-multi-option:focus-within {
+    border-color: rgba(11, 79, 138, 0.4);
+    background: rgba(11, 79, 138, 0.04);
+    box-shadow: 0 0 0 4px rgba(11, 79, 138, 0.08);
+}
+
+.hidrante-multi-option input {
+    width: 18px;
+    min-width: 18px;
+    height: 18px;
+    min-height: 18px;
+    margin: 0;
+    padding: 0;
+    accent-color: var(--primary);
+}
+
+.hidrante-multi-option span {
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .hidrante-form input,
@@ -762,7 +813,8 @@ input[readonly] {
     }
 
     .hidrante-bairro-actions,
-    .geolocation-actions {
+    .geolocation-actions,
+    .hidrante-multi-option-list {
         grid-template-columns: 1fr;
         justify-content: stretch;
     }

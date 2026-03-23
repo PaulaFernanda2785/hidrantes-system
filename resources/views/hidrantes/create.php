@@ -14,6 +14,42 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
 {
     return e((string) ($hidrante[$key] ?? $default));
 }
+
+function hidrante_selected_tampas_ausentes(?array $hidrante): array
+{
+    $rawValue = trim((string) ($hidrante['tampas_ausentes'] ?? ''));
+
+    if ($rawValue === '') {
+        return [];
+    }
+
+    $allowed = [
+        'direita' => true,
+        'esquerda' => true,
+        'central' => true,
+    ];
+    $selected = [];
+    $tokens = preg_split('/\s*[,;|\/]\s*/', mb_strtolower($rawValue)) ?: [];
+
+    foreach ($tokens as $token) {
+        $normalized = trim((string) $token);
+
+        if ($normalized === '' || !isset($allowed[$normalized])) {
+            continue;
+        }
+
+        $selected[$normalized] = true;
+    }
+
+    return array_keys($selected);
+}
+
+$tampasAusentesSelecionadas = hidrante_selected_tampas_ausentes($hidrante);
+$tampasAusentesOpcoes = [
+    'direita' => 'Direita',
+    'esquerda' => 'Esquerda',
+    'central' => 'Central',
+];
 ?>
 
 <h1><?= e($title) ?></h1>
@@ -135,9 +171,23 @@ function old_or_value(?array $hidrante, string $key, string $default = ''): stri
             </select>
         </label>
 
-        <label>Tampas ausentes
-            <input type="text" name="tampas_ausentes" value="<?= old_or_value($hidrante, 'tampas_ausentes') ?>">
-        </label>
+        <div class="hidrante-multi-select-field">
+            <span class="hidrante-multi-select-label">Tampas ausentes</span>
+            <div class="hidrante-multi-option-list" role="group" aria-label="Tampas ausentes">
+                <?php foreach ($tampasAusentesOpcoes as $value => $label): ?>
+                    <label class="hidrante-multi-option">
+                        <input
+                            type="checkbox"
+                            name="tampas_ausentes[]"
+                            value="<?= e($value) ?>"
+                            <?= in_array($value, $tampasAusentesSelecionadas, true) ? 'checked' : '' ?>
+                        >
+                        <span><?= e($label) ?></span>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+            <small class="field-help">Selecione uma ou mais posições com tampa ausente.</small>
+        </div>
 
         <label>Caixa de proteção
             <select name="caixa_protecao" required>
