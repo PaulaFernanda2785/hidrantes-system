@@ -50,6 +50,7 @@ function menu_active(string $path): string
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($title ?? 'Sistema de Gestão de Hidrantes') ?></title>
+    <link rel="icon" href="/img/ico/logo.cbmpa.ico" type="image/x-icon">
     <?php foreach ($stylesheets as $stylesheet): ?>
         <link rel="stylesheet" href="<?= e(css_asset($stylesheet)) ?>">
     <?php endforeach; ?>

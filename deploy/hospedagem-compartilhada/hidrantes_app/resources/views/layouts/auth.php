@@ -28,6 +28,7 @@ $pageScripts = array_values(array_unique(array_merge([
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($title ?? 'Login') ?></title>
+    <link rel="icon" href="/img/ico/logo.cbmpa.ico" type="image/x-icon">
     <?php foreach ($stylesheets as $stylesheet): ?>
         <link rel="stylesheet" href="<?= e(css_asset($stylesheet)) ?>">
     <?php endforeach; ?>
