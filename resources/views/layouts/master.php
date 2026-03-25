@@ -85,6 +85,8 @@ function menu_active(string $path): string
 
             <a href="/hidrantes" class="<?= menu_active('/hidrantes') ?>">Hidrantes</a>
 
+            <a href="/minha-senha" class="<?= menu_active('/minha-senha') ?>">Alterar senha</a>
+
             <?php if ($perfil === 'admin'): ?>
                 <a href="/usuarios" class="<?= menu_active('/usuarios') ?>">Usuários</a>
             <?php endif; ?>
@@ -157,3 +159,4 @@ function menu_active(string $path): string
 <?php endforeach; ?>
 </body>
 </html>
+

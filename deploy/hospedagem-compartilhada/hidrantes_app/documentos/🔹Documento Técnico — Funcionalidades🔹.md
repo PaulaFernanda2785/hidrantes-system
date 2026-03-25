@@ -81,7 +81,8 @@ Funcionalidades entregues:
 - filtro por nome;
 - cadastro;
 - edicao;
-- alteracao de senha;
+- alteracao de senha de outro usuario (admin);
+- alteracao da propria senha pelo menu lateral (`/minha-senha`);
 - ativacao e inativacao.
 
 Regras de negocio relevantes:
@@ -89,6 +90,8 @@ Regras de negocio relevantes:
 - somente `admin` acessa o modulo;
 - matricula funcional deve ser unica;
 - senha minima exige 8 caracteres com letras e numeros;
+- troca da propria senha exige validacao da senha atual;
+- nova senha deve ser diferente da senha atual no fluxo da propria conta;
 - usuario nao pode alterar o proprio perfil/status pela tela administrativa;
 - usuario nao pode inativar a propria conta pela tela administrativa.
 
@@ -140,6 +143,7 @@ Eventos hoje auditados no codigo:
 - cadastrar usuario;
 - editar usuario;
 - alterar senha;
+- alterar propria senha;
 - ativar usuario;
 - inativar usuario;
 - cadastrar hidrante;

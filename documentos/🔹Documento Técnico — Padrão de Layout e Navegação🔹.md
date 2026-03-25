@@ -25,6 +25,7 @@ Menu lateral atual:
 
 - `Painel`
 - `Hidrantes`
+- `Alterar senha` para qualquer usuario autenticado
 - `Usuarios` apenas para `admin`
 - `Relatorios` e `Historico` para `admin` e `gestor`
 
@@ -65,7 +66,13 @@ O estado ativo do menu e calculado no layout com base na URI atual.
 - hero com metricas por perfil;
 - tabela com acoes administrativas;
 - formulario separado para cadastro/edicao;
-- tela dedicada para troca de senha.
+- tela dedicada para troca de senha de outros usuarios (admin).
+
+### Minha senha
+
+- tela dedicada para autoatendimento de senha;
+- exige senha atual, nova senha e confirmacao;
+- acessivel pelo menu lateral para `admin`, `gestor` e `operador`.
 
 ### Relatorios
 

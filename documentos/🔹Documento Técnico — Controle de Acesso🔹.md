@@ -59,6 +59,8 @@ Politica implementada:
 - `POST /logout`
 - `GET /`
 - `GET /painel`
+- `GET /minha-senha`
+- `POST /minha-senha`
 - `GET /hidrantes`
 - `GET /hidrantes/exportar/csv`
 - `GET /uploads/hidrantes/{filename}`
@@ -93,6 +95,9 @@ Politica implementada:
 - `operador` pode editar hidrante existente, mas nao pode alterar `numero_hidrante`.
 - `operador` nao pode criar nem excluir hidrantes.
 - `operador` tambem nao acessa usuarios, historico e relatorios.
+- qualquer usuario autenticado pode alterar a propria senha em `/minha-senha`.
+- alteracao da propria senha exige confirmacao da `senha_atual`.
+- `admin` usa `/usuarios/{id}/senha` apenas para outros usuarios.
 - qualquer usuario autenticado pode cadastrar ou editar bairro pelas rotas API internas.
 - apenas `admin` gerencia usuarios.
 

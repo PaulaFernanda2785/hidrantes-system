@@ -91,8 +91,56 @@ class UsuarioController extends Controller
         }
     }
 
+    public function myPassword(): void
+    {
+        $auth = Session::get('auth');
+        $id = (int) ($auth['id'] ?? 0);
+
+        if ($id <= 0) {
+            $this->redirect('/login', null, 'Faca login para acessar o sistema.');
+        }
+
+        $usuario = (new UsuarioService())->find($id);
+        if (!$usuario) {
+            $this->redirect('/painel', null, 'Usuario nao encontrado.');
+        }
+
+        $this->view('usuarios/password', [
+            'title' => 'Alterar Minha Senha',
+            'usuario' => $usuario,
+            'formAction' => '/minha-senha',
+            'cancelUrl' => '/painel',
+            'isSelfPassword' => true,
+        ]);
+    }
+
+    public function updateMyPassword(): void
+    {
+        $auth = Session::get('auth');
+        $id = (int) ($auth['id'] ?? 0);
+
+        if ($id <= 0) {
+            $this->redirect('/login', null, 'Faca login para acessar o sistema.');
+        }
+
+        try {
+            (new UsuarioService())->changeOwnPassword($id, $this->request->all(), $auth);
+            $this->redirect('/minha-senha', 'Senha alterada com sucesso.');
+        } catch (ValidationException $e) {
+            $this->redirect('/minha-senha', null, $e->getMessage());
+        } catch (\Throwable $e) {
+            report_exception($e);
+            $this->redirect('/minha-senha', null, 'Nao foi possivel alterar a senha agora.');
+        }
+    }
+
     public function password(string $id): void
     {
+        $auth = Session::get('auth');
+        if ((int) ($auth['id'] ?? 0) === (int) $id) {
+            $this->redirect('/minha-senha');
+        }
+
         $usuario = (new UsuarioService())->find((int) $id);
         if (!$usuario) {
             $this->redirect('/usuarios', null, 'Usuario nao encontrado.');
@@ -102,12 +150,17 @@ class UsuarioController extends Controller
             'title' => 'Alterar Senha do Usuario',
             'usuario' => $usuario,
             'formAction' => '/usuarios/' . (int) $id . '/senha',
+            'cancelUrl' => '/usuarios',
+            'isSelfPassword' => false,
         ]);
     }
 
     public function updatePassword(string $id): void
     {
         $auth = Session::get('auth');
+        if ((int) ($auth['id'] ?? 0) === (int) $id) {
+            $this->redirect('/minha-senha', null, 'Para alterar a propria senha, use esta tela.');
+        }
 
         try {
             (new UsuarioService())->changePassword((int) $id, $this->request->all(), $auth);

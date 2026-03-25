@@ -35,6 +35,16 @@ $router->get('/painel/manual/usuario', [PainelController::class, 'manualUsuario'
     RoleMiddleware::class . ':admin,gestor,operador',
 ]);
 
+$router->get('/minha-senha', [UsuarioController::class, 'myPassword'], [
+    AuthMiddleware::class,
+    RoleMiddleware::class . ':admin,gestor,operador',
+]);
+
+$router->post('/minha-senha', [UsuarioController::class, 'updateMyPassword'], [
+    AuthMiddleware::class,
+    RoleMiddleware::class . ':admin,gestor,operador',
+]);
+
 $router->get('/hidrantes', [HidranteController::class, 'index'], [
     AuthMiddleware::class,
     RoleMiddleware::class . ':admin,gestor,operador',

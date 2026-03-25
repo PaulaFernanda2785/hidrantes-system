@@ -79,7 +79,9 @@ Responsabilidades:
 - criar usuario com hash de senha;
 - atualizar dados cadastrais;
 - impedir que o usuario altere o proprio perfil/status por esta tela;
-- trocar senha com politica minima;
+- trocar senha de outro usuario com politica minima;
+- trocar a propria senha com validacao da senha atual;
+- impedir reutilizacao da senha atual no fluxo da propria conta;
 - ativar e inativar usuarios;
 - registrar auditoria.
 

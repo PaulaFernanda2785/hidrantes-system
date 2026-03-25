@@ -85,25 +85,27 @@ class UsuarioService
             throw new \RuntimeException('Usuario nao encontrado.');
         }
 
-        $newPassword = trim((string) ($data['nova_senha'] ?? ''));
-        $confirmation = trim((string) ($data['confirmacao_senha'] ?? ''));
-
-        if ($newPassword === '') {
-            throw new ValidationException(['nova_senha' => 'Informe a nova senha.']);
-        }
-
-        if (!$this->isStrongPassword($newPassword)) {
-            throw new ValidationException([
-                'nova_senha' => 'A nova senha deve ter pelo menos 8 caracteres, com letras e numeros.',
-            ]);
-        }
-
-        if ($newPassword !== $confirmation) {
-            throw new ValidationException(['confirmacao_senha' => 'A confirmacao de senha nao confere.']);
-        }
+        $newPassword = $this->validatePasswordChangeData($data);
 
         $this->usuarioRepository->updatePassword($id, $this->passwordService->hash($newPassword));
         $this->recordAuditSafely($actor, 'alterar senha', 'usuarios', (string) $id, 'Senha do usuario alterada.');
+    }
+
+    public function changeOwnPassword(int $id, array $data, array $actor): void
+    {
+        if ((int) ($actor['id'] ?? 0) !== $id) {
+            throw new ValidationException(['senha_atual' => 'Nao foi possivel validar a troca de senha.']);
+        }
+
+        $current = $this->usuarioRepository->findById($id);
+        if (!$current) {
+            throw new \RuntimeException('Usuario nao encontrado.');
+        }
+
+        $newPassword = $this->validatePasswordChangeData($data, (string) ($current['senha_hash'] ?? ''));
+
+        $this->usuarioRepository->updatePassword($id, $this->passwordService->hash($newPassword));
+        $this->recordAuditSafely($actor, 'alterar propria senha', 'usuarios', (string) $id, 'Senha propria alterada.');
     }
 
     public function updateStatus(int $id, string $status, array $actor): void
@@ -205,6 +207,44 @@ class UsuarioService
         return mb_strlen($password) >= 8
             && preg_match('/[A-Za-z]/', $password) === 1
             && preg_match('/\d/', $password) === 1;
+    }
+
+    private function validatePasswordChangeData(array $data, ?string $currentHash = null): string
+    {
+        $newPassword = trim((string) ($data['nova_senha'] ?? ''));
+        $confirmation = trim((string) ($data['confirmacao_senha'] ?? ''));
+
+        if ($currentHash !== null) {
+            $currentPassword = trim((string) ($data['senha_atual'] ?? ''));
+
+            if ($currentPassword === '') {
+                throw new ValidationException(['senha_atual' => 'Informe a senha atual.']);
+            }
+
+            if (!$this->passwordService->verify($currentPassword, $currentHash)) {
+                throw new ValidationException(['senha_atual' => 'A senha atual informada esta incorreta.']);
+            }
+        }
+
+        if ($newPassword === '') {
+            throw new ValidationException(['nova_senha' => 'Informe a nova senha.']);
+        }
+
+        if (!$this->isStrongPassword($newPassword)) {
+            throw new ValidationException([
+                'nova_senha' => 'A nova senha deve ter pelo menos 8 caracteres, com letras e numeros.',
+            ]);
+        }
+
+        if ($newPassword !== $confirmation) {
+            throw new ValidationException(['confirmacao_senha' => 'A confirmacao de senha nao confere.']);
+        }
+
+        if ($currentHash !== null && $this->passwordService->verify($newPassword, $currentHash)) {
+            throw new ValidationException(['nova_senha' => 'A nova senha deve ser diferente da senha atual.']);
+        }
+
+        return $newPassword;
     }
 
     private function recordAuditSafely(array $actor, string $acao, string $entidade, string $referencia, string $detalhes): void

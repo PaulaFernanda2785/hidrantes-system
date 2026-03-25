@@ -2,7 +2,7 @@
 
 ## Escopo
 
-Os requisitos abaixo descrevem o comportamento funcional efetivamente implementado no sistema ate **22/03/2026**.
+Os requisitos abaixo descrevem o comportamento funcional efetivamente implementado no sistema ate **25/03/2026**.
 
 ## Requisitos de acesso
 
@@ -115,29 +115,33 @@ O sistema deve permitir ao perfil `admin` criar usuarios com perfil e status def
 
 O sistema deve permitir ao perfil `admin` atualizar dados cadastrais de usuarios.
 
-### RF-24 - Alterar senha de usuario
+### RF-24 - Alterar senha de outro usuario
 
 O sistema deve permitir ao perfil `admin` alterar a senha de outro usuario.
 
-### RF-25 - Ativar e inativar usuario
+### RF-25 - Alterar propria senha
+
+O sistema deve permitir a qualquer usuario autenticado (`admin`, `gestor`, `operador`) alterar a propria senha pela rota `/minha-senha`, com validacao da senha atual.
+
+### RF-26 - Ativar e inativar usuario
 
 O sistema deve permitir ao perfil `admin` alternar o status de usuarios.
 
 ## Requisitos de auditoria e relatorio
 
-### RF-26 - Consultar historico de operacoes
+### RF-27 - Consultar historico de operacoes
 
 O sistema deve permitir aos perfis `admin` e `gestor` consultar a trilha de auditoria.
 
-### RF-27 - Filtrar historico
+### RF-28 - Filtrar historico
 
 O sistema deve permitir filtrar historico por nome do usuario e acao.
 
-### RF-28 - Gerar relatorio tecnico de hidrantes
+### RF-29 - Gerar relatorio tecnico de hidrantes
 
 O sistema deve permitir aos perfis `admin` e `gestor` gerar relatorio filtrado de hidrantes.
 
-### RF-29 - Imprimir relatorio
+### RF-30 - Imprimir relatorio
 
 O sistema deve permitir pre-visualizacao e impressao do relatorio em HTML.
 

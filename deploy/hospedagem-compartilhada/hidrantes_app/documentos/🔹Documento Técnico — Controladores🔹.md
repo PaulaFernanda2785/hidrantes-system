@@ -53,8 +53,10 @@ Responsabilidades:
 - abrir formularios de criacao e edicao;
 - criar usuario;
 - atualizar dados cadastrais;
-- abrir tela de troca de senha;
-- atualizar senha;
+- abrir tela de troca de senha para outro usuario (`/usuarios/{id}/senha`);
+- atualizar senha de outro usuario;
+- abrir tela de troca da propria senha (`/minha-senha`);
+- atualizar propria senha com validacao da senha atual;
 - ativar e inativar usuario.
 
 ### `RelatorioController`
