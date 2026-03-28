@@ -11,6 +11,41 @@ button:hover {
     border-color: var(--primary-dark);
 }
 
+button.is-submitting,
+button.is-submitting:hover,
+input[type="submit"].is-submitting {
+    cursor: wait;
+    opacity: 0.92;
+}
+
+button.is-submitting {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+button.is-submitting .submit-loading-indicator {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.45);
+    border-top-color: #fff;
+    animation: submit-loading-spin 0.7s linear infinite;
+    flex: 0 0 auto;
+}
+
+.btn-secondary.is-submitting .submit-loading-indicator {
+    border-color: rgba(11, 79, 138, 0.28);
+    border-top-color: var(--primary);
+}
+
+@keyframes submit-loading-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .btn-secondary {
     display: inline-flex;
     align-items: center;

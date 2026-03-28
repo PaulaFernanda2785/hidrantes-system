@@ -79,6 +79,74 @@
         };
     }
 
+    function createSingleSubmitController() {
+        const forms = Array.from(document.querySelectorAll('form')).filter((form) => {
+            const method = (form.getAttribute('method') || 'GET').toUpperCase();
+            const mode = (form.dataset.singleSubmit || '').toLowerCase();
+
+            return method === 'POST' && mode !== 'false';
+        });
+
+        if (forms.length === 0) {
+            return null;
+        }
+
+        const enhanceSubmitter = function (form, submitter) {
+            if (!submitter || !('disabled' in submitter)) {
+                return;
+            }
+
+            const processingText = form.dataset.submitProcessingText
+                || submitter.dataset.processingText
+                || 'Processando...';
+
+            submitter.disabled = true;
+            submitter.classList.add('is-submitting');
+            submitter.setAttribute('aria-busy', 'true');
+
+            if (submitter.tagName === 'BUTTON') {
+                if (!submitter.dataset.originalHtml) {
+                    submitter.dataset.originalHtml = submitter.innerHTML;
+                }
+
+                submitter.textContent = processingText;
+
+                const spinner = document.createElement('span');
+                spinner.className = 'submit-loading-indicator';
+                spinner.setAttribute('aria-hidden', 'true');
+                submitter.appendChild(spinner);
+                return;
+            }
+
+            if (submitter.tagName === 'INPUT') {
+                if (!submitter.dataset.originalValue) {
+                    submitter.dataset.originalValue = submitter.value;
+                }
+
+                submitter.value = processingText;
+            }
+        };
+
+        forms.forEach((form) => {
+            form.addEventListener('submit', (event) => {
+                if (form.dataset.isSubmitting === '1') {
+                    event.preventDefault();
+                    return;
+                }
+
+                const submitter = event.submitter
+                    || form.querySelector('button[type="submit"], input[type="submit"]');
+
+                form.dataset.isSubmitting = '1';
+                enhanceSubmitter(form, submitter);
+            });
+        });
+
+        return {
+            formsCount: forms.length,
+        };
+    }
+
     window.HidrantesApp = {
         onReady(callback) {
             if (document.readyState === 'loading') {
@@ -92,5 +160,6 @@
 
     window.HidrantesApp.onReady(function () {
         createSidebarController();
+        createSingleSubmitController();
     });
 }());

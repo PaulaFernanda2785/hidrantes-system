@@ -212,6 +212,155 @@ if (!function_exists('csrf_token_is_valid')) {
     }
 }
 
+if (!function_exists('idempotency_scope_key')) {
+    function idempotency_scope_key(string $scope): string
+    {
+        $normalized = trim($scope);
+        if ($normalized === '') {
+            return 'global';
+        }
+
+        $normalized = preg_replace('/[^A-Za-z0-9._:-]/', '_', $normalized);
+        $normalized = is_string($normalized) ? trim($normalized, '_') : '';
+
+        return $normalized !== '' ? $normalized : 'global';
+    }
+}
+
+if (!function_exists('idempotency_cleanup')) {
+    function idempotency_cleanup(string $scope, int $maxAgeSeconds = 3600): void
+    {
+        $scopeKey = idempotency_scope_key($scope);
+        $maxAgeSeconds = max(1, $maxAgeSeconds);
+        $now = time();
+
+        if (!isset($_SESSION['_idempotency_issued']) || !is_array($_SESSION['_idempotency_issued'])) {
+            $_SESSION['_idempotency_issued'] = [];
+        }
+
+        if (!isset($_SESSION['_idempotency_processed']) || !is_array($_SESSION['_idempotency_processed'])) {
+            $_SESSION['_idempotency_processed'] = [];
+        }
+
+        $issued = $_SESSION['_idempotency_issued'][$scopeKey] ?? [];
+        $processed = $_SESSION['_idempotency_processed'][$scopeKey] ?? [];
+
+        $issued = is_array($issued) ? $issued : [];
+        $processed = is_array($processed) ? $processed : [];
+
+        $issued = array_filter($issued, static function (mixed $issuedAt) use ($maxAgeSeconds, $now): bool {
+            return is_int($issuedAt) && ($now - $issuedAt) <= $maxAgeSeconds;
+        });
+
+        $processed = array_filter($processed, static function (mixed $processedAt) use ($maxAgeSeconds, $now): bool {
+            return is_int($processedAt) && ($now - $processedAt) <= $maxAgeSeconds;
+        });
+
+        if ($issued === []) {
+            unset($_SESSION['_idempotency_issued'][$scopeKey]);
+        } else {
+            $_SESSION['_idempotency_issued'][$scopeKey] = $issued;
+        }
+
+        if ($processed === []) {
+            unset($_SESSION['_idempotency_processed'][$scopeKey]);
+        } else {
+            $_SESSION['_idempotency_processed'][$scopeKey] = $processed;
+        }
+    }
+}
+
+if (!function_exists('idempotency_token')) {
+    function idempotency_token(string $scope = 'global'): string
+    {
+        $scopeKey = idempotency_scope_key($scope);
+        idempotency_cleanup($scopeKey);
+
+        if (!isset($_SESSION['_idempotency_issued']) || !is_array($_SESSION['_idempotency_issued'])) {
+            $_SESSION['_idempotency_issued'] = [];
+        }
+
+        $token = bin2hex(random_bytes(32));
+        $_SESSION['_idempotency_issued'][$scopeKey][$token] = time();
+
+        return $token;
+    }
+}
+
+if (!function_exists('idempotency_field')) {
+    function idempotency_field(string $scope = 'global', string $fieldName = '_idempotency_token'): string
+    {
+        return '<input type="hidden" name="' . e($fieldName) . '" value="' . e(idempotency_token($scope)) . '">';
+    }
+}
+
+if (!function_exists('idempotency_claim')) {
+    function idempotency_claim(?string $token, string $scope = 'global', int $windowSeconds = 5): array
+    {
+        $scopeKey = idempotency_scope_key($scope);
+        $windowSeconds = max(1, $windowSeconds);
+        idempotency_cleanup($scopeKey);
+
+        $normalizedToken = is_string($token) ? trim($token) : '';
+        if ($normalizedToken === '') {
+            return [
+                'ok' => false,
+                'duplicate' => false,
+                'message' => 'Token de envio ausente. Recarregue a pagina e tente novamente.',
+            ];
+        }
+
+        if (!preg_match('/^[a-f0-9]{64}$/', $normalizedToken)) {
+            return [
+                'ok' => false,
+                'duplicate' => false,
+                'message' => 'Token de envio invalido. Recarregue o formulario e tente novamente.',
+            ];
+        }
+
+        $issued = $_SESSION['_idempotency_issued'][$scopeKey] ?? [];
+        $processed = $_SESSION['_idempotency_processed'][$scopeKey] ?? [];
+
+        $issued = is_array($issued) ? $issued : [];
+        $processed = is_array($processed) ? $processed : [];
+        $now = time();
+
+        $processedAt = $processed[$normalizedToken] ?? null;
+        if (is_int($processedAt) && ($now - $processedAt) <= $windowSeconds) {
+            return [
+                'ok' => false,
+                'duplicate' => true,
+                'message' => 'Solicitacao duplicada detectada. Aguarde alguns segundos antes de reenviar.',
+            ];
+        }
+
+        if (!isset($issued[$normalizedToken])) {
+            return [
+                'ok' => false,
+                'duplicate' => false,
+                'message' => 'Token de envio invalido ou expirado. Recarregue o formulario e tente novamente.',
+            ];
+        }
+
+        unset($issued[$normalizedToken]);
+        $processed[$normalizedToken] = $now;
+
+        if ($issued === []) {
+            unset($_SESSION['_idempotency_issued'][$scopeKey]);
+        } else {
+            $_SESSION['_idempotency_issued'][$scopeKey] = $issued;
+        }
+
+        $_SESSION['_idempotency_processed'][$scopeKey] = $processed;
+
+        return [
+            'ok' => true,
+            'duplicate' => false,
+            'message' => null,
+        ];
+    }
+}
+
 if (!function_exists('send_security_headers')) {
     function send_security_headers(): void
     {

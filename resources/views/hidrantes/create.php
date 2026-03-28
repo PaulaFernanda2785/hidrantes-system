@@ -9,6 +9,7 @@ $canEditNumeroHidrante = !$isEdit || in_array($perfil, ['admin', 'gestor'], true
 $uploadMaxFiles = (int) config('uploads.max_files', 3);
 $uploadMaxFileSizeBytes = (int) config('uploads.max_file_size', 5 * 1024 * 1024);
 $uploadMaxFileSizeMb = max(1, (int) round($uploadMaxFileSizeBytes / (1024 * 1024)));
+$formIdempotencyScope = $isEdit ? 'hidrantes.update' : 'hidrantes.store';
 
 function old_or_value(?array $hidrante, string $key, string $default = ''): string
 {
@@ -60,10 +61,13 @@ $tampasAusentesOpcoes = [
         action="<?= e($formAction ?? '/hidrantes/salvar') ?>"
         enctype="multipart/form-data"
         class="form-grid cols-2 hidrante-form"
+        data-single-submit="true"
+        data-submit-processing-text="Processando..."
         data-upload-max-files="<?= e((string) $uploadMaxFiles) ?>"
         data-upload-max-size-bytes="<?= e((string) $uploadMaxFileSizeBytes) ?>"
     >
         <?= csrf_field() ?>
+        <?= idempotency_field($formIdempotencyScope) ?>
         <div class="col-span-2 hidrante-form-header">
             <div class="hidrante-form-header-copy">
                 <p class="hidrante-form-eyebrow">Cadastro técnico</p>

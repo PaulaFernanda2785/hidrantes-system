@@ -1,6 +1,7 @@
 <?php
 $isEdit = (bool) ($isEdit ?? false);
 $usuario = $usuario ?? null;
+$formIdempotencyScope = $isEdit ? 'usuarios.update' : 'usuarios.store';
 ?>
 
 <div class="management-page">
@@ -28,8 +29,15 @@ $usuario = $usuario ?? null;
             <p>Preencha as informações obrigatórias para salvar o cadastro e liberar o acesso ao sistema.</p>
         </div>
 
-        <form method="POST" action="<?= e($formAction ?? '/usuarios/salvar') ?>" class="form-grid cols-2 management-form-grid">
+        <form
+            method="POST"
+            action="<?= e($formAction ?? '/usuarios/salvar') ?>"
+            class="form-grid cols-2 management-form-grid"
+            data-single-submit="true"
+            data-submit-processing-text="Processando..."
+        >
             <?= csrf_field() ?>
+            <?= idempotency_field($formIdempotencyScope) ?>
 
             <label class="col-span-2">Nome
                 <input type="text" name="nome" required value="<?= e((string) ($usuario['nome'] ?? '')) ?>">

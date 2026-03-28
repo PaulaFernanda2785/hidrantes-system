@@ -60,6 +60,20 @@ class HidranteController extends Controller
 
     public function store(): void
     {
+        $idempotency = idempotency_claim(
+            (string) $this->request->input('_idempotency_token'),
+            'hidrantes.store',
+            5
+        );
+
+        if (($idempotency['ok'] ?? false) !== true) {
+            $message = ($idempotency['duplicate'] ?? false)
+                ? 'Ja recebemos este envio ha poucos segundos. Aguarde para evitar cadastro duplicado.'
+                : (string) ($idempotency['message'] ?? 'Nao foi possivel validar o envio. Recarregue o formulario e tente novamente.');
+
+            $this->redirect('/hidrantes/novo', null, $message);
+        }
+
         $auth = Session::get('auth');
 
         try {
