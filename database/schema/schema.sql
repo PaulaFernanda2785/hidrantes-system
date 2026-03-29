@@ -209,8 +209,8 @@ CREATE INDEX idx_historico_usuario_usuario_acao ON historico_usuario (usuario_id
 
 -- =========================================================
 -- DADOS INICIAIS OPCIONAIS
--- Login inicial: matricula 000000 / senha admin123
--- Altere a senha apos o primeiro acesso.
+-- Usuario administrador inicial para bootstrap do sistema.
+-- Ajuste as credenciais conforme a politica interna apos o primeiro acesso.
 -- =========================================================
 INSERT INTO usuarios (nome, matricula_funcional, senha_hash, perfil, status)
 VALUES

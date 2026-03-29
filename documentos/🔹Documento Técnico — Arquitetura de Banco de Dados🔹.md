@@ -71,7 +71,7 @@ O banco usa:
 
 O schema entrega apenas um seed obrigatorio:
 
-- usuario administrador inicial (`000000` / `admin123`)
+- usuario administrador inicial (credenciais definidas internamente)
 
 Observacoes:
 

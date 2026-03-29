@@ -77,10 +77,10 @@ storage/uploads/     # Arquivos enviados (fotos de hidrantes)
 5. Configure seu `DocumentRoot` ou `VirtualHost` para `public/`.
 6. Acesse o sistema no navegador.
 
-Credencial inicial (ambiente de desenvolvimento):
+Acesso inicial:
 
-- Matricula: `000000`
-- Senha: `admin123`
+- O schema inclui um usuario administrador inicial para bootstrap.
+- Altere matricula e senha imediatamente apos o primeiro acesso.
 
 ## Documentacao complementar
 
