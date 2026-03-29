@@ -1,5 +1,0 @@
-.env
-.env.*
-!.env.example
-storage/uploads/
-storage/framework/
