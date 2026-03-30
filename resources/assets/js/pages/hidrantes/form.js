@@ -9,6 +9,7 @@ window.HidrantesApp.onReady(() => {
     const geolocationFeedback = document.getElementById('geolocation-feedback');
     const locationMapPreview = document.getElementById('location-map-preview');
     const locationMapCoordinates = document.getElementById('location-map-preview-coordinates');
+    const locationMapCanvas = document.getElementById('location-map-canvas');
     const locationMapFrame = document.getElementById('location-map-frame');
     const fileInput = document.getElementById('upload-fotos-input');
     const cameraInput = document.getElementById('upload-camera-input');
@@ -55,6 +56,8 @@ window.HidrantesApp.onReady(() => {
     let editingBairroId = '';
     let selectedFiles = [];
     let uploadFeedbackMessage = '';
+    let locationLeafletMap = null;
+    let locationLeafletMarker = null;
 
     if (
         !municipio
@@ -89,6 +92,7 @@ window.HidrantesApp.onReady(() => {
         || !geolocationFeedback
         || !locationMapPreview
         || !locationMapCoordinates
+        || !locationMapCanvas
         || !locationMapFrame
     ) {
         return;
@@ -160,10 +164,28 @@ window.HidrantesApp.onReady(() => {
         openLocationMapButton.disabled = coordinatePair === null;
     };
 
+    const formatCoordinateValue = (value) => {
+        return Number.isFinite(value) ? value.toFixed(8) : '';
+    };
+
+    const applyCoordinatePairToInputs = (latitude, longitude) => {
+        latitudeInput.value = formatCoordinateValue(latitude);
+        longitudeInput.value = formatCoordinateValue(longitude);
+    };
+
+    const refreshCoordinateBadge = () => {
+        const coordinatePair = getCoordinatePair();
+        locationMapCoordinates.textContent = coordinatePair
+            ? `${coordinatePair.latitudeValue}, ${coordinatePair.longitudeValue}`
+            : '-';
+    };
+
     const hideMapPreview = () => {
         locationMapPreview.hidden = true;
         locationMapCoordinates.textContent = '-';
+        locationMapCanvas.hidden = true;
         locationMapFrame.removeAttribute('src');
+        locationMapFrame.hidden = true;
     };
 
     const buildMapPreviewUrl = (coordinatePair) => {
@@ -179,6 +201,95 @@ window.HidrantesApp.onReady(() => {
         return `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${encodeURIComponent(`${coordinatePair.latitudeValue},${coordinatePair.longitudeValue}`)}`;
     };
 
+    const syncCoordinatesFromInteractiveMap = (latitude, longitude, message) => {
+        applyCoordinatePairToInputs(latitude, longitude);
+        refreshCoordinateBadge();
+        updateGeolocationActionState();
+
+        if (locationLeafletMarker) {
+            locationLeafletMarker.setLatLng([latitude, longitude]);
+        }
+
+        if (locationLeafletMap) {
+            locationLeafletMap.panTo([latitude, longitude], {
+                animate: true,
+                duration: 0.25,
+            });
+        }
+
+        if (message) {
+            setGeolocationFeedback(message, 'success');
+        }
+    };
+
+    const ensureInteractiveMap = (coordinatePair) => {
+        if (!window.L) {
+            return false;
+        }
+
+        locationMapCanvas.hidden = false;
+        locationMapFrame.hidden = true;
+        locationMapFrame.removeAttribute('src');
+
+        if (!locationLeafletMap) {
+            locationLeafletMap = window.L.map(locationMapCanvas, {
+                zoomControl: true,
+                scrollWheelZoom: true,
+                dragging: true,
+                touchZoom: true,
+                doubleClickZoom: true,
+                minZoom: 5,
+                maxZoom: 20,
+            });
+
+            window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 20,
+                attribution: '&copy; OpenStreetMap contributors',
+            }).addTo(locationLeafletMap);
+
+            locationLeafletMap.on('click', (event) => {
+                syncCoordinatesFromInteractiveMap(
+                    Number(event.latlng.lat),
+                    Number(event.latlng.lng),
+                    'Ponto reposicionado no mapa. Ajuste fino arrastando o marcador antes de salvar.'
+                );
+            });
+        }
+
+        if (!locationLeafletMarker) {
+            locationLeafletMarker = window.L.marker(
+                [coordinatePair.latitude, coordinatePair.longitude],
+                { draggable: true }
+            ).addTo(locationLeafletMap);
+
+            locationLeafletMarker.on('dragend', (event) => {
+                const marker = event.target;
+                const markerCoordinates = marker.getLatLng();
+
+                syncCoordinatesFromInteractiveMap(
+                    Number(markerCoordinates.lat),
+                    Number(markerCoordinates.lng),
+                    'Ponto ajustado no mapa com sucesso. Salve o cadastro para manter a nova localizacao.'
+                );
+            });
+        } else {
+            locationLeafletMarker.setLatLng([coordinatePair.latitude, coordinatePair.longitude]);
+        }
+
+        const targetZoom = locationLeafletMap.getZoom() >= 14 ? locationLeafletMap.getZoom() : 16;
+        locationLeafletMap.setView([coordinatePair.latitude, coordinatePair.longitude], targetZoom, {
+            animate: false,
+        });
+
+        window.setTimeout(() => {
+            if (locationLeafletMap) {
+                locationLeafletMap.invalidateSize();
+            }
+        }, 0);
+
+        return true;
+    };
+
     const renderMapPreview = ({ reveal = true, scroll = false } = {}) => {
         const coordinatePair = getCoordinatePair();
 
@@ -187,13 +298,19 @@ window.HidrantesApp.onReady(() => {
             return false;
         }
 
-        latitudeInput.value = coordinatePair.latitudeValue;
-        longitudeInput.value = coordinatePair.longitudeValue;
-        locationMapCoordinates.textContent = `${coordinatePair.latitudeValue}, ${coordinatePair.longitudeValue}`;
-        locationMapFrame.src = buildMapPreviewUrl(coordinatePair);
-
         if (reveal) {
             locationMapPreview.hidden = false;
+        }
+
+        applyCoordinatePairToInputs(coordinatePair.latitude, coordinatePair.longitude);
+        refreshCoordinateBadge();
+
+        const interactiveMapReady = ensureInteractiveMap(coordinatePair);
+
+        if (!interactiveMapReady) {
+            locationMapCanvas.hidden = true;
+            locationMapFrame.hidden = false;
+            locationMapFrame.src = buildMapPreviewUrl(coordinatePair);
         }
 
         if (scroll) {
@@ -530,7 +647,7 @@ window.HidrantesApp.onReady(() => {
                 updateGeolocationActionState();
                 renderMapPreview({ reveal: true, scroll: false });
                 setGeolocationFeedback(
-                    `Coordenadas preenchidas com sucesso. Precisão aproximada de ${Math.round(position.coords.accuracy)} metros. A previa do mapa foi atualizada abaixo.`,
+                    `Coordenadas preenchidas com sucesso. Precisao aproximada de ${Math.round(position.coords.accuracy)} metros. Se necessario, arraste o marcador para ajustar o ponto.`,
                     'success'
                 );
                 useCurrentLocationButton.disabled = false;
@@ -556,7 +673,11 @@ window.HidrantesApp.onReady(() => {
             return;
         }
 
-        setGeolocationFeedback('Prévia do ponto atualizada abaixo para conferência antes de salvar.', 'success');
+        if (window.L) {
+            setGeolocationFeedback('Prévia atualizada. Arraste o marcador no mapa para ajustar a localizacao exata antes de salvar.', 'success');
+        } else {
+            setGeolocationFeedback('Prévia do ponto atualizada abaixo para conferência antes de salvar.', 'success');
+        }
         updateGeolocationActionState();
     });
 

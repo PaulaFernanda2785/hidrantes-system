@@ -257,12 +257,28 @@ input[readonly] {
     color: var(--text-soft);
 }
 
-.location-map-frame {
+.location-map-preview-help {
+    margin: 0;
+    color: var(--text-soft);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.location-map-frame,
+.location-map-canvas {
     width: 100%;
     min-height: 320px;
     border: 1px solid var(--border);
     border-radius: 14px;
     background: #e5e7eb;
+}
+
+.location-map-canvas.leaflet-container {
+    cursor: grab;
+}
+
+.location-map-canvas.leaflet-container.leaflet-dragging {
+    cursor: grabbing;
 }
 
 .hidrante-upload-panel {
@@ -829,7 +845,8 @@ input[readonly] {
         min-width: 0;
     }
 
-    .location-map-frame {
+    .location-map-frame,
+    .location-map-canvas {
         min-height: 280px;
     }
 

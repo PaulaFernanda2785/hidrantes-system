@@ -54,6 +54,12 @@ class HidranteController extends Controller
             'hidrante' => null,
             'municipios' => (new MunicipioRepository())->all(),
             'bairros' => [],
+            'headLinks' => [
+                'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+            ],
+            'externalScripts' => [
+                'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+            ],
             'scripts' => ['pages/hidrantes/form.js'],
         ]);
     }
@@ -113,6 +119,12 @@ class HidranteController extends Controller
             'hidrante' => $hidrante,
             'municipios' => (new MunicipioRepository())->all(),
             'bairros' => $bairros,
+            'headLinks' => [
+                'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+            ],
+            'externalScripts' => [
+                'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+            ],
             'scripts' => ['pages/hidrantes/form.js'],
         ]);
     }

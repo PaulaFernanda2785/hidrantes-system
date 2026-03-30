@@ -350,12 +350,22 @@ $tampasAusentesOpcoes = [
                 <strong>Prévia do ponto no mapa</strong>
                 <span class="location-map-preview-coordinates" id="location-map-preview-coordinates">-</span>
             </div>
+            <p class="location-map-preview-help">
+                Ajuste fino: arraste o marcador no mapa para corrigir a localizacao exata do hidrante.
+            </p>
+            <div
+                id="location-map-canvas"
+                class="location-map-canvas"
+                aria-label="Mapa interativo para ajustar o ponto do hidrante"
+                hidden
+            ></div>
             <iframe
                 id="location-map-frame"
                 class="location-map-frame"
                 title="Prévia do ponto do hidrante no mapa"
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade"
+                hidden
             ></iframe>
         </div>
 
